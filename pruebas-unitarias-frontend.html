@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informe de Pruebas Unitarias - Frontend | RehabACV</title>
+  <meta name="description" content="Resultados detallados, cobertura y métricas de la suite de pruebas unitarias del cliente web de RehabACV, desarrolladas con Vitest y React Testing Library.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Estilos Adicionales Específicos para Informes */
+    .hero-report {
+      padding: 140px 0 60px;
+    }
+    
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 36px;
+    }
+    
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+      transition: var(--transition);
+    }
+    
+    .kpi-card:hover {
+      border-color: var(--blue);
+      transform: translateY(-2px);
+    }
+    
+    .kpi-value {
+      font-family: var(--font-syne);
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+    
+    .kpi-value.passed {
+      color: var(--teal);
+      text-shadow: 0 0 15px rgba(45, 212, 191, 0.2);
+    }
+    
+    .kpi-label {
+      font-size: 12px;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Cobertura Grid */
+    .coverage-section {
+      padding: 60px 0;
+    }
+    
+    .coverage-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 40px;
+      align-items: start;
+    }
+    
+    @media (max-width: 968px) {
+      .coverage-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .coverage-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .bar-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .bar-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .bar-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .bar-pct {
+      font-family: var(--font-syne);
+      font-weight: 700;
+    }
+    
+    /* Figuras / Wireframes de Evidencia */
+    .evidence-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 40px;
+    }
+    
+    @media (max-width: 768px) {
+      .evidence-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .evidence-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      text-align: center;
+      transition: var(--transition);
+    }
+    
+    .evidence-card:hover {
+      border-color: var(--border2);
+    }
+    
+    .evidence-img-container {
+      width: 100%;
+      height: 240px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    
+    .evidence-img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+    
+    .evidence-card:hover .evidence-img-container img {
+      transform: scale(1.03);
+    }
+    
+    .evidence-placeholder {
+      font-size: 13px;
+      color: var(--text3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .evidence-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text2);
+    }
+
+    /* Accordion / Detalles Colapsables */
+    .modules-section {
+      padding: 60px 0;
+    }
+    
+    .accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 32px;
+    }
+    
+    details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    
+    details[open] {
+      border-color: var(--blue2);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    summary {
+      padding: 20px 24px;
+      font-family: var(--font-syne);
+      font-weight: 700;
+      font-size: 16px;
+      color: #ffffff;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      list-style: none;
+    }
+    
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    
+    summary::after {
+      content: '+';
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--text2);
+      transition: var(--transition);
+    }
+    
+    details[open] summary::after {
+      content: '−';
+      color: var(--teal);
+    }
+    
+    summary:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    
+    .details-content {
+      padding: 0 24px 24px;
+      border-top: 1px solid var(--border);
+      background: rgba(11, 15, 26, 0.4);
+    }
+    
+    .module-desc {
+      color: var(--text2);
+      font-size: 14px;
+      margin: 16px 0;
+      line-height: 1.6;
+    }
+
+    /* Tablas de Casos */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    
+    .test-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+    
+    .test-table th {
+      background: var(--surface2);
+      color: #ffffff;
+      font-weight: 600;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-syne);
+    }
+    
+    .test-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text2);
+      vertical-align: top;
+    }
+    
+    .test-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .test-table tr:hover td {
+      background: rgba(255, 255, 255, 0.01);
+      color: #ffffff;
+    }
+    
+    .cell-id {
+      font-family: monospace;
+      color: var(--blue);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    
+    .badge-pass {
+      background: var(--teal-dim);
+      color: var(--teal);
+      border: 1px solid rgba(45, 212, 191, 0.2);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: inline-block;
+    }
+
+    /* Conclusión */
+    .conclusion-card {
+      background: linear-gradient(135deg, rgba(79, 142, 247, 0.04) 0%, rgba(45, 212, 191, 0.04) 100%);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin-top: 48px;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+    
+    @media (max-width: 768px) {
+      .conclusion-card {
+        flex-direction: column;
+        gap: 16px;
+        padding: 24px;
+      }
+    }
+    
+    .conclusion-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--teal-dim);
+      color: var(--teal);
+      border: 1.5px solid rgba(45, 212, 191, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .conclusion-content h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .conclusion-content p {
+      color: var(--text2);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA DE NAVEGACIÓN -->
+  <nav class="navbar" id="main-navbar">
+    <div class="container navbar-container">
+      <div class="brand">
+        <img src="public/PS-MariposaMorpho-Logo.png" alt="Logo Mariposa Morpho" class="brand-logo">
+        <span class="brand-name">Mariposa Morpho</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Descripción</a></li>
+        <li><a href="index.html#tecnologias" class="nav-link">Tecnologías</a></li>
+        <li class="dropdown">
+          <span class="nav-link dropdown-toggle active" tabindex="0">
+            Pruebas
+            <svg class="dropdown-chevron" viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </span>
+          <ul class="dropdown-menu">
+            <li class="dropdown-item">
+              <a href="pruebas-funcionales-frontend.html">Informe de Pruebas Funcionales - Frontend</a>
+            </li>
+            <li class="dropdown-item">
+              <a href="pruebas-unitarias-backend.html">Informe de Pruebas Unitarias - Backend</a>
+            </li>
+            <li class="dropdown-item">
+              <a href="pruebas-unitarias-frontend.html" style="color: var(--teal); font-weight: 600;">Informe de Pruebas Unitarias - Frontend</a>
+            </li>
+            <li class="dropdown-item">
+              <a href="pruebas-unitarias-unity.html">Informe de Pruebas Unitarias - Unity</a>
+            </li>
+          </ul>
+        </li>
+        <li><a href="index.html#equipo" class="nav-link">Equipo</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO DEL INFORME -->
+  <header class="hero-report container">
+    <div class="fade-in" style="animation-delay: 100ms;">
+      <span class="badge">Pruebas Unitarias</span>
+      <h1 class="hero-title" style="font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 12px;">Informe de Pruebas Unitarias — Frontend</h1>
+      <p class="hero-description" style="max-width: 800px;">
+        Guía principal y resultados de la suite de pruebas automatizadas del cliente web de RehabACV, desarrolladas con Vitest y React Testing Library.
+      </p>
+    </div>
+
+    <!-- KPIs Rápidos -->
+    <div class="kpi-grid fade-in" style="animation-delay: 200ms;">
+      <div class="kpi-card">
+        <div class="kpi-value">105</div>
+        <div class="kpi-label">Total Casos</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value passed">100%</div>
+        <div class="kpi-label">Passed</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value" style="font-size: 20px; padding: 6px 0;">Vitest + RTL</div>
+        <div class="kpi-label">Herramientas</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value" style="color: var(--teal); font-size: 26px;">77.5%</div>
+        <div class="kpi-label">Cobertura Promedio</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SECCIÓN DE COBERTURA Y MÉTRICAS -->
+  <section class="section coverage-section container">
+    <div class="coverage-layout">
+      <div class="coverage-left fade-in" style="animation-delay: 200ms;">
+        <h2 class="section-title" style="text-align: left; margin-bottom: 16px;">Cobertura de Código</h2>
+        <p style="color: var(--text2); margin-bottom: 24px; line-height: 1.6;">
+          Utilizamos el motor nativo de cobertura <strong>V8</strong> integrado con <strong>Vitest</strong> para auditar cada línea, rama y función de nuestra interfaz en React. Las métricas actuales demuestran una cobertura robusta que supera los estándares requeridos para aplicaciones de grado médico.
+        </p>
+        
+        <div class="coverage-bars">
+          <div class="bar-group">
+            <div class="bar-info">
+              <span class="bar-name">Cobertura de Líneas (Lines)</span>
+              <span class="bar-pct" style="color: var(--blue);">78%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width: 78%; background: var(--blue);"></div>
+            </div>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar-info">
+              <span class="bar-name">Cobertura de Funciones (Functions)</span>
+              <span class="bar-pct" style="color: var(--teal);">82%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width: 82%; background: var(--teal);"></div>
+            </div>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar-info">
+              <span class="bar-name">Cobertura de Ramas (Branches)</span>
+              <span class="bar-pct" style="color: var(--purple);">71%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width: 71%; background: var(--purple);"></div>
+            </div>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar-info">
+              <span class="bar-name">Cobertura de Declaraciones (Statements)</span>
+              <span class="bar-pct" style="color: var(--amber);">79%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width: 79%; background: var(--amber);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="coverage-right fade-in" style="animation-delay: 300ms;">
+        <h2 class="section-title" style="text-align: left; margin-bottom: 16px;">Evidencia del Proceso</h2>
+        <p style="color: var(--text2); margin-bottom: 24px; line-height: 1.6;">
+          Se adjuntan las capturas de pantalla de la terminal correspondientes a la compilación y ejecución de la suite de pruebas unitarias locales.
+        </p>
+        
+        <!-- Evidencias Visuales -->
+        <div class="evidence-layout">
+          <div class="evidence-card">
+            <div class="evidence-img-container">
+              <img src="images/test-unitarias.png" alt="Ejecución de Pruebas Unitarias">
+            </div>
+            <div class="evidence-title">Figura 1: Terminal tras correr 105 tests unitarios locales</div>
+          </div>
+
+          <div class="evidence-card">
+            <div class="evidence-img-container">
+              <img src="images/cobertura-pruebas.png" alt="Reporte de Cobertura de Pruebas">
+            </div>
+            <div class="evidence-title">Figura 2: Consola de Vitest detallando los porcentajes de cobertura</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN DE RESULTADOS POR MÓDULO (ACORDEÓN) -->
+  <section class="section modules-section container" id="resultados">
+    <h2 class="section-title">Resultados por Módulo Clínico</h2>
+    <p class="section-subtitle">Explora el desglose completo de los 105 casos de prueba ejecutados satisfactoriamente en el frontend de RehabACV.</p>
+
+    <div class="accordion">
+      
+      <!-- 1. Módulo Autenticación -->
+      <details>
+        <summary>Módulo Autenticación (7 Casos)</summary>
+        <div class="details-content">
+          <p class="module-desc">Garantiza el inicio y cierre seguro de sesiones, validando formatos y persistencia local del token de autorización.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Caso de Prueba</th>
+                  <th>Entrada / Condición</th>
+                  <th>Resultado Esperado</th>
+                  <th>Resultado Real</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="cell-id">PU-FRONT-01</td>
+                  <td>Renderizado del formulario de Login</td>
+                  <td>Carga del componente <code>&lt;Login /&gt;</code></td>
+                  <td>Inputs de email, contraseña y botón visibles</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-02</td>
+                  <td>Validación de campos obligatorios vacíos</td>
+                  <td>Click en Login con campos vacíos</td>
+                  <td>Mostrar advertencia "Campos obligatorios"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-03</td>
+                  <td>Validación de formato de Email incorrecto</td>
+                  <td>Email: "correo-invalido"</td>
+                  <td>Mostrar error "Correo inválido"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-04</td>
+                  <td>Login exitoso con credenciales válidas</td>
+                  <td>Email y Password válidos, click en Login</td>
+                  <td>Redirección al Dashboard de administración</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-05</td>
+                  <td>Login fallido con credenciales inválidas</td>
+                  <td>Email y/o Password incorrectos</td>
+                  <td>Mostrar error "Credenciales no coinciden"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-06</td>
+                  <td>Recuperación de contraseña</td>
+                  <td>Email registrado en formulario de recuperación</td>
+                  <td>Alerta de éxito: "Correo de recuperación enviado"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-07</td>
+                  <td>Cierre de sesión (Logout)</td>
+                  <td>Click en "Cerrar sesión" en Sidebar</td>
+                  <td>Limpieza de localStorage y redirección a Login</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <!-- 2. Módulo Dashboard -->
+      <details>
+        <summary>Módulo Dashboard (7 Casos)</summary>
+        <div class="details-content">
+          <p class="module-desc">Comprueba la visualización correcta de métricas consolidadas, la respuesta responsiva de paneles y la carga de datos asíncronos.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Caso de Prueba</th>
+                  <th>Entrada / Condición</th>
+                  <th>Resultado Esperado</th>
+                  <th>Resultado Real</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="cell-id">PU-FRONT-08</td>
+                  <td>Renderizado del layout base del Dashboard</td>
+                  <td>Usuario autenticado carga <code>/dashboard</code></td>
+                  <td>Menú lateral y topbar visibles en pantalla</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-09</td>
+                  <td>Despliegue de métricas agregadas</td>
+                  <td>Datos exitosos desde <code>/dashboard/stats</code></td>
+                  <td>Muestra cantidad total de pacientes y de sesiones</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-10</td>
+                  <td>Carga de actividades recientes</td>
+                  <td>Arreglo con últimas 5 sesiones de rehabilitación</td>
+                  <td>Renderizar lista detallando paciente y fecha</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-11</td>
+                  <td>Gráfico de adherencia clínica</td>
+                  <td>Datos históricos del backend</td>
+                  <td>Renderizar gráfico de líneas con puntos clave</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-12</td>
+                  <td>Navegación interna vía sidebar</td>
+                  <td>Click en la sección "Pacientes" en el menú</td>
+                  <td>Cambio de ruta en el navegador a <code>/patients</code></td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-13</td>
+                  <td>Comportamiento responsivo del menú</td>
+                  <td>Viewport en tamaño mobile (375px)</td>
+                  <td>Sidebar colapsa y botón hamburguesa visible</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-14</td>
+                  <td>Manejo de estados de carga (Skeletons)</td>
+                  <td>Llamada al backend en progreso (loading=true)</td>
+                  <td>Visualizar skeletons de carga en lugar de métricas vacías</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <!-- 3. Módulo Gestión de Pacientes -->
+      <details>
+        <summary>Módulo Gestión de Pacientes (13 Casos)</summary>
+        <div class="details-content">
+          <p class="module-desc">Valida la creación, edición, desactivación y listado de pacientes, así como los filtros de búsqueda por DNI y nombres.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Caso de Prueba</th>
+                  <th>Entrada / Condición</th>
+                  <th>Resultado Esperado</th>
+                  <th>Resultado Real</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="cell-id">PU-FRONT-15</td>
+                  <td>Renderizado de la lista con paginación</td>
+                  <td>Lista de pacientes paginada</td>
+                  <td>Mostrar tabla con nombres, DNI y controles de página</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-16</td>
+                  <td>Búsqueda de pacientes por nombre o DNI</td>
+                  <td>Input de búsqueda: "70529"</td>
+                  <td>Filtrar tabla mostrando coincidencia exacta</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-17</td>
+                  <td>Apertura de formulario de creación</td>
+                  <td>Click en "Registrar Paciente"</td>
+                  <td>Apertura de modal con inputs limpios</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-18</td>
+                  <td>Creación exitosa de un paciente</td>
+                  <td>Payload válido enviado al backend</td>
+                  <td>Cierre de modal y refresco de tabla con alerta</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-19</td>
+                  <td>Validación de campos obligatorios en creación</td>
+                  <td>Nombres vacíos en el formulario</td>
+                  <td>Mostrar mensaje "Nombres son obligatorios"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-20</td>
+                  <td>Validación de DNI duplicado</td>
+                  <td>DNI ya registrado en base de datos</td>
+                  <td>Mostrar error "El DNI ya se encuentra registrado"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-21</td>
+                  <td>Visualización de perfil clínico detallado</td>
+                  <td>Click en fila del paciente con ID 12</td>
+                  <td>Mostrar ficha médica y antecendentes del paciente</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-22</td>
+                  <td>Renderizado de historial de sesiones</td>
+                  <td>Apertura de pestaña "Sesiones" del paciente</td>
+                  <td>Listar sesiones con fecha, tipo de ejercicio y ROM</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-23</td>
+                  <td>Carga de formulario de edición</td>
+                  <td>Click en "Editar paciente"</td>
+                  <td>Formulario precargado con datos del paciente</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-24</td>
+                  <td>Actualización exitosa del perfil</td>
+                  <td>Datos modificados correctamente</td>
+                  <td>Cierre de modal y actualización del registro en pantalla</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-25</td>
+                  <td>Desactivar o suspender paciente</td>
+                  <td>Click en "Desactivar" paciente activo</td>
+                  <td>Cambio de badge a "Inactivo" en la lista</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-26</td>
+                  <td>Manejo de errores de conexión de red</td>
+                  <td>Falla de petición GET (servidor inaccesible)</td>
+                  <td>Mostrar mensaje "Error de conexión con el servidor"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-27</td>
+                  <td>Descarga de reporte clínico en PDF</td>
+                  <td>Click en "Exportar Historial"</td>
+                  <td>Llamada al servicio y descarga de archivo de extensión PDF</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <!-- 4. Módulo Gestión de Sesiones -->
+      <details>
+        <summary>Módulo Gestión de Sesiones (15 Casos)</summary>
+        <div class="details-content">
+          <p class="module-desc">Cubre la orquestación del inicio de sesiones de terapia, conexiones WebSocket con Unity, conteo de repeticiones y resúmenes médicos.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Caso de Prueba</th>
+                  <th>Entrada / Condición</th>
+                  <th>Resultado Esperado</th>
+                  <th>Resultado Real</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="cell-id">PU-FRONT-28</td>
+                  <td>Renderizado de interfaz de inicio de sesión</td>
+                  <td>Ingreso a la sección de nueva sesión</td>
+                  <td>Selector de paciente y botón de configurar sesión visibles</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-29</td>
+                  <td>Selección de tipo de ejercicio y dificultad</td>
+                  <td>Ejercicio: "Flexión de Codo", Nivel: "Medio"</td>
+                  <td>Campos configurados correctamente para envío</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-30</td>
+                  <td>Conexión con el WebSocket de Unity</td>
+                  <td>Click en "Iniciar" sesión</td>
+                  <td>Establecer canal WebSocket con el puerto configurado</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-31</td>
+                  <td>Sincronización de estado de sensor Kinect</td>
+                  <td>Evento "Kinect_Connected" recibido vía WS</td>
+                  <td>Mostrar indicador de hardware en color verde (Activo)</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-32</td>
+                  <td>Renderizado del avatar interactivo</td>
+                  <td>Coordenadas de articulaciones recibidas vía WS</td>
+                  <td>Actualizar representación 2D/3D del esqueleto del paciente</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-33</td>
+                  <td>Indicadores de ángulo actual y meta</td>
+                  <td>Mensaje de ángulo: "85" (Meta: 90)</td>
+                  <td>Muestra progreso visual del ángulo angular</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-34</td>
+                  <td>Contador visual de repeticiones</td>
+                  <td>Mensaje "Rep_Completed" recibido</td>
+                  <td>Incrementar contador de repeticiones en pantalla</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-35</td>
+                  <td>Feedback de postura incorrecta</td>
+                  <td>Mensaje de advertencia "Back_Compensated"</td>
+                  <td>Mostrar mensaje "Mantenga la espalda recta" en rojo</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-36</td>
+                  <td>Guardar sesión exitosamente</td>
+                  <td>Finalización de rutina y envío de logs clínicos</td>
+                  <td>Guardado exitoso, redirección a pantalla de resumen</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-37</td>
+                  <td>Pausar y reanudar sesión de terapia</td>
+                  <td>Click en "Pausar" / "Reanudar"</td>
+                  <td>Enviar evento de control correspondiente al socket</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-38</td>
+                  <td>Cancelación de sesión activa</td>
+                  <td>Click en "Cancelar" y confirmar alerta</td>
+                  <td>Cerrar conexión WebSocket sin persistir la sesión</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-39</td>
+                  <td>Manejo de desconexión abrupta de Kinect</td>
+                  <td>Pérdida de señal o socket cerrado inesperadamente</td>
+                  <td>Alerta crítica en pantalla y pausa del temporizador</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-40</td>
+                  <td>Visualización de resumen de métricas</td>
+                  <td>Carga de la vista de final de sesión</td>
+                  <td>Muestra promedio de ROM alcanzado y tiempo útil</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-41</td>
+                  <td>Guardado fallido por error de red</td>
+                  <td>Servicio HTTP 503 al enviar logs</td>
+                  <td>Guardar logs en cache interna del navegador</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-42</td>
+                  <td>Validación de límite de sesiones diarias</td>
+                  <td>Paciente seleccionado excede límite clínico</td>
+                  <td>Mostrar aviso: "Paciente ya completó su límite hoy"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <!-- 5. Módulo Gestión de Usuarios -->
+      <details>
+        <summary>Módulo Gestión de Usuarios (10 Casos)</summary>
+        <div class="details-content">
+          <p class="module-desc">Valida la creación y modificación de credenciales de terapeutas y administradores, el control de roles y contraseñas seguras.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Caso de Prueba</th>
+                  <th>Entrada / Condición</th>
+                  <th>Resultado Esperado</th>
+                  <th>Resultado Real</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="cell-id">PU-FRONT-43</td>
+                  <td>Renderizado de lista de usuarios</td>
+                  <td>Acceso al panel de administración</td>
+                  <td>Mostrar tabla con lista de terapeutas y administradores</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-44</td>
+                  <td>Creación de nuevo usuario terapeuta</td>
+                  <td>Formulario con datos de terapeuta válidos</td>
+                  <td>Llamada exitosa al backend y recarga de lista</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-45</td>
+                  <td>Validación de contraseña en creación</td>
+                  <td>Contraseña: "123" (débil)</td>
+                  <td>Mostrar error "Mínimo 8 caracteres, números y letras"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-46</td>
+                  <td>Edición de datos de perfil de usuario</td>
+                  <td>Cambio de teléfono o correo de contacto</td>
+                  <td>Actualización exitosa en base de datos</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-47</td>
+                  <td>Asignación de pacientes a un terapeuta</td>
+                  <td>Selección de pacientes asociados</td>
+                  <td>Guardar asociación de pacientes correctamente</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-48</td>
+                  <td>Habilitar / Deshabilitar cuenta</td>
+                  <td>Click en alternar estado de cuenta</td>
+                  <td>Deshabilitar accesibilidad inmediata al login</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-49</td>
+                  <td>Validación de correo institucional único</td>
+                  <td>Correo duplicado de otro terapeuta</td>
+                  <td>Mostrar error "Este correo ya está registrado"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-50</td>
+                  <td>Búsqueda de usuarios por nombre o rol</td>
+                  <td>Filtro de búsqueda: "Administrador"</td>
+                  <td>Tabla filtrada únicamente con administradores</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-51</td>
+                  <td>Restablecer contraseña por administrador</td>
+                  <td>Click en "Restablecer contraseña temporal"</td>
+                  <td>Enviar contraseña temporal y forzar cambio al inicio</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-52</td>
+                  <td>Control de concurrencia de edición</td>
+                  <td>Intento de actualizar perfil modificado por otro</td>
+                  <td>Mostrar alerta de conflicto al enviar cambios</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <!-- 6. Smoke Test - Aplicación Principal -->
+      <details>
+        <summary>Smoke Test - Aplicación Principal (1 Caso)</summary>
+        <div class="details-content">
+          <p class="module-desc">Prueba rápida para confirmar que el bundle y los componentes principales del portal cargan sin excepciones críticas.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Caso de Prueba</th>
+                  <th>Entrada / Condición</th>
+                  <th>Resultado Esperado</th>
+                  <th>Resultado Real</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="cell-id">PU-FRONT-53</td>
+                  <td>Carga inicial de la aplicación (Smoke Test)</td>
+                  <td>Montar el contenedor principal de React</td>
+                  <td>El DOM carga sin lanzar errores fatales en consola</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <!-- 7. Configuración HTTP / Axios Interceptors -->
+      <details>
+        <summary>Configuración HTTP / Axios Interceptors (10 Casos)</summary>
+        <div class="details-content">
+          <p class="module-desc">Audita las respuestas y cabeceras de peticiones Axios, controlando la inyección de JWT, manejo de errores globales y renovación de tokens.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Caso de Prueba</th>
+                  <th>Entrada / Condición</th>
+                  <th>Resultado Esperado</th>
+                  <th>Resultado Real</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="cell-id">PU-FRONT-54</td>
+                  <td>Inyección del token Bearer JWT</td>
+                  <td>Lanzar petición HTTP cualquiera</td>
+                  <td>Header <code>Authorization</code> contiene el token guardado</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-55</td>
+                  <td>Renovación automática de Token (401)</td>
+                  <td>Token expirado y respuesta 401 del backend</td>
+                  <td>Solicitar /refresh, actualizar token y reintentar petición</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-56</td>
+                  <td>Redirección a Login por falta de autorización</td>
+                  <td>Refresh token inválido o expirado</td>
+                  <td>Limpiar almacenamiento de sesión y forzar /login</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-57</td>
+                  <td>Manejo de errores globales 500</td>
+                  <td>Error del servidor HTTP 500</td>
+                  <td>Mostrar alerta toast: "Ocurrió un error inesperado"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-58</td>
+                  <td>Interceptor de Timeout</td>
+                  <td>Llamada al backend excede 10 segundos</td>
+                  <td>Cancelar petición y notificar "Tiempo de espera agotado"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-59</td>
+                  <td>Configuración de URL base de API</td>
+                  <td>Llamada a endpoints relativos</td>
+                  <td>Se resuelven dinámicamente con la URL base de API</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-60</td>
+                  <td>Bloqueo de peticiones duplicadas</td>
+                  <td>Click doble rápido en botón de envío</td>
+                  <td>Enviar solo la primera petición y cancelar la duplicada</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-61</td>
+                  <td>Manejo de error 403 (Permisos)</td>
+                  <td>Acción denegada por permisos del rol</td>
+                  <td>Mostrar alerta indicando falta de privilegios</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-62</td>
+                  <td>Almacenamiento seguro del token</td>
+                  <td>Inicio de sesión exitoso</td>
+                  <td>Token guardado en memoria y localStorage cifrado</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-63</td>
+                  <td>Limpieza de headers en llamadas externas</td>
+                  <td>Llamada a API de mapas externa</td>
+                  <td>Cabecera Authorization omitida de la petición externa</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <!-- 8. Módulo Cambio de Contraseña Inicial -->
+      <details>
+        <summary>Módulo Cambio de Contraseña Inicial (8 Casos)</summary>
+        <div class="details-content">
+          <p class="module-desc">Valida la protección de cuentas que inician sesión por primera vez con contraseñas temporales generadas por administradores.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Caso de Prueba</th>
+                  <th>Entrada / Condición</th>
+                  <th>Resultado Esperado</th>
+                  <th>Resultado Real</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="cell-id">PU-FRONT-64</td>
+                  <td>Redirección forzada inicial</td>
+                  <td>Usuario con bandera temporal=true se loguea</td>
+                  <td>Redirección obligatoria al formulario de cambio de clave</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-65</td>
+                  <td>Validación de contraseña actual correcta</td>
+                  <td>Contraseña actual errónea</td>
+                  <td>Mostrar alerta "Contraseña actual incorrecta"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-66</td>
+                  <td>Validación de coincidencia de claves</td>
+                  <td>Clave nueva y confirmación no coinciden</td>
+                  <td>Mostrar error "Las contraseñas no coinciden"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-67</td>
+                  <td>Validación de complejidad mínima</td>
+                  <td>Nueva clave sin números o caracteres especiales</td>
+                  <td>Mostrar error de requisitos mínimos</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-68</td>
+                  <td>Envío exitoso de la transacción</td>
+                  <td>Formulario válido y click en Cambiar Clave</td>
+                  <td>Token de sesión temporal invalidado y clave actualizada</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-69</td>
+                  <td>Bloqueo del botón de envío</td>
+                  <td>Petición HTTP en progreso</td>
+                  <td>Botón inhabilitado para evitar peticiones múltiples</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-70</td>
+                  <td>Error si es idéntica a la anterior</td>
+                  <td>Nueva clave idéntica a la temporal anterior</td>
+                  <td>Mostrar error "Debe ingresar una contraseña diferente"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-71</td>
+                  <td>Redirección automática final</td>
+                  <td>Flujo completado exitosamente</td>
+                  <td>Acceso al Dashboard y bandera temporal=false</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <!-- 9. Módulo Enrutamiento y Control de Acceso -->
+      <details>
+        <summary>Módulo Enrutamiento y Control de Acceso (15 Casos)</summary>
+        <div class="details-content">
+          <p class="module-desc">Asegura que las rutas del aplicativo estén protegidas contra accesos no autorizados y basadas estrictamente en los roles de usuario.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Caso de Prueba</th>
+                  <th>Entrada / Condición</th>
+                  <th>Resultado Esperado</th>
+                  <th>Resultado Real</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="cell-id">PU-FRONT-72</td>
+                  <td>Protección de rutas privadas</td>
+                  <td>Acceso a <code>/patients</code> sin token guardado</td>
+                  <td>Redirección forzada inmediata a <code>/login</code></td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-73</td>
+                  <td>Restricción a panel administrativo (Terapeuta)</td>
+                  <td>Terapeuta intenta ingresar a <code>/admin/users</code></td>
+                  <td>Redirección a ruta /403 (Acceso Denegado)</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-74</td>
+                  <td>Restricción a configuración general (Paciente)</td>
+                  <td>Paciente intenta acceder a rutas del terapeuta</td>
+                  <td>Bloqueo inmediato y redirección a 403</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-75</td>
+                  <td>Redirección post-autenticación</td>
+                  <td>Acceso inicial protegido y login exitoso posterior</td>
+                  <td>Redirigir a la URL original que el usuario intentó cargar</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-76</td>
+                  <td>Página de error 404</td>
+                  <td>Ruta inexistente <code>/ruta-fantasma</code></td>
+                  <td>Mostrar pantalla 404 personalizada con botón de retorno</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-77</td>
+                  <td>Página de error 403</td>
+                  <td>Carga explícita de error de permisos</td>
+                  <td>Muestra mensaje clínico: "No posee privilegios para ver esto"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-78</td>
+                  <td>Persistencia de autenticación</td>
+                  <td>Recarga completa de página en Dashboard (F5)</td>
+                  <td>El usuario sigue logueado, sin parpadeo de redirección</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-79</td>
+                  <td>Carga perezosa (Lazy Loading)</td>
+                  <td>Transición de ruta hacia el panel interactivo</td>
+                  <td>Visualizar fallback de carga de componente asíncrono</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-80</td>
+                  <td>Cancelación de transición inactiva</td>
+                  <td>Cambio rápido de sección antes de resolver llamada API</td>
+                  <td>Abortar transiciones y llamadas a controladores anteriores</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-81</td>
+                  <td>Control de visibilidad del Sidebar</td>
+                  <td>Rol "Terapeuta" autenticado</td>
+                  <td>Ocultar el enlace "Gestión de Usuarios" en el sidebar</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-82</td>
+                  <td>Redirección redundante de Login</td>
+                  <td>Usuario autenticado navega a <code>/login</code></td>
+                  <td>Redirección inmediata a Dashboard</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-83</td>
+                  <td>Cierre de diálogos activos en cambio de ruta</td>
+                  <td>Navegación con modal abierto</td>
+                  <td>Modal se remueve del DOM automáticamente</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-84</td>
+                  <td>Confirmación de cambios no guardados</td>
+                  <td>Intento de salir de formulario editado sin guardar</td>
+                  <td>Mostrar ventana emergente nativa confirmando salida</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-85</td>
+                  <td>Título dinámico de la página</td>
+                  <td>Navegar a la sección de Historial Clínico</td>
+                  <td>Título del navegador cambia a "Pacientes - RehabACV"</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-86</td>
+                  <td>Cierre de sesión automática por inactividad</td>
+                  <td>Sin interacción de eventos durante 15 minutos</td>
+                  <td>Cerrar sesión, limpiar tokens y redirección con aviso</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <!-- 10. Módulo API Layer -->
+      <details>
+        <summary>Módulo API Layer (19 Casos)</summary>
+        <div class="details-content">
+          <p class="module-desc">Pruebas a bajo nivel de las funciones y servicios que interactúan directamente con los endpoints HTTP REST de RehabACV.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Caso de Prueba</th>
+                  <th>Entrada / Condición</th>
+                  <th>Resultado Esperado</th>
+                  <th>Resultado Real</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="cell-id">PU-FRONT-87</td>
+                  <td>Llamada login en Auth API</td>
+                  <td>Llamar <code>authService.login(email, pass)</code></td>
+                  <td>Llamar a POST /auth/login con parámetros correctos</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-88</td>
+                  <td>Llamada refresh en Auth API</td>
+                  <td>Llamar <code>authService.refresh(token)</code></td>
+                  <td>Llamar a POST /auth/refresh</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-89</td>
+                  <td>Lectura de pacientes con búsqueda</td>
+                  <td><code>patientService.getAll("Luis")</code></td>
+                  <td>GET /patients?search=Luis</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-90</td>
+                  <td>Creación de paciente</td>
+                  <td><code>patientService.create(data)</code></td>
+                  <td>POST /patients con el cuerpo JSON estructurado</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-91</td>
+                  <td>Lectura detallada de paciente</td>
+                  <td><code>patientService.getById(12)</code></td>
+                  <td>GET /patients/12</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-92</td>
+                  <td>Actualización de paciente</td>
+                  <td><code>patientService.update(12, data)</code></td>
+                  <td>PUT /patients/12 con campos de modificación</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-93</td>
+                  <td>Desactivación lógica de paciente</td>
+                  <td><code>patientService.delete(12)</code></td>
+                  <td>DELETE /patients/12</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-94</td>
+                  <td>Lectura de historial global de sesiones</td>
+                  <td><code>sessionService.getAll()</code></td>
+                  <td>GET /sessions</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-95</td>
+                  <td>Registro de sesión finalizada</td>
+                  <td><code>sessionService.save(sessionData)</code></td>
+                  <td>POST /sessions enviando logs de movimiento</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-96</td>
+                  <td>Lectura de sesiones de un paciente</td>
+                  <td><code>sessionService.getByPatient(12)</code></td>
+                  <td>GET /sessions/patient/12</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-97</td>
+                  <td>Obtener lista de rutinas habilitadas</td>
+                  <td><code>exerciseService.getEnabled()</code></td>
+                  <td>GET /exercises</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-98</td>
+                  <td>Descarga de reporte clínico en PDF</td>
+                  <td><code>reportService.getPDF(12)</code></td>
+                  <td>GET /reports/clinical/12 en formato blob</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-99</td>
+                  <td>Lectura de lista de terapeutas</td>
+                  <td><code>userService.getAll()</code></td>
+                  <td>GET /users</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-100</td>
+                  <td>Creación de nuevo usuario terapeuta</td>
+                  <td><code>userService.create(data)</code></td>
+                  <td>POST /users enviando objeto terapeuta</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-101</td>
+                  <td>Actualización de datos de perfil de usuario</td>
+                  <td><code>userService.update(5, data)</code></td>
+                  <td>PUT /users/5</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-102</td>
+                  <td>Activación/Desactivación de usuario</td>
+                  <td><code>userService.patchStatus(5, false)</code></td>
+                  <td>PATCH /users/5/status</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-103</td>
+                  <td>Estadísticas consolidadas del Dashboard</td>
+                  <td><code>dashboardService.getStats()</code></td>
+                  <td>GET /dashboard/stats</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-104</td>
+                  <td>Listar alertas médicas y notificaciones</td>
+                  <td><code>notificationService.getAlerts()</code></td>
+                  <td>GET /notifications</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td class="cell-id">PU-FRONT-105</td>
+                  <td>Serialización de fechas en formato ISO 8601</td>
+                  <td>Envío de fechas nativas del cliente</td>
+                  <td>Cadena transformada automáticamente a formato UTC</td>
+                  <td><span class="badge-pass">PASS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <!-- CONCLUSIÓN -->
+  <section class="container" style="padding-bottom: 90px;">
+    <div class="conclusion-card fade-in" style="animation-delay: 200ms;">
+      <div class="conclusion-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <div class="conclusion-content">
+        <h3>Nivel de Confianza y Estabilidad Global</h3>
+        <p>
+          La ejecución exitosa de los <strong>105 casos de prueba unitarios</strong> con un <strong>100% de éxito (Passed)</strong> e índices de cobertura promedio superiores al <strong>77%</strong> confiere un alto nivel de confianza al portal de RehabACV. La suite garantiza un comportamiento consistente frente a escenarios de error inesperados (como desconexión de hardware o fallos de red) y validaciones rigurosas que blindan la seguridad biomecánica y clínica en la atención del paciente.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-logo">
+        <img src="public/PS-MariposaMorpho-Logo.png" alt="Logo Mariposa Morpho">
+        <span>Mariposa Morpho — RehabACV</span>
+      </div>
+      <div class="footer-text">
+        © 2026 Mariposa Morpho. Todos los derechos reservados. Desarrollado con fines académicos para la Escuela de Ingeniería de Sistemas - UNSA.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Accesibilidad Dropdown con teclado
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
+    dropdownToggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const menu = dropdownToggle.nextElementSibling;
+        const isVisible = window.getComputedStyle(menu).visibility === 'visible';
+        menu.style.opacity = isVisible ? '0' : '1';
+        menu.style.visibility = isVisible ? 'hidden' : 'visible';
+        menu.style.transform = isVisible ? 'translateY(10px)' : 'translateY(0)';
+      }
+    });
+  </script>
+
+</body>
+</html>
