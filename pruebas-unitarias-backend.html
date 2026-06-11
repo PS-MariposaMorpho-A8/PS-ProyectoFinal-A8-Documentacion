@@ -914,9 +914,11 @@
                                     <td class="cell-id">PU-BACK-40</td>
                                     <td>Verificar creación de vistas e índices adicionales</td>
                                     <td>BD SQLite en memoria con esquema inicial y ejecución de
-                                        <code>apply_sqlite_extras()</code></td>
+                                        <code>apply_sqlite_extras()</code>
+                                    </td>
                                     <td>Los objetos adicionales son creados y consultables desde
-                                        <code>sqlite_master</code></td>
+                                        <code>sqlite_master</code>
+                                    </td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
                             </tbody>
@@ -978,9 +980,11 @@
                                     <td class="cell-id">PU-BACK-42</td>
                                     <td>Calcular propiedades derivadas del usuario</td>
                                     <td>Usuario con <code>id=1</code>, <code>email="a@b.c"</code> y nombres
-                                        <code>"First Last"</code>, <code>"Only"</code> y <code>""</code></td>
+                                        <code>"First Last"</code>, <code>"Only"</code> y <code>""</code>
+                                    </td>
                                     <td>Propiedades <code>first_name</code>, <code>last_name</code>,
-                                        <code>full_name</code> y representación textual correctas</td>
+                                        <code>full_name</code> y representación textual correctas
+                                    </td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
                             </tbody>
@@ -1014,7 +1018,8 @@
                                     <td>Request con IP <code>127.0.0.1</code> y User-Agent <code>pytest-agent</code>
                                     </td>
                                     <td>Retorna contexto con <code>ip_address="127.0.0.1"</code> y
-                                        <code>user_agent="pytest-agent"</code></td>
+                                        <code>user_agent="pytest-agent"</code>
+                                    </td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
                                 <tr>
@@ -1022,7 +1027,8 @@
                                     <td>Asignar valores por defecto sin información del cliente</td>
                                     <td>Request sin cliente y sin cabeceras</td>
                                     <td>Retorna contexto con <code>ip_address="0.0.0.0"</code> y
-                                        <code>user_agent=None</code></td>
+                                        <code>user_agent=None</code>
+                                    </td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
                             </tbody>
@@ -1082,6 +1088,145 @@
                 menu.style.visibility = isVisible ? 'hidden' : 'visible';
                 menu.style.transform = isVisible ? 'translateY(10px)' : 'translateY(0)';
             }
+        });
+
+        // ==============================================
+        // MODAL DE IMÁGENES CON FONDO BORROSO
+        // ==============================================
+
+        // Crear el modal dinámicamente si no existe
+        if (!document.getElementById('imageModal')) {
+            const modalHTML = `
+      <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImg">
+        <div id="caption"></div>
+      </div>
+    `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        // Obtener elementos del modal
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImg');
+        const captionText = document.getElementById('caption');
+        const closeBtn = document.querySelector('.close');
+
+        // Asegurar que los estilos del modal estén correctos (por si no están en CSS)
+        if (modal) {
+            modal.style.display = 'none';
+            modal.style.position = 'fixed';
+            modal.style.zIndex = '1000';
+            modal.style.paddingTop = '60px';
+            modal.style.left = '0';
+            modal.style.top = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.overflow = 'auto';
+            modal.style.backdropFilter = 'blur(8px)';
+            modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        }
+
+        if (modalImg) {
+            modalImg.style.margin = 'auto';
+            modalImg.style.display = 'block';
+            modalImg.style.maxWidth = '90%';
+            modalImg.style.maxHeight = '90vh';
+            modalImg.style.borderRadius = '12px';
+            modalImg.style.boxShadow = '0 0 30px rgba(0,0,0,0.5)';
+        }
+
+        if (captionText) {
+            captionText.style.margin = 'auto';
+            captionText.style.display = 'block';
+            captionText.style.textAlign = 'center';
+            captionText.style.color = '#fff';
+            captionText.style.padding = '15px';
+            captionText.style.fontSize = '14px';
+            captionText.style.fontFamily = 'system-ui, sans-serif';
+        }
+
+        if (closeBtn) {
+            closeBtn.style.position = 'absolute';
+            closeBtn.style.top = '20px';
+            closeBtn.style.right = '35px';
+            closeBtn.style.color = '#fff';
+            closeBtn.style.fontSize = '45px';
+            closeBtn.style.fontWeight = 'bold';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.transition = '0.3s';
+            closeBtn.style.zIndex = '1001';
+        }
+
+        // Función para abrir el modal con la imagen clickeada
+        function openModal(imgElement) {
+            if (!modal || !modalImg || !captionText) return;
+
+            modal.style.display = 'block';
+            modalImg.src = imgElement.src;
+            captionText.innerHTML = imgElement.alt || 'Imagen sin descripción';
+
+            // Prevenir scroll del body mientras el modal está abierto
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Función para cerrar el modal
+        function closeModal() {
+            if (!modal) return;
+            modal.style.display = 'none';
+            // Restaurar scroll del body
+            document.body.style.overflow = '';
+        }
+
+        // Agregar event listeners a todas las imágenes dentro de evidence-card
+        const evidenceImages = document.querySelectorAll('.evidence-card img');
+
+        evidenceImages.forEach(img => {
+            // Asegurar que el cursor sea pointer para indicar que es clickeable
+            img.style.cursor = 'pointer';
+
+            // Agregar efecto hover sutil
+            img.addEventListener('mouseenter', () => {
+                img.style.transition = 'transform 0.2s ease';
+                img.style.transform = 'scale(1.02)';
+            });
+
+            img.addEventListener('mouseleave', () => {
+                img.style.transform = 'scale(1)';
+            });
+
+            // Evento de clic para abrir el modal
+            img.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openModal(img);
+            });
+        });
+
+        // Cerrar modal al hacer clic en la X
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeModal);
+        }
+
+        // Cerrar modal al hacer clic fuera de la imagen (en el fondo borroso)
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                // Solo cerrar si el clic fue directamente en el modal (fondo), no en la imagen
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        // Cerrar modal con la tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal && modal.style.display === 'block') {
+                closeModal();
+            }
+        });
+
+        // Limpiar evento al descargar la página (por si acaso)
+        window.addEventListener('beforeunload', () => {
+            document.body.style.overflow = '';
         });
     </script>
 
