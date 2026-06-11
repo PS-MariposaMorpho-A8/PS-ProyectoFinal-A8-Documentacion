@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informe de Pruebas Funcionales - Frontend (QA) | RehabACV</title>
+  <meta name="description" content="Resultados de la suite de pruebas funcionales (E2E) aplicadas sobre la interfaz de RehabACV.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Estilos específicos para el informe de Pruebas Funcionales */
+    .hero-report { padding: 140px 0 60px; }
+
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 36px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 22px 20px 18px;
+      text-align: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue), var(--teal));
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .kpi-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+    }
+
+    .kpi-card:hover::before { opacity: 1; }
+
+    .kpi-value {
+      font-family: var(--font-syne);
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+      line-height: 1;
+    }
+
+    .kpi-value.passed { color: var(--teal); text-shadow: 0 0 20px rgba(45, 212, 191, 0.25); }
+    .kpi-value.failed { color: var(--red); text-shadow: 0 0 20px rgba(248, 113, 113, 0.25); }
+    .kpi-value.small { font-size: 16px; padding: 4px 0; }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-weight: 500;
+    }
+
+    /* Executive Metrics & Progress */
+    .metrics-section {
+      padding: 60px 0;
+    }
+
+    .metrics-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    @media (max-width: 968px) { .metrics-layout { grid-template-columns: 1fr; } }
+
+    .glosario-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .glosario-table th {
+      background: var(--surface2);
+      color: #ffffff;
+      font-weight: 600;
+      padding: 12px 16px;
+      text-align: left;
+      font-family: var(--font-syne);
+    }
+
+    .glosario-table td {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      color: var(--text2);
+    }
+
+    .glosario-table td strong { color: var(--blue); font-family: monospace; }
+
+    .status-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px;
+      border-radius: var(--radius-lg);
+    }
+
+    .bar-group { display: flex; flex-direction: column; gap: 8px; }
+
+    .bar-info { display: flex; justify-content: space-between; align-items: center; }
+
+    .bar-name { font-weight: 600; font-size: 14px; }
+
+    .bar-pct { font-family: var(--font-syne); font-weight: 700; }
+
+    .alert-note {
+      margin-top: 20px;
+      padding: 16px;
+      border-left: 4px solid var(--red);
+      background: var(--red-dim);
+      color: #fff;
+      font-size: 13px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      line-height: 1.6;
+    }
+
+    /* Accordion & Tables */
+    .modules-section { padding: 60px 0; }
+
+    .accordion { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+
+    details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: var(--transition);
+      margin-bottom: 24px;
+    }
+
+    details[open] {
+      border-color: var(--blue2);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    summary {
+      padding: 20px 24px;
+      font-family: var(--font-syne);
+      font-weight: 700;
+      font-size: 16px;
+      color: #ffffff;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; font-size: 20px; font-weight: 300; color: var(--text2); transition: var(--transition); }
+    details[open] summary::after { content: '−'; color: var(--teal); }
+    summary:hover { background: rgba(255,255,255,0.02); }
+
+    .details-content {
+      padding: 0 24px 24px;
+      border-top: 1px solid var(--border);
+      background: rgba(11, 15, 26, 0.4);
+    }
+
+    .case-card {
+      margin-top: 24px;
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .case-header {
+      padding: 16px 20px;
+      background: var(--surface2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .case-id { font-family: monospace; font-weight: 700; color: var(--blue); font-size: 14px; }
+    
+    .badge-pass { background: var(--teal); color: #000; padding: 4px 12px; border-radius: var(--radius-full); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-fail { background: var(--red); color: #fff; padding: 4px 12px; border-radius: var(--radius-full); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .test-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    .test-table th { width: 25%; padding: 12px 20px; border-bottom: 1px solid var(--border); color: var(--text2); font-weight: 600; border-right: 1px solid var(--border); }
+    .test-table td { padding: 12px 20px; border-bottom: 1px solid var(--border); color: #ffffff; line-height: 1.6; }
+    .test-table tr:last-child th, .test-table tr:last-child td { border-bottom: none; }
+
+    .evidence-img {
+      display: block;
+      margin: 20px auto;
+      max-width: 600px;
+      width: 100%;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border2);
+      box-shadow: var(--shadow);
+    }
+
+    /* Conclusión */
+    .conclusion-card {
+      background: linear-gradient(135deg, rgba(79,142,247,0.05) 0%, rgba(248,113,113,0.05) 100%);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      margin-top: 48px;
+      margin-bottom: 90px;
+    }
+
+    @media (max-width: 768px) {
+      .conclusion-card { flex-direction: column; gap: 16px; padding: 24px; }
+    }
+
+    .conclusion-icon {
+      width: 52px; height: 52px;
+      background: var(--blue-dim); color: var(--blue);
+      border: 1.5px solid rgba(79,142,247,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    .conclusion-content h3 { font-size: 19px; margin-bottom: 12px; }
+    .conclusion-content p { color: var(--text2); line-height: 1.75; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA DE NAVEGACIÓN -->
+  <nav class="navbar" id="main-navbar">
+    <div class="container navbar-container">
+      <div class="brand">
+        <img src="public/PS-MariposaMorpho-Logo.png" alt="Logo Mariposa Morpho" class="brand-logo">
+        <span class="brand-name">Mariposa Morpho</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Descripción</a></li>
+        <li><a href="index.html#tecnologias" class="nav-link">Tecnologías</a></li>
+        <li class="dropdown">
+          <span class="nav-link dropdown-toggle active" tabindex="0">
+            Pruebas
+            <svg class="dropdown-chevron" viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </span>
+          <ul class="dropdown-menu">
+            <li class="dropdown-item">
+              <a href="pruebas-funcionales-frontend.html" style="color: var(--teal); font-weight: 600;">Informe de Pruebas Funcionales - Frontend</a>
+            </li>
+            <li class="dropdown-item">
+              <a href="pruebas-unitarias-backend.html">Informe de Pruebas Unitarias - Backend</a>
+            </li>
+            <li class="dropdown-item">
+              <a href="pruebas-unitarias-frontend.html">Informe de Pruebas Unitarias - Frontend</a>
+            </li>
+            <li class="dropdown-item">
+              <a href="pruebas-unitarias-unity.html">Informe de Pruebas Unitarias - Unity</a>
+            </li>
+          </ul>
+        </li>
+        <li><a href="index.html#equipo" class="nav-link">Equipo</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO DEL INFORME -->
+  <header class="hero-report container">
+    <div class="fade-in" style="animation-delay: 80ms;">
+      <span class="badge"><span class="pulse-dot"></span> Pruebas E2E / QA</span>
+      <h1 class="hero-title" style="font-size: clamp(1.9rem, 5vw, 3.2rem); margin-bottom: 14px;">
+        Informe de Pruebas Funcionales<br>Frontend (QA)
+      </h1>
+      <p class="hero-description" style="max-width: 800px;">
+        Resultados de la suite de pruebas de caja negra y flujos de usuario (E2E) aplicados sobre la interfaz de RehabACV, documentando criterios de aceptación, validaciones de interfaz y bugs detectados.
+      </p>
+    </div>
+
+    <!-- KPIs Rápidos -->
+    <div class="kpi-grid fade-in" style="animation-delay: 200ms;">
+      <div class="kpi-card">
+        <div class="kpi-value">23</div>
+        <div class="kpi-label">Casos Ejecutados</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value passed">70%</div>
+        <div class="kpi-label">Tasa de Éxito (Passed)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value failed">7</div>
+        <div class="kpi-label">Errores Detectados (Fails)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value small">FUNC, NEG, VAL</div>
+        <div class="kpi-label">Tipo de Pruebas</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MÉTRICAS COMPLEMENTARIAS Y CONVENCIONES -->
+  <section class="metrics-section container" id="metricas">
+    <h2 class="section-title" style="text-align: left;">Métricas y Convenciones</h2>
+    <div class="metrics-layout fade-in" style="animation-delay: 300ms;">
+      
+      <!-- Tabla de Glosario -->
+      <div>
+        <table class="glosario-table">
+          <thead>
+            <tr>
+              <th>Prefijo</th>
+              <th>Módulo Referenciado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>AU</strong></td><td>Autenticación y Seguridad</td></tr>
+            <tr><td><strong>AC</strong></td><td>Control de Acceso por Roles</td></tr>
+            <tr><td><strong>DA</strong></td><td>Dashboard Superadmin</td></tr>
+            <tr><td><strong>GU</strong></td><td>Gestión de Usuarios (CRUD)</td></tr>
+            <tr><td><strong>TZ</strong></td><td>Trazabilidad (Audit Logs)</td></tr>
+            <tr><td><strong>FUNC</strong> / <strong>NEG</strong> / <strong>VAL</strong></td><td>Flujo Funcional / Negativo / Validación</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Barras de progreso de estado -->
+      <div class="status-bars">
+        <div class="bar-group">
+          <div class="bar-info">
+            <span class="bar-name">Criterios Exitosos (PASS)</span>
+            <span class="bar-pct" style="color: var(--teal);">16 Casos</span>
+          </div>
+          <div class="progress-bar-container" style="height: 10px; border-radius: 8px;">
+            <div class="progress-bar" style="width: 70%; background: var(--teal); border-radius: 8px;"></div>
+          </div>
+        </div>
+
+        <div class="bar-group" style="margin-top: 16px;">
+          <div class="bar-info">
+            <span class="bar-name">Criterios Fallidos (FAIL)</span>
+            <span class="bar-pct" style="color: var(--red);">7 Casos</span>
+          </div>
+          <div class="progress-bar-container" style="height: 10px; border-radius: 8px;">
+            <div class="progress-bar" style="width: 30%; background: var(--red); border-radius: 8px;"></div>
+          </div>
+        </div>
+        
+        <div class="alert-note">
+          <strong>Aviso QA:</strong> Las fallas (<code>FAIL</code>) detectadas, representadas principalmente por problemas en la edición de usuarios, desactivaciones cruzadas, filtros de fechas y omisión de registros de logout, se encuentran documentadas con capturas para su posterior corrección en el sprint de estabilización.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESGLOSE DETALLADO DE HISTORIAS DE USUARIO Y CASOS DE PRUEBA -->
+  <section class="section modules-section container" id="casos">
+    <h2 class="section-title">Desglose de Casos de Prueba</h2>
+    <p class="section-subtitle">Reporte detallado de historias de usuario y sus resultados correspondientes por módulo funcional.</p>
+
+    <div class="accordion">
+
+      <!-- 1. Autenticación -->
+      <details open>
+        <summary>1. Autenticación (10 Casos)</summary>
+        <div class="details-content">
+          <!-- TC-AU-FUNC-01 -->
+          <div class="case-card">
+            <div class="case-header">
+              <span class="case-id">TC-AU-FUNC-01</span>
+              <span class="badge-pass">✅ PASS</span>
+            </div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el sistema permite el ingreso con credenciales válidas de superadmin y redirige al dashboard correspondiente.</td></tr>
+              <tr><th>Precondiciones</th><td>El sistema está desplegado y accesible. El usuario no tiene sesión activa.</td></tr>
+              <tr><th>Pasos</th><td>1. Navegar a la URL del sistema.<br>2. Verificar que el formulario de login carga con los campos vacíos.<br>3. Ingresar correo y contraseña válidos de superadmin.<br>4. Presionar el botón de ingreso.</td></tr>
+              <tr><th>Datos de Entrada</th><td>Correo: <code>admin@local.test</code> · Contraseña: <code>Admin1234</code></td></tr>
+              <tr><th>Resultado Esperado</th><td>El sistema autentica al usuario y redirige a <code>/admin/dashboard</code>. La sesión queda activa.</td></tr>
+              <tr><th>Resultado Real</th><td>El sistema autentica al usuario y redirige a <code>/admin/dashboard</code>. La sesión queda activa.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/5ee72ee3-61b6-4c5c-a62d-049972ea80f1" class="evidence-img" alt="Evidencia TC-AU-FUNC-01">
+          </div>
+
+          <!-- TC-AU-FUNC-02 -->
+          <div class="case-card">
+            <div class="case-header">
+              <span class="case-id">TC-AU-FUNC-02</span>
+              <span class="badge-pass">✅ PASS</span>
+            </div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que la sesión del superadmin se mantiene activa al recargar la página (F5).</td></tr>
+              <tr><th>Precondiciones</th><td>El superadmin tiene sesión activa en el dashboard.</td></tr>
+              <tr><th>Pasos</th><td>1. Con sesión activa en <code>/admin/dashboard</code>, presionar F5.<br>2. Observar si el sistema solicita login nuevamente o mantiene la sesión.</td></tr>
+              <tr><th>Resultado Real</th><td>El sistema mantiene la sesión activa y muestra el dashboard sin solicitar nuevas credenciales.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/2c996d83-4817-43ae-84cb-67a449611cdd" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-AU-FUNC-03 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-AU-FUNC-03</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el superadmin puede cerrar sesión correctamente y es redirigido al login.</td></tr>
+              <tr><th>Precondiciones</th><td>El superadmin tiene sesión activa.</td></tr>
+              <tr><th>Pasos</th><td>1. Localizar la opción de cerrar sesión. 2. Ejecutar el logout. 3. Intentar navegar de vuelta a <code>/admin/dashboard</code> manualmente.</td></tr>
+              <tr><th>Resultado Real</th><td>El sistema cierra la sesión y redirige a <code>/login</code>. Al intentar acceder al dashboard sin sesión, redirige nuevamente a <code>/login</code>.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/4ed0a0d1-9e35-41b2-a616-babc9d342769" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-AU-FUNC-04 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-AU-FUNC-04</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el ícono dentro del campo contraseña permite alternar entre texto visible y oculto.</td></tr>
+              <tr><th>Datos de Entrada</th><td>Contraseña: <code>superadmin123</code></td></tr>
+              <tr><th>Resultado Real</th><td>Al presionar el ícono, la contraseña cambia entre texto visible y asteriscos.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/185500e7-3cab-45aa-83e1-9ee0a4354981" class="evidence-img" alt="Evidencia" style="max-width: 400px;">
+          </div>
+
+          <!-- TC-AU-NEG-01 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-AU-NEG-01</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el sistema muestra el mensaje de error correcto al ingresar contraseña incorrecta sin limpiar los campos.</td></tr>
+              <tr><th>Datos de Entrada</th><td>Correo: <code>admin@local.test</code> · Contraseña: <code>wrongpassword</code></td></tr>
+              <tr><th>Resultado Real</th><td>El sistema muestra el mensaje "Correo o contraseña incorrectos". Los campos no se limpian. No se produce redirección.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/e394cbe4-0db2-402e-ad89-2bf3e932e2fe" class="evidence-img" alt="Evidencia" style="max-width: 400px;">
+          </div>
+
+          <!-- TC-AU-NEG-02 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-AU-NEG-02</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar el comportamiento al ingresar un correo que no existe en el sistema.</td></tr>
+              <tr><th>Resultado Real</th><td>El sistema muestra el mensaje "Correo o contraseña incorrectos". Los campos no se limpian.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/fc6ba752-f51f-4719-99bc-ed2a918db473" class="evidence-img" alt="Evidencia" style="max-width: 400px;">
+          </div>
+
+          <!-- TC-AU-NEG-03 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-AU-NEG-03</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el sistema muestra el banner de advertencia al intentar ingresar con una cuenta desactivada.</td></tr>
+              <tr><th>Resultado Real</th><td>El sistema muestra el banner amarillo con el mensaje esperado. No se produce redirección.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/1f1aa57a-c3e4-4512-86f0-26f6bcf6388f" class="evidence-img" alt="Evidencia" style="max-width: 400px;">
+          </div>
+
+          <!-- TC-AU-NEG-04 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-AU-NEG-04</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el sistema impide el envío del formulario con campos vacíos.</td></tr>
+              <tr><th>Resultado Real</th><td>El sistema muestra mensajes de validación bajo los campos requeridos.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/a4dd5ca2-a318-49dc-ba18-1e9b2999879c" class="evidence-img" alt="Evidencia" style="max-width: 400px;">
+          </div>
+
+          <!-- TC-AU-NEG-05 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-AU-NEG-05</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el sistema valida el formato del correo electrónico antes de intentar autenticar.</td></tr>
+              <tr><th>Resultado Real</th><td>El sistema muestra un mensaje de validación inline. No se realiza autenticación.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/7e518de9-6125-451c-ba2d-635e55be2e4b" class="evidence-img" alt="Evidencia" style="max-width: 400px;">
+          </div>
+
+          <!-- TC-AU-VAL-01 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-AU-VAL-01</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el botón de ingreso se deshabilita y muestra indicador de carga durante la autenticación.</td></tr>
+              <tr><th>Resultado Real</th><td>El botón se deshabilita y muestra un indicador de carga mientras se procesa la solicitud.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/b69c12bf-3be3-4c43-94a9-f7a4db94d6a8" class="evidence-img" alt="Evidencia" style="max-width: 400px;">
+          </div>
+        </div>
+      </details>
+
+      <!-- 2. Control de Acceso por Roles -->
+      <details>
+        <summary>2. Control de Acceso por Roles (3 Casos)</summary>
+        <div class="details-content">
+          <!-- TC-AC-FUNC-01 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-AC-FUNC-01</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que un usuario no autenticado es redirigido al login al intentar acceder a una ruta protegida.</td></tr>
+              <tr><th>Resultado Real</th><td>Redirige automáticamente a <code>/login</code>. No se muestra contenido del dashboard.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/7d0bbac5-682b-4c77-a4fd-e7f0e3fc6bac" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-AC-FUNC-02 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-AC-FUNC-02</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que un superadmin autenticado no puede acceder a rutas del rol especialista.</td></tr>
+              <tr><th>Resultado Real</th><td>Redirige a <code>/admin/dashboard</code> con mensaje "No tienes permisos para acceder a esta sección."</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/7ef01dbd-cc37-4477-895e-685087faf69c" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-AC-FUNC-03 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-AC-FUNC-03</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el superadmin puede navegar entre rutas del área admin sin ser redirigido.</td></tr>
+              <tr><th>Resultado Real</th><td>Ambas rutas (<code>/admin/users</code>, <code>/admin/logs</code>) cargan correctamente sin errores de acceso.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/aedd3518-1918-48ee-9b3d-2bae88ae7b14" class="evidence-img" alt="Evidencia">
+          </div>
+        </div>
+      </details>
+
+      <!-- 3. Dashboard Superadmin -->
+      <details>
+        <summary>3. Dashboard Superadmin (3 Casos)</summary>
+        <div class="details-content">
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-DA-FUNC-01</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el dashboard muestra las cuatro métricas principales con valores numéricos.</td></tr>
+              <tr><th>Resultado Real</th><td>Se muestran las cuatro tarjetas con valores numéricos correctamente.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/a48e7d4b-e874-467c-bcda-5f35618cd2a3" class="evidence-img" alt="Evidencia">
+          </div>
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-DA-FUNC-02</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que la tabla de actividad reciente muestra hasta 8 entradas con los datos esperados.</td></tr>
+              <tr><th>Resultado Real</th><td>Se muestran máximo 8 entradas con usuario, acción y fecha/hora.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/369fdf08-3728-4ecd-b021-5c343715ab2e" class="evidence-img" alt="Evidencia">
+          </div>
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-DA-FUNC-03</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que los botones de acceso rápido navegan a las secciones correctas.</td></tr>
+              <tr><th>Resultado Real</th><td>Ambos botones navegan a las URLs correctas.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/445a9485-802c-440d-a630-15a224921f8f" class="evidence-img" alt="Evidencia">
+          </div>
+        </div>
+      </details>
+
+      <!-- 4. Gestión de Usuarios -->
+      <details>
+        <summary>4. Gestión de Usuarios (12 Casos)</summary>
+        <div class="details-content">
+          <!-- TC-GU-FUNC-01 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-GU-FUNC-01</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que la tabla de usuarios carga correctamente con las columnas esperadas.</td></tr>
+              <tr><th>Resultado Real</th><td>La tabla muestra las columnas esperadas con datos paginados y legibles.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/577b0190-31a7-41a9-b908-ccf6f9b94766" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-GU-FUNC-02 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-GU-FUNC-02</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el superadmin puede registrar un nuevo usuario especialista con todos los campos válidos.</td></tr>
+              <tr><th>Resultado Real</th><td>El usuario aparece en la tabla con estado "Activo". El modal se cierra sin errores.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/dd1abb77-3f9d-42a9-94c9-8ec6e7e74da8" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-GU-FUNC-03 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-GU-FUNC-03</span><span class="badge-fail">❌ FAIL</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el superadmin puede editar el nombre de un usuario existente.</td></tr>
+              <tr><th>Resultado Esperado</th><td>La tabla refleja el nombre actualizado. El correo no es editable.</td></tr>
+              <tr><th>Resultado Real</th><td>Al hacer clic en "Guardar cambios" no se realiza ninguna acción.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/20a84d60-3c49-4b38-9a1c-649d017ccffb" class="evidence-img" alt="Evidencia" style="max-width: 500px;">
+          </div>
+
+          <!-- TC-GU-FUNC-04 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-GU-FUNC-04</span><span class="badge-fail">❌ FAIL</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el superadmin puede desactivar un usuario con confirmación previa.</td></tr>
+              <tr><th>Resultado Real</th><td>El modal de confirmación aparece y el usuario pasa a "Inactivo". Sin embargo, al confirmar también se abre el panel de edición del especialista.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/80358662-c0a3-4975-84f3-1a049653b247" class="evidence-img" alt="Evidencia" style="max-width: 500px;">
+          </div>
+
+          <!-- TC-GU-FUNC-05 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-GU-FUNC-05</span><span class="badge-fail">❌ FAIL</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el superadmin puede reactivar un usuario previamente desactivado.</td></tr>
+              <tr><th>Resultado Real</th><td>El usuario pasa a "Activo", pero al ejecutar la acción también se abre el panel de edición.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/bce2ea9d-0c61-422d-8670-f2fa611efae1" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-GU-FUNC-06 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-GU-FUNC-06</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el buscador filtra usuarios por nombre en tiempo real.</td></tr>
+              <tr><th>Resultado Real</th><td>La tabla se filtra dinámicamente mostrando solo los usuarios cuyo nombre coincide.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/ab6f4a0b-e399-4643-b2b1-22d5bc2eb7e8" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-GU-FUNC-07 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-GU-FUNC-07</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el filtro por estado muestra solo activos o solo inactivos según la selección.</td></tr>
+              <tr><th>Resultado Real</th><td>Con "Activo" solo aparecen activos. Con "Inactivo" solo aparecen inactivos.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/4aacefe2-3ea3-4fb8-a317-2275209ab2ee" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-GU-NEG-01 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-GU-NEG-01</span><span class="badge-fail">❌ FAIL</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el sistema impide crear un usuario con un correo ya registrado.</td></tr>
+              <tr><th>Resultado Real</th><td>El sistema pasa a revisar datos pero al confirmar no realiza ninguna acción ni muestra mensaje de error.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/e48fbd7a-60e6-4d3d-b654-bd2c129dea0c" class="evidence-img" alt="Evidencia" style="max-width: 500px;">
+          </div>
+
+          <!-- TC-GU-NEG-02 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-GU-NEG-02</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el sistema valida el formato del correo al crear un usuario.</td></tr>
+              <tr><th>Resultado Real</th><td>El sistema muestra un mensaje de error de formato inline. El usuario no se crea.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/14902c04-4fc3-4307-9dd1-febfaf028da8" class="evidence-img" alt="Evidencia" style="max-width: 500px;">
+          </div>
+
+          <!-- TC-GU-NEG-03 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-GU-NEG-03</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el sistema rechaza nombres con menos de 2 caracteres.</td></tr>
+              <tr><th>Resultado Real</th><td>El sistema muestra el error inline indicando mínimo 2 caracteres.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/becd440b-6e82-4461-9d67-cec6c2d23cdc" class="evidence-img" alt="Evidencia" style="max-width: 500px;">
+          </div>
+
+          <!-- TC-GU-NEG-04 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-GU-NEG-04</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el sistema no ofrece la opción de eliminar usuarios de forma permanente.</td></tr>
+              <tr><th>Resultado Real</th><td>No existe ningún botón de eliminación. Solo se ofrecen activar/desactivar y editar.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/5ed7169c-88b3-46a1-a510-6240518ee8e0" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-GU-VAL-01 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-GU-VAL-01</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el modal de edición no permite modificar el correo ni la contraseña.</td></tr>
+              <tr><th>Resultado Real</th><td>El modal no muestra campos editables para correo ni contraseña. Solo nombre y apellido son modificables.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/d9d076b9-15f5-4f12-83cc-1cd6cc3a5d22" class="evidence-img" alt="Evidencia" style="max-width: 500px;">
+          </div>
+
+        </div>
+      </details>
+
+      <!-- 5. Trazabilidad -->
+      <details>
+        <summary>5. Trazabilidad / Audit Logs (7 Casos)</summary>
+        <div class="details-content">
+          <!-- TC-TZ-FUNC-01 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-TZ-FUNC-01</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que la tabla de trazabilidad carga con todas las columnas esperadas.</td></tr>
+              <tr><th>Resultado Real</th><td>La tabla muestra todas las columnas esperadas con registros paginados.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/1eb9319b-c683-439c-8139-bf3c1bc48300" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-TZ-FUNC-02 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-TZ-FUNC-02</span><span class="badge-fail">❌ FAIL</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el filtro por tipo de acción muestra solo los registros del tipo seleccionado.</td></tr>
+              <tr><th>Resultado Real</th><td>Los filtros no muestran las acciones correspondientes.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/abe02e0e-dc67-4b77-8d11-b1d14e6ac17d" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-TZ-FUNC-03 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-TZ-FUNC-03</span><span class="badge-fail">❌ FAIL</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el filtro por rango de fechas acota correctamente los registros.</td></tr>
+              <tr><th>Resultado Real</th><td>No se actualizan los registros según el rango de fecha.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/d92c741b-d17f-45e5-84f7-cce37c10790c" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-TZ-FUNC-04 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-TZ-FUNC-04</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el botón de exportación genera y descarga un archivo CSV con los logs visibles.</td></tr>
+              <tr><th>Resultado Real</th><td>Se descarga el archivo <code>.csv</code> con el nombre y columnas esperadas.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/bd2564b2-0d71-4d0c-bb5c-2c3dbfbe6902" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-TZ-FUNC-05 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-TZ-FUNC-05</span><span class="badge-fail">❌ FAIL</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que el botón de exportación PDF genera un documento con el formato correcto.</td></tr>
+              <tr><th>Resultado Real</th><td>No se realiza la descarga del PDF.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/d286d9ce-e87a-4f8b-8cd7-7c36feabd6f2" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-TZ-FUNC-06 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-TZ-FUNC-06</span><span class="badge-pass">✅ PASS</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que al iniciar sesión el sistema registra automáticamente el evento <code>login</code> en el log.</td></tr>
+              <tr><th>Resultado Real</th><td>El log muestra el registro con tipo <code>login</code>, nombre del superadmin y timestamp.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/22171c51-eeda-4842-930a-30b81d5e8fce" class="evidence-img" alt="Evidencia">
+          </div>
+
+          <!-- TC-TZ-FUNC-07 -->
+          <div class="case-card">
+            <div class="case-header"><span class="case-id">TC-TZ-FUNC-07</span><span class="badge-fail">❌ FAIL</span></div>
+            <table class="test-table">
+              <tr><th>Descripción</th><td>Verificar que al cerrar sesión el sistema registra automáticamente el evento <code>logout</code>.</td></tr>
+              <tr><th>Resultado Real</th><td>No se registran los eventos logout.</td></tr>
+            </table>
+            <img src="https://github.com/user-attachments/assets/b11b52b1-b677-4d7f-957a-01d69c358361" class="evidence-img" alt="Evidencia">
+          </div>
+
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <!-- CONCLUSIÓN Y PLAN DE ACCIÓN -->
+  <section class="container">
+    <div class="conclusion-card fade-in" style="animation-delay: 200ms;">
+      <div class="conclusion-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="conclusion-content">
+        <h3>Diagnóstico Funcional y Plan de Acción</h3>
+        <p>
+          La aplicación muestra una excelente solidez en los módulos de autenticación, control de accesos e inicialización de datos. Sin embargo, se han aislado bugs críticos en la mutación de estados de la gestión de usuarios (aperturas de modales duplicados en activaciones) y reactividad en filtros de fechas de la capa de auditoría. Estos hallazgos reducen regresiones en producción y definen la hoja de ruta para la siguiente fase de desarrollo y estabilización clínica.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-logo">
+        <img src="public/PS-MariposaMorpho-Logo.png" alt="Logo Mariposa Morpho">
+        <span>Mariposa Morpho — RehabACV</span>
+      </div>
+      <div class="footer-text">
+        © 2026 Mariposa Morpho. Todos los derechos reservados. Desarrollado con fines académicos para la Escuela de Ingeniería de Sistemas - UNSA.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Accesibilidad Dropdown con teclado
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
+    dropdownToggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const menu = dropdownToggle.nextElementSibling;
+        const isVisible = window.getComputedStyle(menu).visibility === 'visible';
+        menu.style.opacity    = isVisible ? '0' : '1';
+        menu.style.visibility = isVisible ? 'hidden' : 'visible';
+        menu.style.transform  = isVisible ? 'translateY(10px)' : 'translateY(0)';
+      }
+    });
+  </script>
+
+</body>
+</html>
