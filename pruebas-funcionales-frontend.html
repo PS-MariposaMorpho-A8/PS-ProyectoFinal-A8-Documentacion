@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Informe de Pruebas Funcionales - Frontend (QA) | RehabACV</title>
-  <meta name="description" content="Resultados de la suite de pruebas funcionales (E2E) aplicadas sobre la interfaz de RehabACV.">
+  <meta name="description" content="Resultados completos de la suite de 71 casos de prueba funcionales (E2E) aplicados sobre la interfaz de RehabACV.">
   <link rel="stylesheet" href="style.css">
   <style>
     /* Estilos específicos para el informe de Pruebas Funcionales */
@@ -293,28 +293,28 @@
       <h1 class="hero-title" style="font-size: clamp(1.9rem, 5vw, 3.2rem); margin-bottom: 14px;">
         Informe de Pruebas Funcionales<br>Frontend (QA)
       </h1>
-      <p class="hero-description" style="max-width: 800px;">
-        Resultados de la suite de pruebas de caja negra y flujos de usuario (E2E) aplicados sobre la interfaz de RehabACV, documentando criterios de aceptación, validaciones de interfaz y bugs detectados.
+      <p class="hero-description" style="max-width: 900px;">
+        Suite completa de <strong>71 casos de prueba funcionales</strong> (E2E) documentados en profundidad, incluyendo criterios de aceptación, validaciones de interfaz, datos de entrada reales y evidencia de ejecución. <strong>Tasa de éxito: 76% (54 PASS, 17 FAIL)</strong>.
       </p>
     </div>
 
     <!-- KPIs Rápidos -->
     <div class="kpi-grid fade-in" style="animation-delay: 200ms;">
       <div class="kpi-card">
-        <div class="kpi-value">23</div>
-        <div class="kpi-label">Casos Ejecutados</div>
+        <div class="kpi-value">71</div>
+        <div class="kpi-label">Casos Totales Ejecutados</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-value passed">70%</div>
-        <div class="kpi-label">Tasa de Éxito (Passed)</div>
+        <div class="kpi-value passed">54 PASS</div>
+        <div class="kpi-label">Tasa de Éxito: 76%</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-value failed">7</div>
-        <div class="kpi-label">Errores Detectados (Fails)</div>
+        <div class="kpi-value failed">17 FAIL</div>
+        <div class="kpi-label">Defectos Identificados</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-value small">FUNC, NEG, VAL</div>
-        <div class="kpi-label">Tipo de Pruebas</div>
+        <div class="kpi-value small">10 Módulos</div>
+        <div class="kpi-label">Áreas de Prueba</div>
       </div>
     </div>
   </header>
@@ -379,25 +379,204 @@
     <p class="section-subtitle">Reporte detallado de historias de usuario y sus resultados correspondientes por módulo funcional.</p>
 
     <div class="accordion">
-
-      <!-- 1. Autenticación -->
-      <details open>
-        <summary>1. Autenticación (10 Casos)</summary>
+      <!-- MÓDULO 1: AUTENTICACIÓN -->
+      <details>
+        <summary style="background: var(--surface2);">1. Autenticación <span style="margin-left: auto; background: var(--teal); padding: 2px 8px; border-radius: 4px; font-size: 11px;">10 / 10 PASS</span></summary>
         <div class="details-content">
-          <!-- TC-AU-FUNC-01 -->
-          <div class="case-card">
-            <div class="case-header">
-              <span class="case-id">TC-AU-FUNC-01</span>
-              <span class="badge-pass">✅ PASS</span>
-            </div>
-            <table class="test-table">
-              <tr><th>Descripción</th><td>Verificar que el sistema permite el ingreso con credenciales válidas de superadmin y redirige al dashboard correspondiente.</td></tr>
-              <tr><th>Precondiciones</th><td>El sistema está desplegado y accesible. El usuario no tiene sesión activa.</td></tr>
-              <tr><th>Pasos</th><td>1. Navegar a la URL del sistema.<br>2. Verificar que el formulario de login carga con los campos vacíos.<br>3. Ingresar correo y contraseña válidos de superadmin.<br>4. Presionar el botón de ingreso.</td></tr>
-              <tr><th>Datos de Entrada</th><td>Correo: <code>admin@local.test</code> · Contraseña: <code>Admin1234</code></td></tr>
-              <tr><th>Resultado Esperado</th><td>El sistema autentica al usuario y redirige a <code>/admin/dashboard</code>. La sesión queda activa.</td></tr>
-              <tr><th>Resultado Real</th><td>El sistema autentica al usuario y redirige a <code>/admin/dashboard</code>. La sesión queda activa.</td></tr>
-            </table>
+          <p style="color: var(--text2); margin-bottom: 16px;">Todos los 10 casos de prueba de autenticación ejecutados exitosamente.</p>
+          <div style="background: var(--surface); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--teal);">
+            <strong>✅ Casos PASS:</strong> TC-AU-FUNC-01, 02, 03, 04 · TC-AU-NEG-01, 02, 03, 04, 05 · TC-AU-VAL-01
+            <p style="font-size: 13px; color: var(--text2); margin-top: 8px;">Incluye: Login exitoso, persistencia de sesión, logout, visibilidad de contraseña, errores de validación y estado de botón.</p>
+          </div>
+        </div>
+      </details>
+
+      <!-- MÓDULO 2: CONTROL DE ACCESO -->
+      <details>
+        <summary style="background: var(--surface2);">2. Control de Acceso por Roles <span style="margin-left: auto; background: var(--teal); padding: 2px 8px; border-radius: 4px; font-size: 11px;">3 / 3 PASS</span></summary>
+        <div class="details-content">
+          <p style="color: var(--text2); margin-bottom: 16px;">Control de acceso basado en roles validado correctamente.</p>
+          <div style="background: var(--surface); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--teal);">
+            <strong>✅ Casos PASS:</strong> TC-AC-FUNC-01, 02, 03
+            <p style="font-size: 13px; color: var(--text2); margin-top: 8px;">Redirecciones a login, restricción de acceso cross-role, navegación permitida en área admin.</p>
+          </div>
+        </div>
+      </details>
+
+      <!-- MÓDULO 3: DASHBOARD SUPERADMIN -->
+      <details>
+        <summary style="background: var(--surface2);">3. Dashboard Superadmin <span style="margin-left: auto; background: var(--teal); padding: 2px 8px; border-radius: 4px; font-size: 11px;">3 / 3 PASS</span></summary>
+        <div class="details-content">
+          <p style="color: var(--text2); margin-bottom: 16px;">Panel administrativo con todas las funcionalidades operativas.</p>
+          <div style="background: var(--surface); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--teal);">
+            <strong>✅ Casos PASS:</strong> TC-DA-FUNC-01, 02, 03
+            <p style="font-size: 13px; color: var(--text2); margin-top: 8px;">Métricas, actividad reciente, accesos rápidos funcionando correctamente.</p>
+          </div>
+        </div>
+      </details>
+
+      <!-- MÓDULO 4: GESTIÓN DE USUARIOS -->
+      <details>
+        <summary style="background: var(--surface2);">4. Gestión de Usuarios <span style="margin-left: auto; background: var(--red); padding: 2px 8px; border-radius: 4px; font-size: 11px; color: #fff;">7 / 12 PASS</span></summary>
+        <div class="details-content">
+          <p style="color: var(--text2); margin-bottom: 16px;">Gestión de usuarios con 5 defectos identificados.</p>
+          <div style="background: var(--teal-dim); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--teal); margin-bottom: 12px;">
+            <strong>✅ PASS (7):</strong> Visualización lista, crear usuario, búsqueda, filtrado, no eliminar permanente, campos no editables.
+          </div>
+          <div style="background: var(--red-dim); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--red);">
+            <strong>❌ FAIL (5):</strong> Editar usuario (no guarda), desactivar (abre panel), reactivar (abre panel), email duplicado (sin error), validación inline.
+          </div>
+        </div>
+      </details>
+
+      <!-- MÓDULO 5: TRAZABILIDAD -->
+      <details>
+        <summary style="background: var(--surface2);">5. Trazabilidad (Audit Logs) <span style="margin-left: auto; background: var(--red); padding: 2px 8px; border-radius: 4px; font-size: 11px; color: #fff;">4 / 9 PASS</span></summary>
+        <div class="details-content">
+          <p style="color: var(--text2); margin-bottom: 16px;">Auditoría con 5 defectos en filtrado y exportación.</p>
+          <div style="background: var(--teal-dim); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--teal); margin-bottom: 12px;">
+            <strong>✅ PASS (4):</strong> Tabla carga correctamente, CSV exporta, eventos login registran, eventos create_user registran.
+          </div>
+          <div style="background: var(--red-dim); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--red);">
+            <strong>❌ FAIL (5):</strong> Filtro por tipo acción, filtro por fechas, PDF no descarga, logout no registra, validación rango invertido.
+          </div>
+        </div>
+      </details>
+
+      <!-- MÓDULO 6: PRIMER LOGIN -->
+      <details>
+        <summary style="background: var(--surface2);">6. Primer Login — Cambio de Contraseña <span style="margin-left: auto; background: var(--teal); padding: 2px 8px; border-radius: 4px; font-size: 11px;">5 / 5 PASS</span></summary>
+        <div class="details-content">
+          <p style="color: var(--text2); margin-bottom: 16px;">Flujo de primer acceso completamente funcional.</p>
+          <div style="background: var(--surface); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--teal);">
+            <strong>✅ Casos PASS:</strong> Modal muestra, cambio exitoso, validación diferencia, validación requisitos, impedir omisión.
+            <p style="font-size: 13px; color: var(--text2); margin-top: 8px;">Todos los casos de cambio de contraseña al primer ingreso operativos.</p>
+          </div>
+        </div>
+      </details>
+
+      <!-- MÓDULO 7: DASHBOARD ESPECIALISTA -->
+      <details>
+        <summary style="background: var(--surface2);">7. Dashboard Especialista <span style="margin-left: auto; background: var(--teal); padding: 2px 8px; border-radius: 4px; font-size: 11px;">4 / 4 PASS</span></summary>
+        <div class="details-content">
+          <p style="color: var(--text2); margin-bottom: 16px;">Panel del especialista totalmente funcional.</p>
+          <div style="background: var(--surface); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--teal);">
+            <strong>✅ Casos PASS:</strong> Saludo personalizado, métricas, pacientes recientes, accesos rápidos.
+            <p style="font-size: 13px; color: var(--text2); margin-top: 8px;">Interfaz con bienvenida personalizada y navegación rápida correcta.</p>
+          </div>
+        </div>
+      </details>
+
+      <!-- MÓDULO 8: GESTIÓN DE PACIENTES -->
+      <details>
+        <summary style="background: var(--surface2);">8. Gestión de Pacientes <span style="margin-left: auto; background: var(--red); padding: 2px 8px; border-radius: 4px; font-size: 11px; color: #fff;">11 / 12 PASS</span></summary>
+        <div class="details-content">
+          <p style="color: var(--text2); margin-bottom: 16px;">Gestión de pacientes con solo 1 defecto menor identificado.</p>
+          <div style="background: var(--teal-dim); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--teal); margin-bottom: 12px;">
+            <strong>✅ PASS (11):</strong> Visualizar, crear, editar, archivar, buscar, filtrar, ficha individual, edad automática, validaciones.
+          </div>
+          <div style="background: var(--red-dim); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--red);">
+            <strong>❌ FAIL (1):</strong> Reactivar paciente archivado (no existe opción).
+          </div>
+        </div>
+      </details>
+
+      <!-- MÓDULO 9: CONFIGURACIÓN DE SESIÓN -->
+      <details>
+        <summary style="background: var(--surface2);">9. Configuración de Sesión <span style="margin-left: auto; background: var(--orange); padding: 2px 8px; border-radius: 4px; font-size: 11px; color: #000;">3 / 7 PASS</span></summary>
+        <div class="details-content">
+          <p style="color: var(--text2); margin-bottom: 16px;">Configuración con 4 defectos. Nota: Pruebas Kinect <span style="background: var(--orange); padding: 1px 4px; border-radius: 2px;">BLOQUEADAS</span>.</p>
+          <div style="background: var(--teal-dim); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--teal); margin-bottom: 12px;">
+            <strong>✅ PASS (3):</strong> Formulario carga, sliders funcionan, validación sin paciente.
+          </div>
+          <div style="background: var(--red-dim); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--red);">
+            <strong>❌ FAIL (4):</strong> Selector muestra archivados, guardar plantilla no funciona, cargar plantilla falla, toggle Kinect desactivable.
+          </div>
+        </div>
+      </details>
+
+      <!-- MÓDULO 10: MI CUENTA -->
+      <details>
+        <summary style="background: var(--surface2);">10. Mi Cuenta <span style="margin-left: auto; background: var(--red); padding: 2px 8px; border-radius: 4px; font-size: 11px; color: #fff;">4 / 6 PASS</span></summary>
+        <div class="details-content">
+          <p style="color: var(--text2); margin-bottom: 16px;">Perfil de usuario con 2 defectos en validación de mensajes.</p>
+          <div style="background: var(--teal-dim); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--teal); margin-bottom: 12px;">
+            <strong>✅ PASS (4):</strong> Visualizar datos, cambiar contraseña, rechazo contraseña incorrecta, correo no editable.
+          </div>
+          <div style="background: var(--red-dim); padding: 16px; border-radius: var(--radius-md); border-left: 4px solid var(--red);">
+            <strong>❌ FAIL (2):</strong> Sin mensaje error cuando no coinciden contraseñas (bloquea botón silenciosamente).
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- Sección de módulos -->
+    <h2 class="section-title" style="margin-top: 60px; margin-bottom: 24px;">Detalles Expandibles por Módulo</h2>
+    <p style="color: var(--text2); margin-bottom: 36px;">Haz clic en cada módulo arriba para ver el resumen de sus casos de prueba. Para el contenido detallado con evidencias y screenshots, consulta el documento de pruebas completo.</p>
+
+  <!-- RESUMEN FINAL Y CONCLUSIONES -->
+  <section class="section container" style="padding: 60px 0;" id="resumen">
+    <h2 class="section-title">Resumen Ejecutivo</h2>
+    
+    <table class="glosario-table" style="margin: 36px 0; font-size: 13px;">
+      <thead>
+        <tr>
+          <th>Módulo</th>
+          <th style="text-align:center;">FUNC</th>
+          <th style="text-align:center;">NEG</th>
+          <th style="text-align:center;">VAL</th>
+          <th style="text-align:center;">Total</th>
+          <th style="text-align:center; background: var(--teal-dim);">PASS</th>
+          <th style="text-align:center; background: var(--red-dim);">FAIL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Autenticación</td><td style="text-align:center;">4</td><td style="text-align:center;">5</td><td style="text-align:center;">1</td><td style="text-align:center;"><strong>10</strong></td><td style="text-align:center; color: var(--teal); font-weight:600;">10</td><td style="text-align:center; color: var(--red); font-weight:600;">0</td></tr>
+        <tr><td>Control de Acceso</td><td style="text-align:center;">3</td><td style="text-align:center;">—</td><td style="text-align:center;">—</td><td style="text-align:center;"><strong>3</strong></td><td style="text-align:center; color: var(--teal); font-weight:600;">3</td><td style="text-align:center; color: var(--red); font-weight:600;">0</td></tr>
+        <tr><td>Dashboard Superadmin</td><td style="text-align:center;">3</td><td style="text-align:center;">—</td><td style="text-align:center;">—</td><td style="text-align:center;"><strong>3</strong></td><td style="text-align:center; color: var(--teal); font-weight:600;">3</td><td style="text-align:center; color: var(--red); font-weight:600;">0</td></tr>
+        <tr><td>Gestión de Usuarios</td><td style="text-align:center;">7</td><td style="text-align:center;">4</td><td style="text-align:center;">1</td><td style="text-align:center;"><strong>12</strong></td><td style="text-align:center; color: var(--teal); font-weight:600;">7</td><td style="text-align:center; color: var(--red); font-weight:600;">5</td></tr>
+        <tr><td>Trazabilidad</td><td style="text-align:center;">8</td><td style="text-align:center;">1</td><td style="text-align:center;">—</td><td style="text-align:center;"><strong>9</strong></td><td style="text-align:center; color: var(--teal); font-weight:600;">4</td><td style="text-align:center; color: var(--red); font-weight:600;">5</td></tr>
+        <tr><td>Primer Login</td><td style="text-align:center;">2</td><td style="text-align:center;">3</td><td style="text-align:center;">—</td><td style="text-align:center;"><strong>5</strong></td><td style="text-align:center; color: var(--teal); font-weight:600;">5</td><td style="text-align:center; color: var(--red); font-weight:600;">0</td></tr>
+        <tr><td>Dashboard Especialista</td><td style="text-align:center;">4</td><td style="text-align:center;">—</td><td style="text-align:center;">—</td><td style="text-align:center;"><strong>4</strong></td><td style="text-align:center; color: var(--teal); font-weight:600;">4</td><td style="text-align:center; color: var(--red); font-weight:600;">0</td></tr>
+        <tr><td>Gestión de Pacientes</td><td style="text-align:center;">9</td><td style="text-align:center;">3</td><td style="text-align:center;">—</td><td style="text-align:center;"><strong>12</strong></td><td style="text-align:center; color: var(--teal); font-weight:600;">11</td><td style="text-align:center; color: var(--red); font-weight:600;">1</td></tr>
+        <tr><td>Configuración de Sesión</td><td style="text-align:center;">5</td><td style="text-align:center;">2</td><td style="text-align:center;">—</td><td style="text-align:center;"><strong>7</strong></td><td style="text-align:center; color: var(--teal); font-weight:600;">3</td><td style="text-align:center; color: var(--red); font-weight:600;">4</td></tr>
+        <tr><td>Mi Cuenta</td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;"><strong>6</strong></td><td style="text-align:center; color: var(--teal); font-weight:600;">4</td><td style="text-align:center; color: var(--red); font-weight:600;">2</td></tr>
+        <tr style="background: var(--surface2); font-weight:700; border-top: 2px solid var(--border);">
+          <td>TOTAL</td><td style="text-align:center;">48</td><td style="text-align:center;">20</td><td style="text-align:center;">3</td><td style="text-align:center; color: var(--blue);">71</td><td style="text-align:center; color: var(--teal); font-size:16px;">54</td><td style="text-align:center; color: var(--red); font-size:16px;">17</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Card de conclusión -->
+    <div style="background: linear-gradient(135deg, rgba(79,142,247,0.1) 0%, rgba(248,113,113,0.1) 100%); border: 1px solid var(--border2); border-radius: var(--radius-lg); padding: 36px; margin-top: 48px; display: flex; gap: 24px; align-items: flex-start;">
+      <div style="width: 52px; height: 52px; background: var(--blue-dim); color: var(--blue); border: 1.5px solid rgba(79,142,247,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 28px;">⚠️</div>
+      <div>
+        <h3 style="font-size: 19px; margin-bottom: 12px; color: #ffffff;">Estado General de Calidad</h3>
+        <p style="color: var(--text2); line-height: 1.75; font-size: 14px;">
+          <strong>Tasa de éxito: 76%</strong> (54 de 71 casos PASS). Se han identificado <strong>17 defectos</strong> distribuidos principalmente en:
+          <ul style="margin-top: 12px; margin-left: 20px;">
+            <li><strong>Gestión de Usuarios</strong> (5 defectos): Edición y cambio de estado con comportamientos inesperados.</li>
+            <li><strong>Trazabilidad</strong> (5 defectos): Filtros no funcionales y exportación PDF no disponible.</li>
+            <li><strong>Configuración de Sesión</strong> (4 defectos): Plantillas no guardables y validación de pacientes archivados.</li>
+            <li><strong>Mi Cuenta</strong> (2 defectos): Validaciones de contraseña sin mensajes de error visibles.</li>
+            <li><strong>Gestión de Pacientes</strong> (1 defecto): Falta de opción para reactivar pacientes archivados.</li>
+          </ul>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="background: var(--surface2); padding: 40px 0; text-align: center; color: var(--text2); margin-top: 90px; border-top: 1px solid var(--border);">
+    <div class="container">
+      <p style="margin-bottom: 12px; font-size: 14px;">Informe de Pruebas Funcionales - Frontend | Proyecto Mariposa Morpho</p>
+      <p style="font-size: 12px; color: rgba(255,255,255,0.5);">Suite de 71 casos de prueba · Tasa de éxito: 76% (54 PASS / 17 FAIL)</p>
+      <p style="font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 16px;">Generado: 11 de Junio de 2026</p>
+    </div>
+  </footer>
+
+</body>
+</html>
             <img src="https://github.com/user-attachments/assets/5ee72ee3-61b6-4c5c-a62d-049972ea80f1" class="evidence-img" alt="Evidencia TC-AU-FUNC-01">
           </div>
 
