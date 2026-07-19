@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informe de Pruebas Unitarias - Backend | RehabACV</title>
+    <title>Informe de Pruebas de Sistema Manuales | RehabACV</title>
     <meta name="description"
         content="Resultados detallados, cobertura y métricas de la suite de pruebas unitarias del servidor de RehabACV, desarrolladas con pytest y SQLAlchemy en Python.">
     <link rel="stylesheet" href="style.css">
@@ -365,6 +365,9 @@
                         <li class="dropdown-item">
                             <a href="pruebas-unitarias-unity.html">Informe de Pruebas Unitarias - Unity</a>
                         </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-sistema-manuales.html">Informe de Pruebas de Sistema - Manuales</a>
+                        </li>
                     </ul>
                 </li>
                 <li><a href="index.html#equipo" class="nav-link">Equipo</a></li>
@@ -375,31 +378,31 @@
     <!-- HERO DEL INFORME -->
     <header class="hero-report container">
         <div class="fade-in" style="animation-delay: 100ms;">
-            <span class="badge">Pruebas Unitarias</span>
+            <span class="badge">Pruebas de Sistema Manuales</span>
             <h1 class="hero-title" style="font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 12px;">Informe de Pruebas
-                Unitarias — Backend</h1>
+                de Sistema Manuales</h1>
             <p class="hero-description" style="max-width: 800px;">
-                Guía principal y resultados de la suite de pruebas automatizadas del servidor de RehabACV, desarrolladas
-                con pytest sobre los módulos críticos de la API REST en Python.
+                Guía principal y resultados de las pruebas de Sistema realizadas en las oficinas de CITESOFT.
+                Se realizaron en este lugar por necesidades de equipo especial para el proyecto.
             </p>
         </div>
 
         <!-- KPIs Rápidos -->
         <div class="kpi-grid fade-in" style="animation-delay: 200ms;">
             <div class="kpi-card">
-                <div class="kpi-value">44</div>
+                <div class="kpi-value">24</div>
                 <div class="kpi-label">Total Casos</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-value passed">100%</div>
+                <div class="kpi-value passed">87.5%</div>
                 <div class="kpi-label">Passed</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-value" style="font-size: 20px; padding: 6px 0;">pytest + SQLAlchemy</div>
+                <div class="kpi-value" style="font-size: 20px; padding: 6px 0;">Dispositivo Kinect + Laptop</div>
                 <div class="kpi-label">Herramientas</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-value" style="color: var(--teal); font-size: 26px;">9</div>
+                <div class="kpi-value" style="color: var(--teal); font-size: 26px;">6</div>
                 <div class="kpi-label">Módulos Cubiertos</div>
             </div>
         </div>
@@ -411,50 +414,67 @@
             <div class="coverage-left fade-in" style="animation-delay: 200ms;">
                 <h2 class="section-title" style="text-align: left; margin-bottom: 16px;">Alcance de las Pruebas</h2>
                 <p style="color: var(--text2); margin-bottom: 24px; line-height: 1.6;">
-                    La suite cubre los nueve módulos críticos del servidor: desde el <strong>bootstrap de la base de
-                        datos</strong> y la <strong>capa de seguridad</strong> hasta la <strong>generación de
-                        PDF</strong>, el <strong>enrutamiento de API</strong> y las utilidades de fecha. Cada caso fue
-                    diseñado con mocks de sesión SQLAlchemy para aislar la lógica de negocio de la persistencia real.
+                    La suite de pruebas manuales cubre los principales módulos funcionales del sistema: desde la <strong>gestión de sesiones terapéuticas</strong> y la <strong>integración con Kinect y Unity</strong> hasta la <strong>visualización de resultados</strong>, la <strong>gestión de notas clínicas</strong>, la <strong>generación de reportes PDF</strong> y la <strong>consulta del historial del paciente</strong>. Cada caso de prueba fue diseñado para verificar el correcto funcionamiento de los flujos del sistema, validando las funcionalidades desde la perspectiva del usuario final y asegurando el cumplimiento de los requisitos funcionales establecidos.
                 </p>
 
                 <div class="coverage-bars">
                     <div class="bar-group">
                         <div class="bar-info">
-                            <span class="bar-name">Bootstrap de BD (15 casos)</span>
-                            <span class="bar-pct" style="color: var(--blue);">34%</span>
+                            <span class="bar-name">Gestión de sesiones (9 casos)</span>
+                            <span class="bar-pct" style="color: var(--blue);">38%</span>
                         </div>
                         <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 34%; background: var(--blue);"></div>
+                            <div class="progress-bar" style="width: 38%; background: var(--blue);"></div>
                         </div>
                     </div>
 
                     <div class="bar-group">
                         <div class="bar-info">
-                            <span class="bar-name">Seguridad y Autenticación (10 casos)</span>
-                            <span class="bar-pct" style="color: var(--teal);">23%</span>
+                            <span class="bar-name">Integración Kinect y Unity (4 casos)</span>
+                            <span class="bar-pct" style="color: var(--teal);">17%</span>
                         </div>
                         <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 23%; background: var(--teal);"></div>
+                            <div class="progress-bar" style="width: 17%; background: var(--teal);"></div>
                         </div>
                     </div>
 
                     <div class="bar-group">
                         <div class="bar-info">
-                            <span class="bar-name">Enrutamiento y Control de Acceso (15 casos)</span>
-                            <span class="bar-pct" style="color: var(--purple);">34%</span>
+                            <span class="bar-name">Resultados de sesión (6 casos)</span>
+                            <span class="bar-pct" style="color: var(--purple);">25%</span>
                         </div>
                         <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 34%; background: var(--purple);"></div>
+                            <div class="progress-bar" style="width: 25%; background: var(--purple);"></div>
                         </div>
                     </div>
 
                     <div class="bar-group">
                         <div class="bar-info">
-                            <span class="bar-name">Infraestructura y Utilidades (4 casos)</span>
-                            <span class="bar-pct" style="color: var(--amber);">9%</span>
+                            <span class="bar-name">Notas clínicas (2 casos)</span>
+                            <span class="bar-pct" style="color: var(--amber);">8%</span>
                         </div>
                         <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 9%; background: var(--amber);"></div>
+                            <div class="progress-bar" style="width: 8%; background: var(--amber);"></div>
+                        </div>
+                    </div>
+
+                    <div class="bar-group">
+                        <div class="bar-info">
+                            <span class="bar-name">Reportes PDF (2 casos)</span>
+                            <span class="bar-pct" style="color: var(--green);">8%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 8%; background: var(--green);"></div>
+                        </div>
+                    </div>
+
+                    <div class="bar-group">
+                        <div class="bar-info">
+                            <span class="bar-name">Historial del paciente (1 caso)</span>
+                            <span class="bar-pct" style="color: var(--red);">4%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 4%; background: var(--red);"></div>
                         </div>
                     </div>
                 </div>
@@ -463,17 +483,26 @@
             <div class="coverage-right fade-in" style="animation-delay: 300ms;">
                 <h2 class="section-title" style="text-align: left; margin-bottom: 16px;">Evidencia del Proceso</h2>
                 <p style="color: var(--text2); margin-bottom: 24px; line-height: 1.6;">
-                    Se adjuntan las capturas de pantalla de la terminal correspondientes a la compilación y ejecución de
-                    la suite de pruebas unitarias del backend locales.
+                    Se adjuntan las capturas de pantalla de algunas de las pruebas que se llegaron a realizar en CITESOFT.
                 </p>
 
                 <!-- Evidencias Visuales -->
                 <div class="evidence-layout">
                     <div class="evidence-card">
                         <div class="evidence-img-container">
-                            <img src="images/alcance_back.jpg" alt="Ejecución de Pruebas Unitarias Backend">
+                            <img src="images/sistema_sesion.jpeg" alt="Ejecución de sesion">
                         </div>
-                        <div class="evidence-title">Figura 1: Análisis de cobertura de pruebas del Backend</div>
+                        <div class="evidence-title">Figura 1: Sesión de uso del proyecto</div>
+
+                        <div class="evidence-img-container">
+                            <img src="images/sistema_sesionfinal.jpeg" alt="Puntaje obtenido al termino de la sesión">
+                        </div>
+                        <div class="evidence-title">Figura 2: Puntaje obtenido al termino de la sesión</div>
+
+                        <div class="evidence-img-container">
+                            <img src="images/sistema_sesion_resultados.jpeg" alt="Resultados finales al termino de la sesión">
+                        </div>
+                        <div class="evidence-title">Figura 3: Resultados finales al termino de la sesión</div>
                     </div>
                 </div>
             </div>
@@ -482,19 +511,17 @@
 
     <!-- SECCIÓN DE RESULTADOS POR MÓDULO (ACORDEÓN) -->
     <section class="section modules-section container" id="resultados">
-        <h2 class="section-title">Resultados por Módulo del Servidor</h2>
-        <p class="section-subtitle">Explora el desglose completo de los 44 casos de prueba ejecutados satisfactoriamente
-            en el backend de RehabACV.</p>
+        <h2 class="section-title">Resultados por Módulo de las Pruebas de Sistema</h2>
+        <p class="section-subtitle">Explora el desglose completo de los 24 casos de prueba ejecutados satisfactoriamente.</p>
 
         <div class="accordion">
 
-            <!-- 1. Módulo Bootstrap de Base de Datos -->
+            <!-- 1. Módulo Funcionalidad -->
             <details>
-                <summary>Módulo Bootstrap de Base de Datos (15 Casos)</summary>
+                <summary>Módulo Funcionalidad (9 Casos)</summary>
                 <div class="details-content">
-                    <p class="module-desc">Se encarga de preparar la base de datos para su uso, incluyendo migración de
-                        esquemas antiguos, copia de datos, eliminación de dependencias obsoletas y creación del usuario
-                        administrador inicial.</p>
+                    <p class="module-desc">Se preparan las pruebas para el funcionamiento del código con pruebas que prueben la jugabilidad y sistema
+                        como deberían ser normalmente.</p>
                     <div class="table-container">
                         <table class="test-table">
                             <thead>
@@ -508,108 +535,74 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="cell-id">UT-BTS-001</td>
-                                    <td>Orquestar bootstrap completo</td>
-                                    <td>Ejecución de <code>bootstrap_database()</code></td>
-                                    <td>Se invocan todas las funciones necesarias de inicialización</td>
+                                    <td class="cell-id">PS-01</td>
+                                    <td>Crear una sesión programada</td>
+                                    <td>Especialista configura una nueva sesión con datos válidos</td>
+                                    <td>La sesión se crea en estado <code>scheduled</code></td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
+
                                 <tr>
-                                    <td class="cell-id">UT-BTS-002</td>
-                                    <td>Detectar esquema ya migrado</td>
-                                    <td>Existe tabla <code>users_legacy</code></td>
-                                    <td>El método finaliza sin modificar el esquema</td>
+                                    <td class="cell-id">PS-02</td>
+                                    <td>Pre-chequeo de seguridad</td>
+                                    <td>Lanzamiento de una sesión programada</td>
+                                    <td>Se muestra la pantalla de pre-sesión con checklist y estado del Kinect</td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
+
                                 <tr>
-                                    <td class="cell-id">UT-BTS-003</td>
-                                    <td>Renombrar tabla users antigua</td>
-                                    <td>Tabla <code>users</code> con columnas faltantes</td>
-                                    <td>La tabla es renombrada a <code>users_legacy</code></td>
+                                    <td class="cell-id">PS-03</td>
+                                    <td>Iniciar sesión con Kinect y Unity</td>
+                                    <td>Confirmar inicio de la sesión</td>
+                                    <td>Unity se ejecuta y la sesión cambia a <code>in_progress</code></td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
+
                                 <tr>
-                                    <td class="cell-id">UT-BTS-004</td>
-                                    <td>Eliminar dependencias heredadas</td>
-                                    <td>Existen FK hacia <code>users_legacy</code></td>
-                                    <td>Se eliminan tablas dependientes</td>
+                                    <td class="cell-id">PS-04</td>
+                                    <td>Pausar una sesión</td>
+                                    <td>Sesión activa en ejecución</td>
+                                    <td>El temporizador se detiene y aparece la opción Reanudar</td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
+
                                 <tr>
-                                    <td class="cell-id">UT-BTS-005</td>
-                                    <td>Manejar ausencia de tabla legacy</td>
-                                    <td>No existe <code>users_legacy</code></td>
-                                    <td>No se realiza ninguna copia</td>
+                                    <td class="cell-id">PS-05</td>
+                                    <td>Reanudar una sesión</td>
+                                    <td>Sesión previamente pausada</td>
+                                    <td>El temporizador continúa desde el tiempo pausado</td>
+                                    <td><span class="badge-pass">FAIL</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td class="cell-id">PS-06</td>
+                                    <td>Completar una sesión</td>
+                                    <td>Finalización de una sesión activa</td>
+                                    <td>Se solicita confirmación y la sesión pasa a <code>completed</code></td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
+
                                 <tr>
-                                    <td class="cell-id">UT-BTS-006</td>
-                                    <td>Migrar usuarios heredados</td>
-                                    <td>Registros existentes en <code>users_legacy</code></td>
-                                    <td>Los usuarios son copiados correctamente</td>
+                                    <td class="cell-id">PS-07</td>
+                                    <td>Cancelar una sesión programada</td>
+                                    <td>Cancelar una sesión en estado <code>scheduled</code></td>
+                                    <td>La sesión cambia a <code>cancelled</code></td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
+
                                 <tr>
-                                    <td class="cell-id">UT-BTS-007</td>
-                                    <td>Evitar duplicados</td>
-                                    <td>Usuarios ya migrados</td>
-                                    <td>No se insertan registros duplicados</td>
+                                    <td class="cell-id">PS-08</td>
+                                    <td>Botones según estado de sesión</td>
+                                    <td>Visualizar la lista de sesiones</td>
+                                    <td>Se muestran únicamente las acciones permitidas según el estado</td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
+
                                 <tr>
-                                    <td class="cell-id">UT-BTS-008</td>
-                                    <td>Detectar referencias heredadas</td>
-                                    <td>FK apuntando a <code>users_legacy</code></td>
-                                    <td>Retorna <code>True</code></td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">UT-BTS-009</td>
-                                    <td>Verificar ausencia de referencias heredadas</td>
-                                    <td>Sin FK hacia <code>users_legacy</code></td>
-                                    <td>Retorna <code>False</code></td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">UT-BTS-010</td>
-                                    <td>Eliminar tablas dependientes</td>
-                                    <td>Ejecución del método</td>
-                                    <td>Se ejecutan todas las sentencias <code>DROP</code></td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">UT-BTS-011</td>
-                                    <td>Procesar nombres heredados</td>
-                                    <td>Nombre completo, email o nombre simple</td>
-                                    <td>Se generan correctamente nombre y apellido</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">UT-BTS-012</td>
-                                    <td>Validar configuración mínima</td>
-                                    <td>Configuración incompleta</td>
-                                    <td>No se crea usuario administrador</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">UT-BTS-013</td>
-                                    <td>Verificar existencia del rol</td>
-                                    <td>Rol <code>SuperAdmin</code> inexistente</td>
-                                    <td>No se crea usuario</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">UT-BTS-014</td>
-                                    <td>Actualizar administrador existente</td>
-                                    <td>Usuario administrador ya registrado</td>
-                                    <td>Los datos del usuario son actualizados</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">UT-BTS-015</td>
-                                    <td>Crear administrador inicial</td>
-                                    <td>Usuario inexistente y configuración válida</td>
-                                    <td>Se crea un nuevo usuario administrador</td>
+                                    <td class="cell-id">PS-09</td>
+                                    <td>Autocompletado desde Unity</td>
+                                    <td>Unity finaliza automáticamente la sesión</td>
+                                    <td>La sesión pasa automáticamente a la fase <code>done</code></td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
                             </tbody>
@@ -618,12 +611,40 @@
                 </div>
             </details>
 
-            <!-- 2. Módulo de Configuración -->
+            <!-- 2. Módulo de Negación -->
             <details>
-                <summary>Módulo de Configuración (4 Casos)</summary>
+                <summary>Módulo de Negación (2 Casos)</summary>
                 <div class="details-content">
-                    <p class="module-desc">Gestiona la carga y validación de parámetros de configuración de la
-                        aplicación, como las variables de entorno.</p>
+                    <p class="module-desc">Pruebas cuando un proceso se interrumpe a causa del usuario.</p>
+                    <div class="table-container">
+                        <table class="test-table">
+                            <thead>
+                                <tr>
+                                    <td class="cell-id">PS-10</td>
+                                    <td>Cancelar una sesión en curso</td>
+                                    <td>Cancelar una sesión <code>in_progress</code></td>
+                                    <td>La sesión cambia a estado <code>cancelled</code></td>
+                                    <td><span class="badge-pass">PASS</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td class="cell-id">PS-11</td>
+                                    <td>Lanzar sesión sin Kinect</td>
+                                    <td>Intentar iniciar una sesión con Kinect desconectado</td>
+                                    <td>Se muestra advertencia y se permite continuar</td>
+                                    <td><span class="badge-pass">FAIL</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </details>
+
+            <!-- 3. Módulo de Validación -->
+            <details>
+                <summary>Módulo de Validación (1 Caso)</summary>
+                <div class="details-content">
+                    <p class="module-desc">Valida el comportamiento de ciertos componentes.</p>
                     <div class="table-container">
                         <table class="test-table">
                             <thead>
@@ -637,31 +658,10 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="cell-id">PU-BACK-16</td>
-                                    <td>Verificar prioridad de archivo .env</td>
-                                    <td>Existe <code>.env</code></td>
-                                    <td>Retorna ruta de <code>.env</code></td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-17</td>
-                                    <td>Verificar uso de .env.example como respaldo</td>
-                                    <td>Existe <code>.env.example</code></td>
-                                    <td>Retorna ruta de <code>.env.example</code></td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-18</td>
-                                    <td>Verificar ausencia de archivos de configuración</td>
-                                    <td>No existen archivos</td>
-                                    <td>Retorna <code>()</code></td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-19</td>
-                                    <td>Verificar normalización de DEBUG</td>
-                                    <td><code>release</code>, <code>"dev"</code>, <code>True</code></td>
-                                    <td>Convierte correctamente a booleano</td>
+                                    <td class="cell-id">PS-12</td>
+                                    <td>Temporizador en tiempo real</td>
+                                    <td>Sesión en ejecución durante varios segundos</td>
+                                    <td>El temporizador avanza correctamente</td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
                             </tbody>
@@ -670,13 +670,11 @@
                 </div>
             </details>
 
-            <!-- 3. Módulo de Base de Datos -->
+            <!-- 4. Módulo de Resultados de Funcionalidad -->
             <details>
-                <summary>Módulo de Base de Datos (6 Casos)</summary>
+                <summary>Módulo de Resultados de Funcionalidad (10 Casos)</summary>
                 <div class="details-content">
-                    <p class="module-desc">Administra la conexión con la base de datos, la creación de directorios para
-                        SQLite, la configuración de restricciones (Foreign Keys) y el manejo seguro de sesiones y
-                        transacciones.</p>
+                    <p class="module-desc">Pruebas de cómo deben ser los resultados al termianr las sesiones o el resultado de varias de estas.</p>
                     <div class="table-container">
                         <table class="test-table">
                             <thead>
@@ -690,45 +688,82 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="cell-id">PU-BACK-20</td>
-                                    <td>Ignorar BD no SQLite</td>
-                                    <td>URL PostgreSQL</td>
-                                    <td>No ejecuta <code>mkdir</code></td>
+                                    <td class="cell-id">PS-13</td>
+                                    <td>Resumen de sesión completada</td>
+                                    <td>Abrir la vista de resultados</td>
+                                    <td>Se muestran correctamente los datos generales de la sesión</td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
+
                                 <tr>
-                                    <td class="cell-id">PU-BACK-21</td>
-                                    <td>Ignorar SQLite en memoria</td>
-                                    <td><code>sqlite:///:memory:</code></td>
-                                    <td>No ejecuta <code>mkdir</code></td>
+                                    <td class="cell-id">PS-14</td>
+                                    <td>Gráfica de trayectoria CoM</td>
+                                    <td>Visualizar resultados con datos Kinect</td>
+                                    <td>Se renderiza correctamente la gráfica de trayectoria</td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
+
                                 <tr>
-                                    <td class="cell-id">PU-BACK-22</td>
-                                    <td>Crear directorio para SQLite física</td>
-                                    <td>Ruta SQLite válida</td>
-                                    <td>Ejecuta <code>mkdir</code> una vez</td>
+                                    <td class="cell-id">PS-15</td>
+                                    <td>Gráficas de planos frontal y transversal</td>
+                                    <td>Visualizar resultados de la sesión</td>
+                                    <td>Se muestran correctamente ambas gráficas con sus alertas</td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
+
                                 <tr>
-                                    <td class="cell-id">PU-BACK-23</td>
-                                    <td>Ignorar conexiones no SQLite</td>
-                                    <td><code>DummyConnection</code></td>
-                                    <td>Retorna <code>None</code></td>
+                                    <td class="cell-id">PS-16</td>
+                                    <td>Tabla de parámetros de movimiento</td>
+                                    <td>Visualizar resultados de la sesión</td>
+                                    <td>La tabla presenta todas las métricas esperadas</td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
+
                                 <tr>
-                                    <td class="cell-id">PU-BACK-24</td>
-                                    <td>Activar claves foráneas</td>
-                                    <td>Conexión SQLite</td>
-                                    <td><code>foreign_keys = 1</code></td>
+                                    <td class="cell-id">PS-17</td>
+                                    <td>Comparativa con sesión anterior</td>
+                                    <td>Paciente con al menos dos sesiones completadas</td>
+                                    <td>Se muestra la comparación con la sesión previa</td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
+
                                 <tr>
-                                    <td class="cell-id">PU-BACK-25</td>
-                                    <td>Realizar rollback ante error</td>
-                                    <td>Excepción durante sesión</td>
-                                    <td>Ejecuta rollback y close</td>
+                                    <td class="cell-id">PS-18</td>
+                                    <td>Primera sesión sin comparativa</td>
+                                    <td>Paciente con una única sesión completada</td>
+                                    <td>Se informa que no existe una sesión anterior para comparar</td>
+                                    <td><span class="badge-pass">PASS</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td class="cell-id">PS-19</td>
+                                    <td>Crear nota clínica</td>
+                                    <td>Guardar una nueva nota clínica</td>
+                                    <td>La nota queda registrada correctamente</td>
+                                    <td><span class="badge-pass">PASS</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td class="cell-id">PS-20</td>
+                                    <td>Editar nota clínica</td>
+                                    <td>Modificar una nota clínica existente</td>
+                                    <td>Los cambios se guardan correctamente</td>
+                                    <td><span class="badge-pass">FAIL</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td class="cell-id">PS-21</td>
+                                    <td>Descargar reporte PDF</td>
+                                    <td>Generar el reporte desde la vista de resultados</td>
+                                    <td>Se descarga correctamente el archivo PDF</td>
+                                    <td><span class="badge-pass">PASS</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td class="cell-id">PS-22</td>
+                                    <td>Registro de generación de PDF</td>
+                                    <td>Descargar un reporte PDF</td>
+                                    <td>Se registra el evento de generación en el log de trazabilidad</td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
                             </tbody>
@@ -737,12 +772,11 @@
                 </div>
             </details>
 
-            <!-- 4. Módulo de Generación de PDF -->
+            <!-- 5. Módulo de Resultados de Negación -->
             <details>
-                <summary>Módulo de Generación de PDF (3 Casos)</summary>
+                <summary>Módulo de Resultados de Negación (1 Caso)</summary>
                 <div class="details-content">
-                    <p class="module-desc">Permite la generación de documentos PDF a partir de plantillas HTML y datos
-                        clínicos, con manejo de dependencias opcionales como WeasyPrint.</p>
+                    <p class="module-desc">Implementa pruebas sobre cómo funcionan los resultados de sesiones cuando hay interrupciones.</p>
                     <div class="table-container">
                         <table class="test-table">
                             <thead>
@@ -756,24 +790,10 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="cell-id">PU-BACK-26</td>
-                                    <td>Generar PDF básico</td>
-                                    <td>Título y líneas de contenido</td>
-                                    <td>PDF válido generado</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-27</td>
-                                    <td>Generar PDF desde plantilla</td>
-                                    <td>Template HTML y datos clínicos</td>
-                                    <td>PDF generado correctamente</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-28</td>
-                                    <td>Manejar ausencia de WeasyPrint</td>
-                                    <td>Dependencia inexistente en entorno</td>
-                                    <td>Lanza <code>RuntimeError</code></td>
+                                    <td class="cell-id">PS-23</td>
+                                    <td>Resultados de sesión cancelada</td>
+                                    <td>Visualizar una sesión cancelada</td>
+                                    <td>No se muestra la opción <code>Ver resultados</code></td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
                             </tbody>
@@ -782,12 +802,11 @@
                 </div>
             </details>
 
-            <!-- 5. Módulo de Seguridad -->
+            <!-- 6. Módulo de Resultados de Validación -->
             <details>
-                <summary>Módulo de Seguridad (10 Casos)</summary>
+                <summary>Módulo de Resultados de Validación (1 Caso)</summary>
                 <div class="details-content">
-                    <p class="module-desc">Implementa protección como la validación de contraseñas, generación de tokens
-                        para las sesiones y la recuperación segura de credenciales.</p>
+                    <p class="module-desc">Implementa pruebas sobre cómo funcionan ciertos aspectso del proyecto</p>
                     <div class="table-container">
                         <table class="test-table">
                             <thead>
@@ -801,226 +820,10 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="cell-id">PU-BACK-29</td>
-                                    <td>Rechazar contraseña corta</td>
-                                    <td><code>Ab1</code></td>
-                                    <td>HTTP 422</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-30</td>
-                                    <td>Rechazar falta de mayúsculas</td>
-                                    <td><code>onlylowercase123</code></td>
-                                    <td>HTTP 422</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-31</td>
-                                    <td>Verificar hash válido</td>
-                                    <td><code>Valida123</code></td>
-                                    <td>Verificación exitosa</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-32</td>
-                                    <td>Soportar hash heredado</td>
-                                    <td><code>hashed_clave</code></td>
-                                    <td>Validación correcta</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-33</td>
-                                    <td>Rechazar hash inválido</td>
-                                    <td>Formatos incorrectos</td>
-                                    <td>Retorna <code>FALSE</code></td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-34</td>
-                                    <td>Generar contraseña segura</td>
-                                    <td>Longitud 4</td>
-                                    <td>≥8 caracteres con complejidad requerida</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-35</td>
-                                    <td>Generar token de sesión</td>
-                                    <td>Ninguna</td>
-                                    <td>Token y hash válidos generados</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-36</td>
-                                    <td>Validar token de recuperación</td>
-                                    <td>Token válido, alterado y expirado</td>
-                                    <td>Acepta el válido y rechaza los inválidos</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-37</td>
-                                    <td>Rechazar solicitudes sin credenciales</td>
-                                    <td>Credenciales nulas (<code>None</code>)</td>
-                                    <td>Genera excepción HTTP 401 por ausencia de token Bearer</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-38</td>
-                                    <td>Resolver contexto autenticado desde token válido</td>
-                                    <td>Token <code>abc.token</code> y objeto de BD simulado</td>
-                                    <td>Retorna el contexto autenticado resuelto por el servicio</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </details>
-
-            <!-- 6. Módulo de Inicialización y Arranque del Sistema -->
-            <details>
-                <summary>Módulo de Inicialización y Arranque del Sistema (2 Casos)</summary>
-                <div class="details-content">
-                    <p class="module-desc">Se encarga de ejecutar tareas necesarias al iniciar la aplicación: carga del
-                        bootstrap de la base de datos, carga de configuraciones y la limpieza o cierre de sesiones
-                        obsoletas.</p>
-                    <div class="table-container">
-                        <table class="test-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Caso de Prueba</th>
-                                    <th>Entrada / Condición</th>
-                                    <th>Resultado Esperado</th>
-                                    <th>Resultado Real</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-39</td>
-                                    <td>Ejecutar bootstrap inicial</td>
-                                    <td>Ejecución de <code>main</code></td>
-                                    <td>Llama <code>bootstrap_database()</code></td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-40</td>
-                                    <td>Verificar creación de vistas e índices adicionales</td>
-                                    <td>BD SQLite en memoria con esquema inicial y ejecución de
-                                        <code>apply_sqlite_extras()</code>
-                                    </td>
-                                    <td>Los objetos adicionales son creados y consultables desde
-                                        <code>sqlite_master</code>
-                                    </td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </details>
-
-            <!-- 7. Módulo de Manejo de Fecha y Hora -->
-            <details>
-                <summary>Módulo de Manejo de Fecha y Hora (1 Caso)</summary>
-                <div class="details-content">
-                    <p class="module-desc">Proporciona funciones para obtener, convertir y calcular fechas y horas,
-                        incluyendo soporte para zonas horarias y duraciones.</p>
-                    <div class="table-container">
-                        <table class="test-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Caso de Prueba</th>
-                                    <th>Entrada / Condición</th>
-                                    <th>Resultado Esperado</th>
-                                    <th>Resultado Real</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-41</td>
-                                    <td>Verificar conversiones de fecha y hora</td>
-                                    <td>Fechas válidas, inválidas y nulas</td>
-                                    <td>Conversión correcta en todos los casos</td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </details>
-
-            <!-- 8. Módulo de Modelo de Usuario -->
-            <details>
-                <summary>Módulo de Modelo de Usuario (1 Caso)</summary>
-                <div class="details-content">
-                    <p class="module-desc">Define la estructura y comportamiento de los usuarios del sistema, incluyendo
-                        propiedades y atributos asociados a la entidad usuario.</p>
-                    <div class="table-container">
-                        <table class="test-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Caso de Prueba</th>
-                                    <th>Entrada / Condición</th>
-                                    <th>Resultado Esperado</th>
-                                    <th>Resultado Real</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-42</td>
-                                    <td>Calcular propiedades derivadas del usuario</td>
-                                    <td>Usuario con <code>id=1</code>, <code>email="a@b.c"</code> y nombres
-                                        <code>"First Last"</code>, <code>"Only"</code> y <code>""</code>
-                                    </td>
-                                    <td>Propiedades <code>first_name</code>, <code>last_name</code>,
-                                        <code>full_name</code> y representación textual correctas
-                                    </td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </details>
-
-            <!-- 9. Módulo de Dependencias de API -->
-            <details>
-                <summary>Módulo de Dependencias de API (2 Casos)</summary>
-                <div class="details-content">
-                    <p class="module-desc">Tiene la responsabilidad de proporcionar información y servicios comunes que
-                        los endpoints necesitan antes de ejecutar su lógica principal, como la extracción de metadatos
-                        de la petición entrante.</p>
-                    <div class="table-container">
-                        <table class="test-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Caso de Prueba</th>
-                                    <th>Entrada / Condición</th>
-                                    <th>Resultado Esperado</th>
-                                    <th>Resultado Real</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-43</td>
-                                    <td>Extraer IP y User-Agent desde petición HTTP</td>
-                                    <td>Request con IP <code>127.0.0.1</code> y User-Agent <code>pytest-agent</code>
-                                    </td>
-                                    <td>Retorna contexto con <code>ip_address="127.0.0.1"</code> y
-                                        <code>user_agent="pytest-agent"</code>
-                                    </td>
-                                    <td><span class="badge-pass">PASS</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="cell-id">PU-BACK-44</td>
-                                    <td>Asignar valores por defecto sin información del cliente</td>
-                                    <td>Request sin cliente y sin cabeceras</td>
-                                    <td>Retorna contexto con <code>ip_address="0.0.0.0"</code> y
-                                        <code>user_agent=None</code>
-                                    </td>
+                                    <td class="cell-id">PS-24</td>
+                                    <td>Historial de sesiones del paciente</td>
+                                    <td>Abrir la ficha del paciente</td>
+                                    <td>Se muestran correctamente todas las sesiones completadas</td>
                                     <td><span class="badge-pass">PASS</span></td>
                                 </tr>
                             </tbody>
@@ -1041,14 +844,10 @@
                 </svg>
             </div>
             <div class="conclusion-content">
-                <h3>Estabilidad e Integridad del Servidor</h3>
+                <h3>Resultados de pruebas manuales</h3>
                 <p>
-                    La ejecución exitosa de los <strong>44 casos de prueba unitarios</strong> con un <strong>100% de
-                        éxito (Passed)</strong> sobre los nueve módulos críticos del servidor garantiza la integridad
-                    del núcleo de RehabACV. La suite valida desde la resiliencia del <strong>bootstrap de la base de
-                        datos</strong> y el <strong>control de acceso por roles</strong> hasta la correcta serialización
-                    de datos clínicos y la generación de reportes en PDF, asegurando una base de código confiable para
-                    la atención segura del paciente.
+                    La ejecución de las pruebas fue reveladora ya que se vió de primera mano cómo es que funciona
+                    el proyecto en sí, aunque hubo problemas con la ejecución al inicio, se lograron solucionar trayendo estos resultados.
                 </p>
             </div>
         </div>
