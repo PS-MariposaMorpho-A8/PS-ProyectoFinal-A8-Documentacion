@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Integración de SonarQube | RehabACV</title>
+    <meta name="description"
+        content="Integración de SonarCloud al pipeline CI/CD del backend, con análisis de cobertura de tests y métricas de calidad en el dashboard.">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .hero-report {
+            padding: 140px 0 60px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 36px;
+        }
+
+        .kpi-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .kpi-card:hover {
+            border-color: var(--blue);
+            transform: translateY(-2px);
+        }
+
+        .kpi-value {
+            font-family: var(--font-syne);
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .kpi-value.passed {
+            color: var(--teal);
+            text-shadow: 0 0 15px rgba(45, 212, 191, 0.2);
+        }
+
+        .kpi-value.failed {
+            color: var(--red);
+            text-shadow: 0 0 15px rgba(248, 113, 113, 0.2);
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .content-section {
+            padding: 60px 0;
+        }
+
+        .metadata-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            color: var(--text2);
+            font-size: 13px;
+            margin-bottom: 28px;
+        }
+
+        .metadata-row span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .report-table th,
+        .report-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .report-table th {
+            background: var(--surface2);
+            color: #ffffff;
+            font-weight: 600;
+            text-align: left;
+            font-family: var(--font-syne);
+        }
+
+        .report-table td {
+            color: var(--text2);
+            line-height: 1.7;
+        }
+
+        .report-table tr:last-child td,
+        .report-table tr:last-child th {
+            border-bottom: none;
+        }
+
+        pre {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text);
+            padding: 18px;
+            overflow-x: auto;
+            margin: 18px 0;
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        code {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            color: #f8fafc;
+        }
+
+        .section-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        @media (max-width: 968px) {
+            .section-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <nav class="navbar" id="main-navbar">
+        <div class="container navbar-container">
+            <div class="brand">
+                <img src="public/PS-MariposaMorpho-Logo.png" alt="Logo Mariposa Morpho" class="brand-logo">
+                <span class="brand-name">Mariposa Morpho</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Descripción</a></li>
+                <li><a href="index.html#tecnologias" class="nav-link">Tecnologías</a></li>
+                <li class="dropdown">
+                    <span class="nav-link dropdown-toggle active" tabindex="0">
+                        Pruebas
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24">
+                            <path d="M7 10l5 5 5-5z" />
+                        </svg>
+                    </span>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-item">
+                            <a href="pruebas-unitarias-frontend.html">Informe de Pruebas Unitarias - Frontend</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-unitarias-backend.html">Informe de Pruebas Unitarias - Backend</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-unitarias-unity.html">Informe de Pruebas Unitarias - Unity</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-funcionales-frontend.html">Informe de Pruebas Funcionales - Frontend</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-funcionales-backend.html">Informe de Pruebas Funcionales - Backend</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-integracion-front-back.html">Informe de Pruebas de Integración -
+                                Frontend/Backend</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-integracion-back-bd.html">Informe de Pruebas de Integración - Backend/Base
+                                de Datos</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-integracion-back-unity.html">Informe de Pruebas de Integración -
+                                Backend/Unity</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-sistema-manuales.html">Informe de Pruebas de Sistema - Manuales</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-sistema-automatizadas.html">Informe de Pruebas de Sistema -
+                                Automatizadas</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-aceptación.html">Informe de Pruebas de Aceptación</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="sonarqube.html">Informe de Integración de SonarQube</a>
+                        </li>
+                    </ul>
+                </li>
+                <li><a href="index.html#equipo" class="nav-link">Equipo</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- HERO DEL INFORME -->
+    <header class="hero-report container">
+        <div class="fade-in" style="animation-delay: 80ms;">
+            <span class="badge"><span class="pulse-dot"></span> SonarCloud / SonarQube</span>
+            <h1 class="hero-title" style="font-size: clamp(2rem, 5vw, 3.8rem); margin-bottom: 14px;">
+                Informe de Integración de SonarQube
+            </h1>
+            <p class="hero-description" style="max-width: 840px;">
+                Integración de SonarCloud al pipeline CI/CD del backend, incluyendo la corrección de cobertura de tests
+                y la resolución de warnings que impedían mostrar métricas reales en el dashboard.
+            </p>
+        </div>
+
+        <div class="kpi-grid fade-in" style="animation-delay: 200ms;">
+            <div class="kpi-card">
+                <div class="kpi-value passed">Passed</div>
+                <div class="kpi-label">Quality Gate</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value passed">96.9%</div>
+                <div class="kpi-label">Coverage</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" style="color: var(--amber);">0.6%</div>
+                <div class="kpi-label">Duplications</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" style="color: var(--red);">2</div>
+                <div class="kpi-label">Security issues</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" style="color: var(--amber);">3</div>
+                <div class="kpi-label">Reliability issues</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" style="color: var(--teal);">A</div>
+                <div class="kpi-label">Maintainability</div>
+            </div>
+        </div>
+    </header>
+
+    <section class="section content-section container">
+        <h2 class="section-title">Contexto y objetivo</h2>
+        <div class="metadata-row">
+            <span><strong>Proyecto:</strong> gabrielaborda_PS-ProyectoFinal-A8-Backend</span>
+            <span><strong>Integración:</strong> SonarCloud en el pipeline CI/CD</span>
+            <span><strong>Fecha:</strong> 2026-07-19</span>
+        </div>
+        <p style="color: var(--text2); line-height: 1.75;">
+            Se integró el análisis de calidad de código de SonarCloud al pipeline de GitHub Actions del backend para que
+            el dashboard muestre métricas reales de cobertura y calidad, en lugar de advertencias de ruta y archivos no
+            resueltos.
+        </p>
+    </section>
+
+    <section class="section content-section container">
+        <h2 class="section-title">Diagnóstico</h2>
+        <div class="section-columns">
+            <div>
+                <p style="color: var(--text2); line-height: 1.75;">
+                    El análisis de SonarCloud era exitoso, pero la cobertura no se computaba porque el scanner no podía
+                    resolver las rutas absolutas que generaba <code>coverage.py</code> en el runner de GitHub Actions.
+                </p>
+                <pre><code>WARN  Invalid directory path in 'source' element: /home/runner/work/PS-ProyectoFinal-A8-Backend/PS-ProyectoFinal-A8-Backend/app
+ERROR Cannot resolve the file path '__init__.py' of the coverage report, the file does not exist in all 'source'.
+ERROR Cannot resolve 64 file paths, ignoring coverage measures for those files
+</code></pre>
+            </div>
+            <div>
+                <p style="color: var(--text2); line-height: 1.75;">
+                    La causa raíz fue que <code>coverage.xml</code> se generaba con rutas absolutas del contenedor del
+                    runner, mientras que el scanner de SonarCloud corre en Docker y solo puede resolver rutas relativas
+                    dentro del workspace.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section content-section container">
+        <h2 class="section-title">Solución aplicada</h2>
+        <p style="color: var(--text2); line-height: 1.75; margin-bottom: 18px;">
+            Se corrigió la generación de cobertura y se ajustó la configuración del proyecto y del workflow para que
+            SonarCloud lea el reporte correctamente.
+        </p>
+
+        <h3 style="margin-bottom: 10px;">1. .coveragerc</h3>
+        <pre><code>[run]
+relative_files = True
+source = app
+</code></pre>
+
+        <h3 style="margin-bottom: 10px;">2. sonar-project.properties</h3>
+        <pre><code>sonar.projectKey=gabrielaborda_PS-ProyectoFinal-A8-Backend
+sonar.organization=gabrielaborda
+sonar.projectName=PS-ProyectoFinal-A8-Backend
+sonar.sources=app
+sonar.tests=tests
+sonar.python.version=3.12
+sonar.python.coverage.reportPaths=coverage.xml
+sonar.sourceEncoding=UTF-8
+sonar.exclusions=**/__pycache__/**,**/migrations/**,**/*.png,**/*.jpg,**/*.jpeg,**/*.svg,**/*.ico,**/assets/**
+</code></pre>
+
+        <h3 style="margin-bottom: 10px;">3. Workflow GitHub Actions</h3>
+        <pre><code>- name: Clonar repositorio
+  uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+</code></pre>
+    </section>
+
+    <section class="section content-section container">
+        <h2 class="section-title">Warnings resueltos</h2>
+        <p style="color: var(--text2); line-height: 1.75; margin-bottom: 18px;">
+            Se resolvieron los tres warnings que impedían una integración limpia de SonarCloud.
+        </p>
+
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Warning</th>
+                    <th>Causa</th>
+                    <th>Solución</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>"code is analyzed as compatible with all Python 3 versions"</td>
+                    <td>No se especificó la versión de Python para Sonar</td>
+                    <td>Agregar <code>sonar.python.version=3.12</code> en <code>sonar-project.properties</code></td>
+                </tr>
+                <tr>
+                    <td>"problems with file encoding in the source code"</td>
+                    <td>Sonar intentaba analizar una imagen binaria como código fuente</td>
+                    <td>Excluir imágenes/assets con <code>sonar.exclusions</code></td>
+                </tr>
+                <tr>
+                    <td>"Shallow clone detected"</td>
+                    <td>El checkout solo traía el último commit</td>
+                    <td>Usar <code>fetch-depth: 0</code> en el paso de checkout</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section content-section container">
+        <h2 class="section-title">Conclusión</h2>
+        <p style="color: var(--text2); line-height: 1.75;">
+            La integración de SonarCloud quedó completa para el backend, con métricas de cobertura visibles y análisis
+            de calidad activos en cada push y pull request. El dashboard ahora lee correctamente el reporte de cobertura
+            y ya no falla por rutas absolutas ni archivos no resueltos.
+        </p>
+        <p style="color: var(--text2); line-height: 1.75; margin-top: 10px;">
+            Ver dashboard en SonarCloud: <a
+                href="https://sonarcloud.io/dashboard?id=gabrielaborda_PS-ProyectoFinal-A8-Backend&branch=main"
+                target="_blank" rel="noopener noreferrer"
+                style="color: var(--blue);">https://sonarcloud.io/dashboard?id=gabrielaborda_PS-ProyectoFinal-A8-Backend&branch=main</a>
+        </p>
+    </section>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-logo">
+                <img src="public/PS-MariposaMorpho-Logo.png" alt="Logo Mariposa Morpho">
+                <span>Mariposa Morpho — RehabACV</span>
+            </div>
+            <div class="footer-text">
+                © 2026 Mariposa Morpho. Todos los derechos reservados. Desarrollado con fines académicos para la Escuela
+                de Ingeniería de Sistemas - UNSA.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Accesibilidad Dropdown con teclado
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        dropdownToggle.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const menu = dropdownToggle.nextElementSibling;
+                const isVisible = window.getComputedStyle(menu).visibility === 'visible';
+                menu.style.opacity = isVisible ? '0' : '1';
+                menu.style.visibility = isVisible ? 'hidden' : 'visible';
+                menu.style.transform = isVisible ? 'translateY(10px)' : 'translateY(0)';
+            }
+        });
+    </script>
+</body>
+
+</html>
