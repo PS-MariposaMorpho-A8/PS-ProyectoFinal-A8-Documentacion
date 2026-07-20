@@ -63,6 +63,13 @@
             padding: 60px 0;
         }
 
+        .content-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+        }
+
         .metadata-row {
             display: flex;
             flex-wrap: wrap;
@@ -137,6 +144,10 @@
             grid-template-columns: 1fr 1fr;
             gap: 32px;
             align-items: start;
+        }
+
+        .section-columns>.content-card {
+            min-width: 0;
         }
 
         @media (max-width: 968px) {
@@ -257,22 +268,24 @@
 
     <section class="section content-section container">
         <h2 class="section-title">Contexto y objetivo</h2>
-        <div class="metadata-row">
-            <span><strong>Proyecto:</strong> gabrielaborda_PS-ProyectoFinal-A8-Backend</span>
-            <span><strong>Integración:</strong> SonarCloud en el pipeline CI/CD</span>
-            <span><strong>Fecha:</strong> 2026-07-19</span>
+        <div class="content-card">
+            <div class="metadata-row">
+                <span><strong>Proyecto:</strong> gabrielaborda_PS-ProyectoFinal-A8-Backend</span>
+                <span><strong>Integración:</strong> SonarCloud en el pipeline CI/CD</span>
+                <span><strong>Fecha:</strong> 2026-07-19</span>
+            </div>
+            <p style="color: var(--text2); line-height: 1.75;">
+                Se integró el análisis de calidad de código de SonarCloud al pipeline de GitHub Actions del backend para
+                que el dashboard muestre métricas reales de cobertura y calidad, en lugar de advertencias de ruta y
+                archivos no resueltos.
+            </p>
         </div>
-        <p style="color: var(--text2); line-height: 1.75;">
-            Se integró el análisis de calidad de código de SonarCloud al pipeline de GitHub Actions del backend para que
-            el dashboard muestre métricas reales de cobertura y calidad, en lugar de advertencias de ruta y archivos no
-            resueltos.
-        </p>
     </section>
 
     <section class="section content-section container">
         <h2 class="section-title">Diagnóstico</h2>
         <div class="section-columns">
-            <div>
+            <div class="content-card">
                 <p style="color: var(--text2); line-height: 1.75;">
                     El análisis de SonarCloud era exitoso, pero la cobertura no se computaba porque el scanner no podía
                     resolver las rutas absolutas que generaba <code>coverage.py</code> en el runner de GitHub Actions.
@@ -282,7 +295,7 @@ ERROR Cannot resolve the file path '__init__.py' of the coverage report, the fil
 ERROR Cannot resolve 64 file paths, ignoring coverage measures for those files
 </code></pre>
             </div>
-            <div>
+            <div class="content-card">
                 <p style="color: var(--text2); line-height: 1.75;">
                     La causa raíz fue que <code>coverage.xml</code> se generaba con rutas absolutas del contenedor del
                     runner, mientras que el scanner de SonarCloud corre en Docker y solo puede resolver rutas relativas
@@ -294,19 +307,20 @@ ERROR Cannot resolve 64 file paths, ignoring coverage measures for those files
 
     <section class="section content-section container">
         <h2 class="section-title">Solución aplicada</h2>
-        <p style="color: var(--text2); line-height: 1.75; margin-bottom: 18px;">
-            Se corrigió la generación de cobertura y se ajustó la configuración del proyecto y del workflow para que
-            SonarCloud lea el reporte correctamente.
-        </p>
+        <div class="content-card">
+            <p style="color: var(--text2); line-height: 1.75; margin-bottom: 18px;">
+                Se corrigió la generación de cobertura y se ajustó la configuración del proyecto y del workflow para que
+                SonarCloud lea el reporte correctamente.
+            </p>
 
-        <h3 style="margin-bottom: 10px;">1. .coveragerc</h3>
-        <pre><code>[run]
+            <h3 style="margin-bottom: 10px;">1. .coveragerc</h3>
+            <pre><code>[run]
 relative_files = True
 source = app
 </code></pre>
 
-        <h3 style="margin-bottom: 10px;">2. sonar-project.properties</h3>
-        <pre><code>sonar.projectKey=gabrielaborda_PS-ProyectoFinal-A8-Backend
+            <h3 style="margin-bottom: 10px;">2. sonar-project.properties</h3>
+            <pre><code>sonar.projectKey=gabrielaborda_PS-ProyectoFinal-A8-Backend
 sonar.organization=gabrielaborda
 sonar.projectName=PS-ProyectoFinal-A8-Backend
 sonar.sources=app
@@ -317,12 +331,13 @@ sonar.sourceEncoding=UTF-8
 sonar.exclusions=**/__pycache__/**,**/migrations/**,**/*.png,**/*.jpg,**/*.jpeg,**/*.svg,**/*.ico,**/assets/**
 </code></pre>
 
-        <h3 style="margin-bottom: 10px;">3. Workflow GitHub Actions</h3>
-        <pre><code>- name: Clonar repositorio
+            <h3 style="margin-bottom: 10px;">3. Workflow GitHub Actions</h3>
+            <pre><code>- name: Clonar repositorio
   uses: actions/checkout@v4
   with:
     fetch-depth: 0
 </code></pre>
+        </div>
     </section>
 
     <section class="section content-section container">
@@ -361,17 +376,19 @@ sonar.exclusions=**/__pycache__/**,**/migrations/**,**/*.png,**/*.jpg,**/*.jpeg,
 
     <section class="section content-section container">
         <h2 class="section-title">Conclusión</h2>
-        <p style="color: var(--text2); line-height: 1.75;">
-            La integración de SonarCloud quedó completa para el backend, con métricas de cobertura visibles y análisis
-            de calidad activos en cada push y pull request. El dashboard ahora lee correctamente el reporte de cobertura
-            y ya no falla por rutas absolutas ni archivos no resueltos.
-        </p>
-        <p style="color: var(--text2); line-height: 1.75; margin-top: 10px;">
-            Ver dashboard en SonarCloud: <a
-                href="https://sonarcloud.io/dashboard?id=gabrielaborda_PS-ProyectoFinal-A8-Backend&branch=main"
-                target="_blank" rel="noopener noreferrer"
-                style="color: var(--blue);">https://sonarcloud.io/dashboard?id=gabrielaborda_PS-ProyectoFinal-A8-Backend&branch=main</a>
-        </p>
+        <div class="content-card">
+            <p style="color: var(--text2); line-height: 1.75;">
+                La integración de SonarCloud quedó completa para el backend, con métricas de cobertura visibles y
+                análisis de calidad activos en cada push y pull request. El dashboard ahora lee correctamente el reporte
+                de cobertura y ya no falla por rutas absolutas ni archivos no resueltos.
+            </p>
+            <p style="color: var(--text2); line-height: 1.75; margin-top: 10px;">
+                Ver dashboard en SonarCloud: <a
+                    href="https://sonarcloud.io/dashboard?id=gabrielaborda_PS-ProyectoFinal-A8-Backend&amp;branch=main"
+                    target="_blank" rel="noopener noreferrer"
+                    style="color: var(--blue);">https://sonarcloud.io/dashboard?id=gabrielaborda_PS-ProyectoFinal-A8-Backend&amp;branch=main</a>
+            </p>
+        </div>
     </section>
 
     <footer class="footer">
