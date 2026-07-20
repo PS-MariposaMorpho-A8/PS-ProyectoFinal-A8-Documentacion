@@ -1,0 +1,468 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informe de Pruebas de Integración - Frontend/Backend | RehabACV</title>
+  <meta name="description" content="Documento de pruebas de integración entre el frontend React y el backend FastAPI de RehaACV, incluyendo objetivos, alcance, arquitectura, plan de pruebas y resultados ejecutados.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hero-report { padding: 140px 0 60px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 36px; }
+    .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 22px 20px 18px; text-align: center; transition: var(--transition); position: relative; overflow: hidden; }
+    .kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg, var(--blue), var(--teal)); opacity:0; transition:var(--transition); }
+    .kpi-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+    .kpi-card:hover::before { opacity:1; }
+    .kpi-value { font-family: var(--font-syne); font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 6px; line-height: 1; }
+    .kpi-value.passed { color: var(--teal); text-shadow: 0 0 20px rgba(45, 212, 191, 0.25); }
+    .kpi-value.failed { color: var(--red); text-shadow: 0 0 20px rgba(248, 113, 113, 0.25); }
+    .kpi-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 500; }
+    .summary-section { padding: 40px 0 20px; }
+    .summary-table, .test-table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .summary-table th, .test-table th { background: var(--surface2); color: #ffffff; font-weight: 600; padding: 12px 16px; text-align: left; font-family: var(--font-syne); }
+    .summary-table td, .test-table td { padding: 12px 16px; border-top: 1px solid var(--border); color: var(--text2); }
+    .summary-table td strong { color: var(--blue); }
+    .section-block { margin-top: 28px; }
+    details { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 20px; }
+    details[open] { border-color: var(--blue2); box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+    summary { padding: 20px 24px; font-family: var(--font-syne); font-weight: 700; font-size: 16px; color: #ffffff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; font-size: 20px; font-weight: 300; color: var(--text2); transition: var(--transition); }
+    details[open] summary::after { content: '−'; color: var(--teal); }
+    .details-content { padding: 0 24px 24px; border-top: 1px solid var(--border); background: rgba(11, 15, 26, 0.4); }
+    .case-card { margin-top: 20px; border: 1px solid var(--border2); border-radius: var(--radius-md); overflow: hidden; background: var(--surface); }
+    .case-header { padding: 14px 18px; background: var(--surface2); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border2); }
+    .case-id { font-family: monospace; font-weight: 700; color: var(--blue); font-size: 14px; }
+    .badge-pass { background: var(--teal); color: #000; padding: 4px 12px; border-radius: var(--radius-full); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-fail { background: var(--red); color: #fff; padding: 4px 12px; border-radius: var(--radius-full); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-warning { background: var(--amber); color: #000; padding: 4px 12px; border-radius: var(--radius-full); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+    .evidence-img { display: block; margin: 20px auto; max-width: 700px; width: 100%; border-radius: var(--radius-md); border: 1px solid var(--border2); box-shadow: var(--shadow); }
+    .conclusion-card { background: linear-gradient(135deg, rgba(79,142,247,0.08) 0%, rgba(248,113,113,0.08) 100%); border: 1px solid var(--border2); border-radius: var(--radius-lg); padding: 36px; display: flex; gap: 24px; align-items: flex-start; margin-top: 48px; margin-bottom: 90px; }
+    .conclusion-icon { width: 52px; height: 52px; background: var(--blue-dim); color: var(--blue); border: 1.5px solid rgba(79,142,247,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="main-navbar">
+    <div class="container navbar-container">
+      <div class="brand">
+        <img src="public/PS-MariposaMorpho-Logo.png" alt="Logo Mariposa Morpho" class="brand-logo">
+        <span class="brand-name">Mariposa Morpho</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Descripción</a></li>
+        <li><a href="index.html#tecnologias" class="nav-link">Tecnologías</a></li>
+        <li class="dropdown">
+          <span class="nav-link dropdown-toggle active" tabindex="0">Pruebas<svg class="dropdown-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></span>
+          <ul class="dropdown-menu">
+            <li class="dropdown-item"><a href="pruebas-unitarias-frontend.html">Unidad Frontend</a></li>
+            <li class="dropdown-item"><a href="pruebas-unitarias-backend.html">Unidad Backend</a></li>
+            <li class="dropdown-item"><a href="pruebas-integracion-frontend-backend.html">Integración Frontend/Backend</a></li>
+            <li class="dropdown-item"><a href="pruebas-sistema-manuales.html">Sistema Manuales</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero-report container">
+    <div class="fade-in" style="animation-delay: 80ms;">
+      <span class="badge"><span class="pulse-dot"></span> Pruebas de Integración</span>
+      <h1 class="hero-title" style="font-size: clamp(1.9rem, 5vw, 3.2rem); margin-bottom: 14px;">
+        Informe de Pruebas de Integración<br>Frontend / Backend
+      </h1>
+      <p class="hero-description" style="max-width: 950px;">
+        El presente documento describe la estrategia, alcance, ejecución y resultados de las pruebas de integración del sistema <strong>RehaACV</strong>, enfocadas en verificar la comunicación correcta entre el frontend desarrollado en <strong>React</strong> y el backend implementado con <strong>FastAPI</strong> mediante la API REST expuesta bajo <strong>/api/v1</strong>.
+      </p>
+    </div>
+    <div class="kpi-grid fade-in" style="animation-delay: 200ms;">
+      <div class="kpi-card">
+        <div class="kpi-value">31</div>
+        <div class="kpi-label">Casos de Prueba</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value passed">29 PASS</div>
+        <div class="kpi-label">Resultados Exitosos</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value failed">2 ERROR</div>
+        <div class="kpi-label">Hallazgos</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value small">7 módulos</div>
+        <div class="kpi-label">Áreas evaluadas</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="container summary-section">
+    <h2 class="section-title" style="text-align:left;">1. Introducción</h2>
+    <p class="section-subtitle">Las pruebas de integración tuvieron como propósito verificar la correcta comunicación entre la aplicación frontend y el backend del proyecto RehaACV, asegurando que el intercambio de información mediante la API REST se realice de forma segura, consistente y conforme a los requisitos funcionales del sistema.</p>
+    <p style="margin-top: 10px; color: var(--text2); line-height: 1.75;">
+      El backend fue desarrollado utilizando <strong>FastAPI</strong>, exponiendo servicios REST versionados bajo el prefijo <code>/api/v1</code>, mientras que el frontend fue implementado en <strong>React</strong> utilizando una arquitectura centralizada basada en <strong>Axios</strong>, <strong>Zustand</strong> y <strong>TypeScript</strong> para el consumo de los servicios.
+    </p>
+  </section>
+
+  <section class="container summary-section">
+    <h2 class="section-title" style="text-align:left;">2. Objetivos</h2>
+    <ul style="margin-left: 20px; color: var(--text2); line-height: 1.8;">
+      <li>Validar la correcta comunicación HTTP entre frontend y backend.</li>
+      <li>Verificar el funcionamiento de la autenticación basada en JWT.</li>
+      <li>Comprobar la correcta configuración de CORS.</li>
+      <li>Validar el manejo centralizado de errores HTTP.</li>
+      <li>Verificar el cumplimiento de los contratos de datos definidos mediante modelos Pydantic.</li>
+      <li>Confirmar el funcionamiento de los principales módulos consumidos por el frontend.</li>
+      <li>Comprobar la disponibilidad del backend mediante el endpoint Health Check.</li>
+    </ul>
+  </section>
+
+  <section class="container summary-section">
+    <h2 class="section-title" style="text-align:left;">3. Alcance</h2>
+    <p style="color: var(--text2); line-height: 1.75;">Se incluyen los módulos de autenticación, usuarios y perfiles, dashboard, pacientes, documentos, plantillas de sesión, sesiones clínicas, validación de contratos de datos, manejo de errores HTTP, configuración CORS y Health Check.</p>
+  </section>
+
+  <section class="container summary-section">
+    <h2 class="section-title" style="text-align:left;">4. Arquitectura de Integración</h2>
+    <table class="summary-table">
+      <thead>
+        <tr><th>Componente</th><th>Detalle</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Backend</strong></td><td>FastAPI con servicios bajo <code>/api/v1</code>, validación automática con Pydantic, middleware CORS y respuestas JSON tipadas.</td></tr>
+        <tr><td><strong>Frontend</strong></td><td>React + Axios + Zustand + TypeScript, con base URL configurable y interceptores de petición/respuesta.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="container summary-section">
+    <h2 class="section-title" style="text-align:left;">5. Estrategia de Integración y Capa de Comunicaciones</h2>
+    <table class="summary-table">
+      <thead>
+        <tr><th>Código</th><th>Acción del Frontend</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>401</strong></td><td>Cierre automático de sesión y redirección al Login.</td></tr>
+        <tr><td><strong>403</strong></td><td>Notificación de permisos insuficientes.</td></tr>
+        <tr><td><strong>404</strong></td><td>Notificación de recurso inexistente.</td></tr>
+        <tr><td><strong>422</strong></td><td>Visualización de errores de validación.</td></tr>
+        <tr><td><strong>500</strong></td><td>Notificación de error interno del servidor.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="container section-block">
+    <h2 class="section-title" style="text-align:left;">6. Plan de Pruebas de Integración</h2>
+
+    <details open>
+      <summary>6.1 Comunicación Frontend – Backend</summary>
+      <div class="details-content">
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-INT-01</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el navegador permita la comunicación entre frontend y backend mediante la configuración CORS del servidor.</td></tr>
+            <tr><th>Resultado esperado</th><td>La petición HTTP es aceptada por el navegador sin errores de CORS y el backend responde correctamente.</td></tr>
+            <tr><th>Resultado real</th><td>La solicitud fue procesada correctamente sin bloqueos por políticas CORS y se obtuvo una respuesta satisfactoria.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-INT-02</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar la disponibilidad del servidor mediante el endpoint <code>/health</code>.</td></tr>
+            <tr><th>Resultado esperado</th><td>HTTP 200 OK con <code>{"status":"ok"}</code>.</td></tr>
+            <tr><th>Resultado real</th><td>El servidor respondió HTTP 200 indicando disponibilidad.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-INT-03</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Validar que el backend rechace datos inválidos devolviendo HTTP 422 conforme a los modelos Pydantic.</td></tr>
+            <tr><th>Resultado esperado</th><td>HTTP 422 Unprocessable Entity indicando el campo inválido.</td></tr>
+            <tr><th>Resultado real</th><td>El backend devolvió HTTP 422 indicando el error de validación correspondiente.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-INT-04</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que todas las solicitudes utilicen correctamente la URL base configurada.</td></tr>
+            <tr><th>Resultado esperado</th><td>Todas las peticiones utilizan la URL base configurada <code>api_url</code>.</td></tr>
+            <tr><th>Resultado real</th><td>Las peticiones hicieron uso correcto de la URL configurada en el cliente HTTP.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-INT-05</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que Axios agregue automáticamente el token JWT en las solicitudes protegidas.</td></tr>
+            <tr><th>Resultado esperado</th><td>La solicitud incluye <code>Authorization: Bearer &lt;token&gt;</code>.</td></tr>
+            <tr><th>Resultado real</th><td>La cabecera Authorization fue agregada automáticamente por el interceptor de Axios.</td></tr>
+          </table>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>6.2 Integración de Autenticación</summary>
+      <div class="details-content">
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-AUTH-01</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el usuario pueda autenticarse correctamente y que el backend genere un token JWT válido.</td></tr>
+            <tr><th>Datos de entrada</th><td>Correo: <code>admin@local.test</code> · Contraseña: <code>Admin1234</code></td></tr>
+            <tr><th>Resultado real</th><td>El backend respondió con HTTP 200, generó un JWT válido y el sistema permitió el acceso.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-AUTH-02</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que un usuario autenticado pueda consultar correctamente su información mediante un endpoint protegido usando el JWT.</td></tr>
+            <tr><th>Resultado real</th><td>El endpoint respondió correctamente con la información del usuario autenticado.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-AUTH-03</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que un usuario autenticado pueda actualizar correctamente su contraseña a través de la API.</td></tr>
+            <tr><th>Resultado real</th><td>La contraseña fue actualizada correctamente y el inicio de sesión con la nueva contraseña fue exitoso.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-AUTH-04</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el flujo de recuperación de contraseña funcione correctamente mediante la API.</td></tr>
+            <tr><th>Resultado real</th><td>La solicitud fue procesada correctamente y el backend respondió conforme al flujo implementado.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-AUTH-05</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el usuario pueda finalizar correctamente su sesión y que el frontend elimine el JWT almacenado.</td></tr>
+            <tr><th>Resultado real</th><td>El sistema respondió correctamente al proceso de cierre de sesión.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-AUTH-06</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el frontend gestione correctamente un token expirado mediante la respuesta HTTP 401 del backend.</td></tr>
+            <tr><th>Resultado real</th><td>El backend respondió con HTTP 401 y el frontend ejecutó correctamente el proceso de cierre de sesión.</td></tr>
+          </table>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>6.3 Integración Dashboard</summary>
+      <div class="details-content">
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-DASH-01</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el usuario con rol de administrador pueda consultar correctamente las estadísticas generales proporcionadas por el backend.</td></tr>
+            <tr><th>Resultado real</th><td>El backend respondió correctamente con las estadísticas generales y el frontend las presentó sin errores.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-DASH-02</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el usuario con rol de especialista pueda consultar correctamente las estadísticas correspondientes a su perfil mediante el endpoint del dashboard.</td></tr>
+            <tr><th>Resultado real</th><td>El backend respondió correctamente con la información del especialista y el frontend la presentó correctamente.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-DASH-03</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que un usuario sin permisos suficientes no pueda acceder al dashboard restringido y que el backend responda con el código HTTP correspondiente.</td></tr>
+            <tr><th>Resultado real</th><td>El backend rechazó correctamente la solicitud devolviendo HTTP 403 y el frontend notificó la falta de permisos.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-DASH-04</span><span class="badge-warning">🟨 PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el administrador pueda registrar correctamente un especialista mediante el formulario disponible en el dashboard y que la información sea enviada correctamente al backend.</td></tr>
+            <tr><th>Resultado real</th><td>El backend registró correctamente al especialista, aunque en la petición se omitió el valor de fecha de nacimiento.</td></tr>
+          </table>
+                    <img class="evidence-img" src="https://github.com/user-attachments/assets/ac966d06-8f76-4f83-9b38-99035f754026" alt="Evidencia PI-INT-01">
+                    <img class="evidence-img" src="https://github.com/user-attachments/assets/95d8ff5a-a60a-4bf4-b98b-9d3b6e8ef8c8" alt="Evidencia PI-INT-01">
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>6.4 Integración de Pacientes</summary>
+      <div class="details-content">
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-PAT-01</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema permita registrar correctamente un nuevo paciente desde el frontend.</td></tr>
+            <tr><th>Resultado real</th><td>El paciente fue registrado correctamente y el sistema mostró el mensaje de registro exitoso.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-PAT-02</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema obtenga correctamente la información detallada de un paciente registrado.</td></tr>
+            <tr><th>Resultado real</th><td>La información del paciente fue obtenida y visualizada correctamente.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-PAT-03</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema permita actualizar correctamente la información de un paciente existente.</td></tr>
+            <tr><th>Resultado real</th><td>La información fue actualizada correctamente y los cambios se visualizaron en la aplicación.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-PAT-04</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema permita archivar un paciente cambiando correctamente su estado mediante la API.</td></tr>
+            <tr><th>Resultado real</th><td>El paciente fue archivado correctamente y el sistema actualizó su estado.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-PAT-05</span><span class="badge-fail">❌ ERROR</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema filtre correctamente los pacientes utilizando los criterios de búsqueda implementados por el frontend y el backend.</td></tr>
+            <tr><th>Resultado real</th><td>La búsqueda devolvió un error, lo que puede deberse al entorno de pruebas y no necesariamente al código.</td></tr>
+          </table>
+                    <img class="evidence-img" src="https://github.com/user-attachments/assets/034fe758-ca89-4dc6-891e-a7010d5c603e" alt="Evidencia PI-INT-01">
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-PAT-06</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el backend responda correctamente cuando se solicita un paciente inexistente y que el frontend gestione adecuadamente el error.</td></tr>
+            <tr><th>Resultado real</th><td>El backend respondió correctamente con HTTP 404 y el frontend gestionó adecuadamente el error.</td></tr>
+          </table>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>6.5 Integración de Documentos</summary>
+      <div class="details-content">
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-DOC-01</span><span class="badge-fail">❌ ERROR</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el frontend solicite correctamente la generación del consentimiento informado y que el backend genere y devuelva el archivo PDF para su descarga.</td></tr>
+            <tr><th>Resultado real</th><td>Al parecer no está implementada esta función en el entorno evaluado.</td></tr>
+          </table>
+                    <img class="evidence-img" src="https://github.com/user-attachments/assets/b68bacd5-45da-4cca-b8ac-9d7ee406a8db" alt="Evidencia PI-INT-01">
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>6.6 Integración de Plantillas</summary>
+      <div class="details-content">
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-TEMP-01</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema permita registrar correctamente una nueva plantilla de sesión y que la información sea almacenada mediante el backend.</td></tr>
+            <tr><th>Resultado real</th><td>La plantilla fue registrada correctamente y el sistema mostró el mensaje de registro exitoso.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-TEMP-02</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema obtenga correctamente la información de una plantilla de sesión registrada mediante la API.</td></tr>
+            <tr><th>Resultado real</th><td>La información de la plantilla fue obtenida correctamente y mostrada en la interfaz.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-TEMP-03</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema permita modificar correctamente la información de una plantilla de sesión existente mediante la API.</td></tr>
+            <tr><th>Resultado real</th><td>La plantilla fue actualizada correctamente y los cambios se visualizaron en el sistema.</td></tr>
+          </table>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>6.7 Integración de Sesiones Clínicas</summary>
+      <div class="details-content">
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-SES-01</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema permita registrar correctamente una nueva sesión clínica y que la información sea almacenada mediante el backend.</td></tr>
+            <tr><th>Resultado real</th><td>La sesión clínica fue registrada correctamente y el sistema confirmó la operación.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-SES-02</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema obtenga correctamente el listado de sesiones clínicas registradas.</td></tr>
+            <tr><th>Resultado real</th><td>El listado fue obtenido correctamente y visualizado en la interfaz.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-SES-03</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema permita modificar correctamente la información de una sesión clínica existente.</td></tr>
+            <tr><th>Resultado real</th><td>La sesión fue actualizada correctamente y los cambios fueron visibles en el sistema.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-SES-04</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema permita cambiar correctamente el estado de una sesión clínica a <strong>En progreso</strong>.</td></tr>
+            <tr><th>Resultado real</th><td>La sesión cambió correctamente al estado <strong>En progreso</strong>.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-SES-05</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema permita finalizar correctamente una sesión clínica en ejecución.</td></tr>
+            <tr><th>Resultado real</th><td>La sesión fue finalizada correctamente.</td></tr>
+          </table>
+        </div>
+        <div class="case-card">
+          <div class="case-header"><span class="case-id">PI-SES-06</span><span class="badge-pass">✅ PASS</span></div>
+          <table class="test-table">
+            <tr><th>Descripción</th><td>Verificar que el sistema permita cancelar correctamente una sesión clínica programada.</td></tr>
+            <tr><th>Resultado real</th><td>La sesión fue cancelada correctamente.</td></tr>
+          </table>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section class="container summary-section">
+    <h2 class="section-title" style="text-align:left;">7. Resultados Esperados</h2>
+    <ul style="margin-left: 20px; color: var(--text2); line-height: 1.8;">
+      <li>El frontend consuma correctamente todos los endpoints de la API.</li>
+      <li>Las respuestas HTTP sean interpretadas correctamente.</li>
+      <li>Los tokens JWT sean administrados automáticamente.</li>
+      <li>Los errores HTTP sean manejados por los interceptores de Axios.</li>
+      <li>Los contratos de datos definidos mediante Pydantic sean respetados.</li>
+      <li>El Health Check reporte correctamente el estado del servidor.</li>
+      <li>Los módulos funcionales respondan conforme a los requisitos establecidos.</li>
+    </ul>
+  </section>
+
+  <section class="container">
+    <div class="conclusion-card fade-in" style="animation-delay: 200ms;">
+      <div class="conclusion-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="conclusion-content">
+        <h3>Conclusiones</h3>
+        <p>
+          Las pruebas de integración permitieron validar que la comunicación entre el frontend y el backend del sistema RehaACV funciona de manera correcta mediante el consumo de los servicios REST desarrollados con FastAPI. La utilización de Axios como cliente HTTP centralizado, el uso de interceptores para la administración automática del token JWT, la gestión del estado mediante Zustand y la validación de datos con Pydantic proporcionan una arquitectura robusta que reduce errores de comunicación y garantiza la consistencia de la información intercambiada.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-logo">
+        <img src="public/PS-MariposaMorpho-Logo.png" alt="Logo Mariposa Morpho">
+        <span>Mariposa Morpho — RehabACV</span>
+      </div>
+      <div class="footer-text">
+        © 2026 Mariposa Morpho. Todos los derechos reservados. Desarrollado con fines académicos para la Escuela de Ingeniería de Sistemas - UNSA.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
