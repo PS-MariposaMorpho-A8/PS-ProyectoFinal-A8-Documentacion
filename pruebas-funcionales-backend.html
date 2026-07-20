@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informe de Pruebas Funcionales - Backend | RehabACV</title>
+  <meta name="description" content="Informe funcional del backend de RehabACV con módulos de autenticación, pacientes, sesiones, documentos, usuarios y Unity.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hero-report { padding: 140px 0 60px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 36px; }
+    .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 22px 20px 18px; text-align: center; transition: var(--transition); }
+    .kpi-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .kpi-value { font-family: var(--font-syne); font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 6px; line-height: 1; }
+    .kpi-value.passed { color: var(--teal); }
+    .kpi-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 500; }
+    .modules-section { padding: 60px 0; }
+    .accordion { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+    details { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: var(--transition); }
+    details[open] { border-color: var(--blue2); box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+    summary { padding: 20px 24px; font-family: var(--font-syne); font-weight: 700; font-size: 16px; color: #ffffff; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; font-size: 20px; font-weight: 300; color: var(--text2); transition: var(--transition); }
+    details[open] summary::after { content: '−'; color: var(--teal); }
+    .details-content { padding: 0 24px 24px; border-top: 1px solid var(--border); background: rgba(11, 15, 26, 0.4); }
+    .table-container { width: 100%; overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border); margin-top: 16px; }
+    .test-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    .test-table th { background: var(--surface2); color: #ffffff; font-weight: 600; padding: 12px 16px; border-bottom: 1px solid var(--border); font-family: var(--font-syne); }
+    .test-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+    .test-table td strong { color: #ffffff; }
+    .conclusion-card { background: linear-gradient(135deg, rgba(79,142,247,0.05) 0%, rgba(248,113,113,0.05) 100%); border: 1px solid var(--border2); border-radius: var(--radius-lg); padding: 36px; display: flex; gap: 24px; align-items: flex-start; margin-top: 48px; margin-bottom: 90px; }
+    .conclusion-icon { width: 52px; height: 52px; background: var(--blue-dim); color: var(--blue); border: 1.5px solid rgba(79,142,247,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .conclusion-content h3 { font-size: 19px; margin-bottom: 12px; }
+    .conclusion-content p { color: var(--text2); line-height: 1.75; font-size: 14px; }
+    @media (max-width: 768px) { .conclusion-card { flex-direction: column; gap: 16px; padding: 24px; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="main-navbar">
+    <div class="container navbar-container">
+      <div class="brand">
+        <img src="public/PS-MariposaMorpho-Logo.png" alt="Logo Mariposa Morpho" class="brand-logo">
+        <span class="brand-name">Mariposa Morpho</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Descripción</a></li>
+        <li><a href="index.html#tecnologias" class="nav-link">Tecnologías</a></li>
+        <li class="dropdown">
+          <span class="nav-link dropdown-toggle" tabindex="0">
+            Pruebas
+            <svg class="dropdown-chevron" viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </span>
+          <ul class="dropdown-menu">
+            <li class="dropdown-item"><a href="pruebas-unitarias-frontend.html">Informe de Pruebas Unitarias - Frontend</a></li>
+            <li class="dropdown-item"><a href="pruebas-unitarias-backend.html">Informe de Pruebas Unitarias - Backend</a></li>
+            <li class="dropdown-item"><a href="pruebas-unitarias-unity.html">Informe de Pruebas Unitarias - Unity</a></li>
+            <li class="dropdown-item"><a href="pruebas-funcionales-frontend.html">Informe de Pruebas Funcionales - Frontend</a></li>
+            <li class="dropdown-item"><a href="pruebas-funcionales-backend.html">Informe de Pruebas Funcionales - Backend</a></li>
+            <li class="dropdown-item"><a href="pruebas-integracion-frontend-backend.html">Informe de Pruebas de Integración - Frontend/Backend</a></li>
+            <li class="dropdown-item"><a href="pruebas-integracion-back-bd.html">Informe de Pruebas de Integración - Backend/Base de Datos</a></li>
+            <li class="dropdown-item"><a href="pruebas-integracion-back-unity.html">Informe de Pruebas de Integración - Backend/Unity</a></li>
+            <li class="dropdown-item"><a href="pruebas-sistema-manuales.html">Informe de Pruebas de Sistema - Manuales</a></li>
+            <li class="dropdown-item"><a href="pruebas-sistema-automatizadas.html">Informe de Pruebas de Sistema - Automatizadas</a></li>
+            <li class="dropdown-item"><a href="pruebas-aceptación.html">Informe de Pruebas de Aceptación</a></li>
+            <li class="dropdown-item"><a href="sonarqube.html">Informe de Integración de SonarQube</a></li>
+          </ul>
+        </li>
+        <li><a href="index.html#equipo" class="nav-link">Equipo</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero-report container">
+    <span class="badge"><span class="pulse-dot"></span>Backend · Pruebas Funcionales</span>
+    <h1 class="hero-title">Informe de Pruebas Funcionales - Backend</h1>
+    <p class="hero-description">
+      Esta página consolida los resultados de las pruebas funcionales aplicadas al backend de RehabACV, cubriendo autenticación, pacientes, sesiones, documentos, integración con Unity y gestión de usuarios.
+    </p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-value passed">55</div>
+        <div class="kpi-label">Casos de Prueba</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value passed">6</div>
+        <div class="kpi-label">Módulos Evaluados</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value passed">100%</div>
+        <div class="kpi-label">Tasa de Aprobación</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">PASS</div>
+        <div class="kpi-label">Estado General</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="modules-section container">
+    <h2 class="section-title">Resumen por módulos</h2>
+    <p class="section-subtitle">Cada bloque representa un conjunto de pruebas funcionales del backend, con los casos ejecutados, el resultado esperado y el estado obtenido.</p>
+
+    <div class="accordion">
+      <details open>
+        <summary>Módulo 1 · Autenticación y Seguridad</summary>
+        <div class="details-content">
+          <p class="module-desc">Verifica el flujo completo de acceso, protección de cuentas, recuperación de contraseña y manejo de credenciales.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Caso</th>
+                  <th>Resultado Obtenido</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>PF-BACK-01</strong></td><td>Consulta de estado de primer ingreso</td><td>HTTP 200 con el campo must_change_password.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-02</strong></td><td>Inicio de sesión exitoso</td><td>Se genera access_token y devuelve el correo autenticado.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-03</strong></td><td>Inicio con contraseña incorrecta</td><td>HTTP 401 Unauthorized.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-04</strong></td><td>Inicio con usuario inexistente</td><td>HTTP 401 Unauthorized.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-05</strong></td><td>Inicio con usuario inactivo</td><td>HTTP 403 Forbidden.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-06</strong></td><td>Recuperación para usuario existente</td><td>Se devuelve un reset_token válido.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-07</strong></td><td>Recuperación para usuario inexistente</td><td>reset_token con valor None.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-08</strong></td><td>Confirmación con usuario inexistente</td><td>HTTP 404 Not Found.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-09</strong></td><td>Cambio exitoso de contraseña</td><td>La contraseña se actualiza y must_change_password pasa a False.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-10</strong></td><td>Cambio con contraseña actual incorrecta</td><td>HTTP 400 Bad Request.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-11</strong></td><td>Resolución con token inválido</td><td>HTTP 401 Unauthorized.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-12</strong></td><td>Rechazo de contraseña demasiado corta</td><td>HTTP 422 por longitud insuficiente.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-13</strong></td><td>Rechazo de contraseña sin complejidad</td><td>HTTP 422 por incumplimiento de la política.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-14</strong></td><td>Generación y verificación de hash</td><td>La contraseña coincide con el hash generado.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-15</strong></td><td>Compatibilidad con hashes heredados</td><td>Validación correcta para el hash antiguo.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-16</strong></td><td>Rechazo de hashes inválidos</td><td>Se rechazan formatos mal formados.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-17</strong></td><td>Generación automática de contraseña segura</td><td>Se genera una contraseña con complejidad válida.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-18</strong></td><td>Generación y hash de token de sesión</td><td>Se crean token y hash de sesión seguros.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-19</strong></td><td>Validación de token de recuperación</td><td>Se aceptan tokens válidos y rechazan los alterados o expirados.</td><td>PASS</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Módulo 2 · Gestión Documental</summary>
+        <div class="details-content">
+          <p class="module-desc">Valida el funcionamiento de la generación de documentos PDF y la renderización de plantillas.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr><th>Código</th><th>Caso</th><th>Resultado Obtenido</th><th>Estado</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>PF-BACK-20</strong></td><td>Generación de PDF simple</td><td>Se genera un archivo PDF con cabecera %PDF y contenido esperado.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-21</strong></td><td>Generación de PDF desde plantilla</td><td>La plantilla HTML se renderiza y se convierte a PDF.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-22</strong></td><td>Manejo de ausencia de WeasyPrint</td><td>Se maneja correctamente la excepción RuntimeError.</td><td>PASS</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Módulo 3 · Gestión de Pacientes</summary>
+        <div class="details-content">
+          <p class="module-desc">Comprueba la creación, actualización, validación y archivado de pacientes.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr><th>Código</th><th>Caso</th><th>Resultado Obtenido</th><th>Estado</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>PF-BACK-23</strong></td><td>Validaciones en la creación de pacientes</td><td>HTTP 422 para datos inválidos y HTTP 403 para acciones no permitidas.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-24</strong></td><td>Consistencia de estado e indicador de actividad</td><td>HTTP 422 ante estado inconsistente o inválido.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-25</strong></td><td>Archivado de paciente previamente archivado</td><td>Se mantiene el estado archivado sin errores.</td><td>PASS</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Módulo 4 · Gestión de Sesiones</summary>
+        <div class="details-content">
+          <p class="module-desc">Evalúa el flujo completo de las sesiones terapéuticas, desde su creación hasta la finalización y registro de métricas.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr><th>Código</th><th>Caso</th><th>Resultado Obtenido</th><th>Estado</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>PF-BACK-26</strong></td><td>Transiciones de estado y ramas de listado</td><td>Se bloquean transiciones inválidas con HTTP 409.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-27</strong></td><td>Actualización sin cambios</td><td>No se ejecutan modificaciones innecesarias.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-28</strong></td><td>Restricción de edición de nota ajena</td><td>HTTP 403 Forbidden.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-29</strong></td><td>Validación de velocidad de juego negativa</td><td>HTTP 422 por valor inválido.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-30</strong></td><td>Validación de cantidad de obstáculos negativa</td><td>HTTP 422 por valor inválido.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-31</strong></td><td>Validación de cantidad de monedas negativa</td><td>HTTP 422 por valor inválido.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-32</strong></td><td>Validación de duración de juego negativa</td><td>HTTP 422 por valor inválido.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-33</strong></td><td>Validación de sensibilidad negativa</td><td>HTTP 422 por valor inválido.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-34</strong></td><td>Limpieza interna de sesiones y filtrado</td><td>Se liberan sesiones activas y se recuperan registros filtrados.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-35</strong></td><td>Aplicación de objetos adicionales en SQLite</td><td>Se crean la vista y los índices adicionales correctamente.</td><td>PASS</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Módulo 5 · Integración Unity Runtime</summary>
+        <div class="details-content">
+          <p class="module-desc">Verifica la interacción entre el backend y el entorno de Unity durante la ejecución terapéutica.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr><th>Código</th><th>Caso</th><th>Resultado Obtenido</th><th>Estado</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>PF-BACK-36</strong></td><td>Propagación de error al lanzar Unity</td><td>HTTP 409 con el mensaje “Unity ocupado por otra sesión”.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-37</strong></td><td>Propagación de error al consultar estado Unity</td><td>HTTP 403 con el mensaje “Sin permisos para esta sesión”.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-38</strong></td><td>Inicio de Unity deshabilitado</td><td>HTTP 403 Forbidden y Unity no es iniciado.</td><td>PASS</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Módulo 6 · Gestión de Usuarios y Auditoría</summary>
+        <div class="details-content">
+          <p class="module-desc">Confirma la administración de usuarios, roles, estado de cuentas y trazabilidad de acciones del sistema.</p>
+          <div class="table-container">
+            <table class="test-table">
+              <thead>
+                <tr><th>Código</th><th>Caso</th><th>Resultado Obtenido</th><th>Estado</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>PF-BACK-39</strong></td><td>Creación de usuarios y validaciones</td><td>Solo administradores crean usuarios válidos; correos duplicados y roles inválidos son rechazados.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-40</strong></td><td>Consulta y listado de usuarios</td><td>Se aplican filtros y permisos correctos.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-41</strong></td><td>Actualización de perfil de usuario</td><td>Datos actualizados correctamente y conflictos de correo detectados.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-42</strong></td><td>Gestión de contraseñas, estado y auditoría</td><td>Se actualiza contraseña, estado y se consultan logs.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-43</strong></td><td>Casos límite del servicio de usuarios</td><td>Se actualizan atributos correctamente o se generan errores de validación/existencia.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-44</strong></td><td>Detección de esquema ya migrado</td><td>El esquema se conserva sin cambios innecesarios.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-45</strong></td><td>Renombrado de tabla users incompleta</td><td>Se prepara la migración correctamente.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-46</strong></td><td>Eliminación de dependencias con claves heredadas</td><td>Se eliminan referencias inválidas.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-47</strong></td><td>Ausencia de tabla legacy</td><td>El proceso termina sin modificaciones.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-48</strong></td><td>Prevención de duplicación de usuarios</td><td>No se generan duplicados.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-49</strong></td><td>Detección de claves foráneas heredadas</td><td>Se identifica correctamente la referencia.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-50</strong></td><td>Ausencia de claves foráneas heredadas</td><td>No se detectan dependencias inexistentes.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-51</strong></td><td>Eliminación de tablas dependientes</td><td>Se eliminan las dependencias previstas.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-52</strong></td><td>Procesamiento de nombres heredados</td><td>Los nombres se normalizan correctamente.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-53</strong></td><td>Configuración incompleta de superadministrador</td><td>No se crea un usuario administrador sin datos válidos.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-54</strong></td><td>Rol de administrador inexistente</td><td>No se realiza commit cuando falta el rol.</td><td>PASS</td></tr>
+                <tr><td><strong>PF-BACK-55</strong></td><td>Validación de propiedades derivadas del usuario</td><td>Se calculan nombre, apellido y representación completa adecuadamente.</td><td>PASS</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div class="conclusion-card">
+      <div class="conclusion-icon">✓</div>
+      <div class="conclusion-content">
+        <h3>Conclusión</h3>
+        <p>El backend de RehabACV mostró un comportamiento estable y consistente frente a las pruebas funcionales evaluadas. Los módulos de autenticación, gestión de pacientes, sesiones, documentos, usuarios y Unity cumplieron con los resultados esperados, lo que valida la calidad operacional del sistema y su preparación para los siguientes niveles de prueba.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>RehabACV · Documentación de Pruebas de Software</p>
+      <p>Desarrollo y validación de calidad del sistema</p>
+    </div>
+  </footer>
+</body>
+</html>
