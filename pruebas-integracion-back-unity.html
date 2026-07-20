@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Pruebas de Integración Unity — Backend | RehabACV</title>
+    <meta name="description" content="Resultados y análisis de las pruebas de integración entre Unity y el backend de RehabACV, con 9 casos ejecutados y comunicación verificada.">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .hero-report {
+            padding: 140px 0 60px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 36px;
+        }
+
+        .kpi-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .kpi-card:hover {
+            border-color: var(--blue);
+            transform: translateY(-2px);
+        }
+
+        .kpi-value {
+            font-family: var(--font-syne);
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .kpi-value.passed {
+            color: var(--teal);
+            text-shadow: 0 0 15px rgba(45, 212, 191, 0.2);
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metadata-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            color: var(--text2);
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .metadata-row span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 14px 16px;
+        }
+
+        .section-objective {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px 32px;
+            max-width: 920px;
+            margin: 0 auto;
+            box-shadow: var(--shadow);
+        }
+
+        .section-description {
+            color: var(--text2);
+            line-height: 1.9;
+            max-width: 900px;
+            margin: 0 auto 30px;
+            text-align: center;
+        }
+
+        .section-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px 30px;
+            margin-top: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-columns .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            transition: var(--transition);
+        }
+
+        .section-columns .section-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--teal);
+        }
+
+        .section-columns .section-card h3 {
+            margin-bottom: 16px;
+        }
+
+        .section-image,
+        .report-image {
+            width: 100%;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .test-table tbody tr:hover td {
+            background: rgba(45, 212, 191, 0.06);
+        }
+
+        .report-table,
+        .test-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .report-table th,
+        .report-table td,
+        .test-table th,
+        .test-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .report-table th,
+        .test-table th {
+            background: var(--surface2);
+            color: #ffffff;
+            font-weight: 600;
+            text-align: left;
+            font-family: var(--font-syne);
+        }
+
+        .report-table td,
+        .test-table td {
+            color: var(--text2);
+            line-height: 1.7;
+        }
+
+        .report-table tr:last-child td,
+        .report-table tr:last-child th,
+        .test-table tr:last-child td,
+        .test-table tr:last-child th {
+            border-bottom: none;
+        }
+
+        pre {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text);
+            padding: 18px;
+            overflow-x: auto;
+            margin: 18px 0;
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+        code {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            color: #f8fafc;
+        }
+
+        .badge-pass {
+            background: var(--teal);
+            color: #000;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        @media (max-width: 968px) {
+            .section-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <nav class="navbar" id="main-navbar">
+        <div class="container navbar-container">
+            <div class="brand">
+                <img src="public/PS-MariposaMorpho-Logo.png" alt="Logo Mariposa Morpho" class="brand-logo">
+                <span class="brand-name">Mariposa Morpho</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Descripción</a></li>
+                <li><a href="index.html#tecnologias" class="nav-link">Tecnologías</a></li>
+                <li class="dropdown">
+                    <span class="nav-link dropdown-toggle active" tabindex="0">
+                        Pruebas
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24">
+                            <path d="M7 10l5 5 5-5z" />
+                        </svg>
+                    </span>
+                    <ul class="dropdown-menu">           
+                        <li class="dropdown-item">
+                            <a href="pruebas-unitarias-frontend.html">Informe de Pruebas Unitarias - Frontend</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-unitarias-backend.html">Informe de Pruebas Unitarias - Backend</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-unitarias-unity.html">Informe de Pruebas Unitarias - Unity</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-funcionales-frontend.html">Informe de Pruebas Funcionales - Frontend</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-funcionales-backend.html">Informe de Pruebas Funcionales - Backend</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-integracion-front-back.html">Informe de Pruebas de Integración - Frontend/Backend</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-integracion-back-bd.html">Informe de Pruebas de Integración - Backend/Base de Datos</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-integracion-back-unity.html">Informe de Pruebas de Integración - Backend/Unity</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="sonarqube.html">Informe de Integración de SonarQube</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-sistema-manuales.html">Informe de Pruebas de Sistema - Manuales</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-sistema-automatizadas.html">Informe de Pruebas de Sistema - Automatizadas</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="pruebas-aceptación.html">Informe de Pruebas de Aceptación</a>
+                        </li>
+                    </ul>
+                </li>
+                <li><a href="index.html#equipo" class="nav-link">Equipo</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- HERO DEL INFORME -->
+    <header class="hero-report container">
+        <div class="fade-in" style="animation-delay: 80ms;">
+            <span class="badge"><span class="pulse-dot"></span> Pruebas de Integración</span>
+            <h1 class="hero-title" style="font-size: clamp(2rem, 5vw, 3.8rem); margin-bottom: 14px;">Informe de Pruebas de Integración Unity — Backend</h1>
+            <p class="hero-description" style="max-width: 880px;">
+                Validación de la comunicación entre Unity y el backend de RehabACV mediante nueve casos de prueba de integración, con foco en la consistencia de datos, el manejo de sesiones y la sincronización clínica.
+            </p>
+        </div>
+
+        <div class="kpi-grid fade-in" style="animation-delay: 200ms;">
+            <div class="kpi-card">
+                <div class="kpi-value">9</div>
+                <div class="kpi-label">Casos ejecutados</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value passed">100% PASS</div>
+                <div class="kpi-label">Tasa de éxito</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">9</div>
+                <div class="kpi-label">Warnings reportados</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">Unity ↔ Backend</div>
+                <div class="kpi-label">Integración</div>
+            </div>
+        </div>
+    </header>
+
+    <section class="section container">
+        <div class="section-objective">
+            <h2 class="section-title">Objetivo</h2>
+            <p class="section-subtitle">Verificar el correcto funcionamiento de la integración entre la aplicación Unity y el backend FastAPI, asegurando que los componentes conversen y persistan datos clínicos adecuadamente.</p>
+            <div class="metadata-row">
+                <span><strong>Foco:</strong> Comunicación entre Unity y backend</span>
+                <span><strong>Framework de backend:</strong> FastAPI</span>
+                <span><strong>Cliente:</strong> Unity</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section container">
+            <div class="section-panel">
+                <h2 class="section-title">Arquitectura evaluada</h2>
+                <p class="section-description">
+                    El flujo de pruebas cubre la comunicación desde Unity hasta los servicios del backend, pasando por los servicios de sesión y la persistencia en la base de datos.
+                </p>
+                <img class="section-image" src="https://github.com/PS-MariposaMorpho-A8/PS-ProyectoFinal-A8-Documentacion/blob/e00f92afc08f8e69cfa08062ba6174835d3c37ed/images/Arquitectura_Integraci%C3%B3n%20_Unity_Backend.png" alt="Arquitectura integración Unity Backend">
+    </section>
+
+    <section class="section container">
+        <div class="section-panel">
+            <h2 class="section-title">Casos de prueba implementados</h2>
+            <p class="section-subtitle">Nueve pruebas de integración enfocadas en el lanzamiento de Unity, el estado del runtime, la recuperación de sesiones y el intercambio de datos clínicos.</p>
+
+            <table class="test-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Descripción</th>
+                    <th>Precondiciones</th>
+                    <th>Ruta / Acción</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>PI-BACK-35</td>
+                    <td>Lanzamiento del Runtime de Unity desde el backend.</td>
+                    <td>Paciente, plantilla terapéutica y sesión en <code>in_progress</code>.</td>
+                    <td><code>POST /sessions/{id}/unity/launch</code></td>
+                    <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PI-BACK-36</td>
+                    <td>Detección del cierre del Runtime de Unity.</td>
+                    <td>Sesión en ejecución.</td>
+                    <td><code>GET /sessions/{id}/unity/status</code></td>
+                    <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PI-BACK-37</td>
+                    <td>Obtención de la sesión terapéutica activa.</td>
+                    <td>Sesión con estado <code>in_progress</code>.</td>
+                    <td><code>GET /sessions/running</code></td>
+                    <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PI-BACK-38</td>
+                    <td>Consulta de registros Kinect asociados.</td>
+                    <td>Registros Kinect almacenados.</td>
+                    <td><code>GET /sessions/{id}/kinect-records</code></td>
+                    <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PI-BACK-39</td>
+                    <td>Registro de nota clínica.</td>
+                    <td>Sesión válida existente.</td>
+                    <td><code>POST /sessions/{id}/clinical-notes</code></td>
+                    <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PI-BACK-40</td>
+                    <td>Endpoints temporales de Unity.</td>
+                    <td>Backend en ejecución.</td>
+                    <td>Endpoints de pruebas temporales</td>
+                    <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PI-BACK-41</td>
+                    <td>Generación del resumen clínico de sesión.</td>
+                    <td>Sesión con registros y notas clínicas.</td>
+                    <td><code>GET /sessions/{id}/summary</code></td>
+                    <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PI-BACK-42</td>
+                    <td>Finalización de sesión terapéutica.</td>
+                    <td>Sesión en estado <code>in_progress</code>.</td>
+                    <td><code>POST /sessions/{id}/complete</code></td>
+                    <td><span class="badge-pass">PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PI-BACK-43</td>
+                    <td>Cancelación de sesión terapéutica.</td>
+                    <td>Sesión en estado <code>in_progress</code>.</td>
+                    <td><code>POST /sessions/{id}/cancel</code></td>
+                    <td><span class="badge-pass">PASS</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section container">
+        <h2 class="section-title">Descripción de las pruebas</h2>
+
+        <div class="section-columns">
+            <div class="section-card">
+                <h3>PI-BACK-35 — Lanzamiento del Runtime Unity</h3>
+                <p>
+                    Validar que el backend inicie correctamente el proceso de ejecución del entorno Unity y mantenga la sesión en ejecución.
+                </p>
+                <pre><code>Unity
+   │
+POST /unity/launch
+   │
+API
+   │
+UnityRuntimeService
+   │
+Estado de la sesión</code></pre>
+                <p>Resultado esperado: El Runtime inicia correctamente y el backend devuelve el estado de sesión esperado.</p>
+            </div>
+            <div class="section-card">
+                <h3>PI-BACK-36 — Consulta del estado del Runtime</h3>
+                <p>
+                    Verificar que el backend detecte el cierre del Runtime y actualice el estado de la sesión a <code>Completed</code>.
+                </p>
+                <pre><code>Unity Runtime
+      │
+GET /unity/status
+      │
+UnityRuntimeService
+      │
+SessionService
+      │
+Base de Datos</code></pre>
+                <p>Resultado esperado: cierre detectado y sesión sincronizada con la base de datos.</p>
+            </div>
+        </div>
+
+        <div class="section-columns" style="margin-top: 32px;">
+            <div class="section-card">
+                <h3>PI-BACK-37 — Obtención de la sesión activa</h3>
+                <p>Verificar que Unity reciba la configuración completa de la sesión terapéutica activa.</p>
+                <ul>
+                    <li>Paciente</li>
+                    <li>Identificador de sesión</li>
+                    <li>Velocidad del juego</li>
+                    <li>Cantidad de obstáculos</li>
+                    <li>Cantidad de monedas</li>
+                    <li>Sensibilidad</li>
+                    <li>Duración del juego</li>
+                </ul>
+            </div>
+            <div class="section-card">
+                <h3>PI-BACK-38 — Consulta de registros Kinect</h3>
+                <p>Validar la recuperación de los registros generados por Kinect durante la sesión y su envío a Unity.</p>
+                <p>Resultado esperado: los registros almacenados son recuperados correctamente y enviados al cliente.</p>
+            </div>
+        </div>
+
+        <div class="section-columns" style="margin-top: 32px;">
+            <div class="section-card">
+                <h3>PI-BACK-39 — Registro de notas clínicas</h3>
+                <p>Comprobar el registro de observaciones clínicas del especialista y su asociación con la sesión correspondiente.</p>
+                <p>Resultado esperado: la nota clínica queda almacenada y vinculada a la sesión.</p>
+            </div>
+            <div class="section-card">
+                <h3>PI-BACK-40 — Endpoints temporales de Unity</h3>
+                <p>Validar los endpoints temporales usados durante el desarrollo e integración.</p>
+                <p>Resultado esperado: creación temporal de pacientes, inserción de registros Kinect y persistencia correcta.</p>
+            </div>
+        </div>
+
+        <div class="section-columns" style="margin-top: 32px;">
+            <div class="section-card">
+                <h3>PI-BACK-41 — Resumen de sesión</h3>
+                <p>Verificar la generación del resumen clínico de la sesión con datos de registros y notas.</p>
+                <p>Resultado esperado: el resumen contiene toda la información consolidada de la sesión.</p>
+            </div>
+            <div class="section-card">
+                <h3>PI-BACK-42/43 — Finalización y cancelación de sesión</h3>
+                <p>Validar el cambio de estado a <code>Completed</code> o <code>Cancelled</code> y la persistencia de los cambios.</p>
+                <p>Resultado esperado: el estado final se registra correctamente y se actualiza la base de datos.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section container">
+        <h2 class="section-title">Resultados obtenidos</h2>
+        <p class="section-subtitle">La suite de nueve pruebas fue ejecutada de forma satisfactoria con el 100% de casos pasados.</p>
+        <div style="max-width: 980px; margin: 0 auto;">
+            <img src="https://github.com/PS-MariposaMorpho-A8/PS-ProyectoFinal-A8-Documentacion/blob/dba71922886cba4fe65a65cd2c48da19c0a785b8/images/Pruebas_Integracion_Unity_Backend.png" alt="Resultados de pruebas de integración Unity Backend" style="width:100%; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow);">
+        </div>
+        <pre><code>=================================================
+9 passed, 9 warnings in 2.81s
+=================================================
+</code></pre>
+    </section>
+
+    <section class="section container">
+        <h2 class="section-title">Análisis de resultados</h2>
+        <ul style="color: var(--text2); line-height: 1.75; margin-left: 18px; max-width: 900px; margin: 0 auto;">
+            <li>La comunicación entre el cliente Unity y la API FastAPI funciona correctamente en los flujos principales.</li>
+            <li>Los servicios de sesión, la persistencia de datos clínicos y la consulta de registros Kinect se comportaron como se esperaba.</li>
+            <li>La arquitectura integrada demostró consistencia en la transmisión de información entre los distintos niveles del sistema.</li>
+        </ul>
+    </section>
+
+    <section class="section container">
+        <h2 class="section-title">Conclusiones</h2>
+        <p class="section-subtitle">Los nueve casos de prueba confirman que la integración Unity–Backend es estable y consistente para los flujos terapéuticos clave.</p>
+        <p style="color: var(--text2); line-height: 1.75; max-width: 900px; margin: 0 auto;">
+            La suite de integración demuestra que el backend es capaz de orquestar correctamente el lanzamiento de Unity, la gestión de sesiones, la recuperación de datos Kinect y la persistencia clínica en la base de datos.
+        </p>
+    </section>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-logo">
+                <img src="public/PS-MariposaMorpho-Logo.png" alt="Logo Mariposa Morpho">
+                <span>Mariposa Morpho — RehabACV</span>
+            </div>
+            <div class="footer-text">© 2026 Mariposa Morpho. Todos los derechos reservados. Desarrollado con fines académicos para la Escuela de Ingeniería de Sistemas - UNSA.</div>
+        </div>
+    </footer>
+
+    <script>
+        // Accesibilidad Dropdown con teclado
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        dropdownToggle.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const menu = dropdownToggle.nextElementSibling;
+                const isVisible = window.getComputedStyle(menu).visibility === 'visible';
+                menu.style.opacity = isVisible ? '0' : '1';
+                menu.style.visibility = isVisible ? 'hidden' : 'visible';
+                menu.style.transform = isVisible ? 'translateY(10px)' : 'translateY(0)';
+            }
+        });
+    </script>
+</body>
+</html>
