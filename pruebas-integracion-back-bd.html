@@ -3,1021 +3,1334 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plan de Pruebas de Integración — Backend</title>
+<title>Plan de Pruebas de Integración · Backend FastAPI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --navy: #7fa4ff;
-    --navy-dark: #05070d;
-    --accent: #5b8dff;
-    --accent-light: #182238;
-    --green: #4fd699;
-    --green-light: #10261d;
-    --amber: #e8b95a;
-    --amber-light: #2b2210;
-    --gray-50: #12151d;
-    --gray-100: #171b26;
-    --gray-300: #2a2f3d;
-    --gray-500: #8992a3;
-    --gray-700: #c3c9d6;
-    --text: #e7e9ee;
-    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-    --surface: #171b26;
-    --surface-2: #1d2230;
-    --hero-start: #131b30;
-    --hero-end: #05070d;
-    --border: #2a2f3d;
+  :root{
+    --bg: #0a0e13;
+    --surface: #11161d;
+    --surface-2: #171e26;
+    --surface-3: #1d2530;
+    --border: #232c37;
+    --border-soft: #1a212b;
+    --text: #dde5ec;
+    --muted: #7c8a98;
+    --muted-2: #566270;
+    --green: #4ade80;
+    --green-dim: #2f7a52;
+    --blue: #63b3ff;
+    --amber: #f2c14e;
+    --red: #f27878;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+    --sans: 'Inter', -apple-system, sans-serif;
   }
 
-  * { box-sizing: border-box; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
 
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background: radial-gradient(ellipse 1200px 800px at 20% -10%, #101720 0%, var(--bg) 55%);
     color: var(--text);
-    background: var(--gray-50);
+    font-family: var(--sans);
     line-height: 1.6;
+    padding-bottom: 80px;
   }
 
-  .page {
-    max-width: 980px;
+  ::selection{ background: var(--green-dim); color:#fff; }
+
+  a{ color: var(--blue); text-decoration:none; }
+  a:hover{ text-decoration:underline; }
+
+  code, .mono{ font-family: var(--mono); }
+
+  /* ---------- Layout shell ---------- */
+  .shell{
+    max-width: 1180px;
     margin: 0 auto;
-    padding: 0 24px 80px;
+    padding: 0 28px;
+    display:grid;
+    grid-template-columns: 240px 1fr;
+    gap: 48px;
   }
 
-  header.hero {
-    background: linear-gradient(135deg, var(--hero-start) 0%, var(--hero-end) 100%);
-    color: #fff;
-    padding: 56px 24px 44px;
-    margin-bottom: 40px;
+  @media (max-width: 900px){
+    .shell{ grid-template-columns: 1fr; }
+    .sidenav{ display:none; }
   }
 
-  header.hero .inner {
-    max-width: 980px;
+  /* ---------- Hero ---------- */
+  .hero{
+    max-width: 1180px;
     margin: 0 auto;
+    padding: 64px 28px 40px;
+    position: relative;
   }
-
-  .eyebrow {
+  .hero::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0; height:1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    letter-spacing: .12em;
-    font-size: 12px;
-    color: #9db3e8;
+    color: var(--green);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom: 18px;
+  }
+  .eyebrow .dot{
+    width:7px; height:7px; border-radius:50%;
+    background: var(--green);
+    box-shadow: 0 0 10px 2px rgba(74,222,128,0.55);
+  }
+  h1{
+    font-family: var(--mono);
+    font-size: clamp(28px, 4vw, 44px);
     font-weight: 700;
-    margin-bottom: 10px;
-  }
-
-  header.hero h1 {
-    margin: 0 0 14px;
-    font-size: 34px;
-    font-weight: 800;
     letter-spacing: -0.01em;
+    line-height: 1.15;
+    color: #f2f6f9;
+    max-width: 900px;
   }
-
-  header.hero p.lead {
-    margin: 0;
+  .hero p.lede{
+    margin-top: 18px;
     max-width: 760px;
-    color: #c9d3e8;
+    color: var(--muted);
     font-size: 15.5px;
   }
 
-  .hero-stats {
-    display: flex;
-    gap: 14px;
+  .badges{
+    display:flex; flex-wrap:wrap; gap: 10px;
     margin-top: 28px;
-    flex-wrap: wrap;
   }
-
-  .stat-pill {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.14);
-    border-radius: 10px;
-    padding: 12px 18px;
-    min-width: 120px;
-  }
-
-  .stat-pill .num {
-    font-size: 22px;
-    font-weight: 800;
-    color: #fff;
-  }
-
-  .stat-pill .label {
-    font-size: 11.5px;
-    color: #a9b7db;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-  }
-
-  h2.section-title {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--navy);
-    margin: 56px 0 8px;
-    padding-bottom: 10px;
-    border-bottom: 3px solid var(--accent);
-    display: inline-block;
-  }
-
-  .section-wrap { margin-bottom: 8px; }
-
-  p.section-intro {
-    color: var(--gray-700);
-    font-size: 15px;
-    max-width: 820px;
-    margin: 14px 0 24px;
-  }
-
-  .fixtures-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 14px;
-    margin: 20px 0 40px;
-  }
-
-  .fixture-card {
+  .badge{
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 7px;
     background: var(--surface);
-    border: 1px solid var(--gray-300);
+    border: 1px solid var(--border);
+    color: var(--text);
+    display:flex; align-items:center; gap:8px;
+  }
+  .badge b{ color: var(--green); font-weight:700; }
+  .badge.warn b{ color: var(--amber); }
+  .badge.info b{ color: var(--blue); }
+
+  /* ---------- Sidenav ---------- */
+  .sidenav{
+    position: sticky;
+    top: 28px;
+    align-self: start;
+    padding-top: 40px;
+  }
+  .sidenav .label{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    margin-bottom: 14px;
+  }
+  .sidenav ul{ list-style:none; }
+  .sidenav li{ margin-bottom: 2px; }
+  .sidenav a{
+    display:block;
+    font-size: 13.5px;
+    color: var(--muted);
+    padding: 7px 10px;
+    border-radius: 6px;
+    border-left: 2px solid transparent;
+  }
+  .sidenav a:hover{
+    color: var(--text);
+    background: var(--surface);
+    text-decoration:none;
+    border-left-color: var(--green-dim);
+  }
+  .sidenav .num{ color: var(--muted-2); margin-right:6px; font-family: var(--mono); font-size:12px; }
+
+  /* ---------- Main content ---------- */
+  main{ padding-top: 40px; min-width: 0; }
+
+  section{ margin-bottom: 56px; scroll-margin-top: 24px; }
+
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .section-head .idx{
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--green);
+    background: rgba(74,222,128,0.08);
+    border: 1px solid var(--green-dim);
+    padding: 3px 9px;
+    border-radius: 5px;
+    white-space:nowrap;
+  }
+  .section-head h2{
+    font-family: var(--mono);
+    font-size: 20px;
+    color: #f2f6f9;
+    font-weight: 600;
+  }
+
+  p{ color: var(--text); font-size: 14.5px; }
+  p + p{ margin-top: 10px; }
+
+  .fixtures-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .fixture-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 10px;
     padding: 16px 18px;
   }
-
-  .fixture-card code {
+  .fixture-card code.name{
     font-family: var(--mono);
-    background: var(--accent-light);
-    color: var(--accent);
-    padding: 2px 7px;
-    border-radius: 5px;
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  .fixture-card p {
-    margin: 8px 0 0;
+    color: var(--amber);
     font-size: 13.5px;
-    color: var(--gray-700);
+    font-weight: 600;
   }
+  .fixture-card p{ margin-top: 8px; color: var(--muted); font-size: 13.5px; }
 
-  .module-card {
+  /* ---------- Test module cards ---------- */
+  .module{
     background: var(--surface);
-    border: 1px solid var(--gray-300);
-    border-radius: 14px;
-    margin: 28px 0;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.35);
-  }
-
-  .module-head {
-    background: var(--gray-100);
-    padding: 18px 24px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    border-bottom: 1px solid var(--gray-300);
-  }
-
-  .module-num {
-    background: var(--navy);
-    color: #fff;
-    font-weight: 800;
-    font-size: 14px;
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .module-head h3 {
-    margin: 0;
-    font-size: 17px;
-    font-family: var(--mono);
-    color: var(--navy);
-  }
-
-  .module-body { padding: 20px 24px 24px; }
-
-  .meta-table {
-    width: 100%;
-    border-collapse: collapse;
+    border: 1px solid var(--border);
+    border-radius: 12px;
     margin-bottom: 18px;
-    font-size: 13.5px;
+    overflow: hidden;
   }
-
-  .meta-table td {
-    padding: 7px 10px;
-    vertical-align: top;
-    border-bottom: 1px solid var(--gray-100);
+  .module > summary{
+    list-style: none;
+    cursor: pointer;
+    padding: 18px 22px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 16px;
   }
-
-  .meta-table td.k {
-    width: 190px;
-    font-weight: 700;
-    color: var(--gray-500);
-    text-transform: uppercase;
+  .module > summary::-webkit-details-marker{ display:none; }
+  .module-title{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    min-width:0;
+  }
+  .module-title .chev{
+    color: var(--muted-2);
+    font-family: var(--mono);
+    font-size: 13px;
+    transition: transform 0.15s ease;
+    flex-shrink:0;
+  }
+  .module[open] .chev{ transform: rotate(90deg); color: var(--green); }
+  .module-title .filename{
+    font-family: var(--mono);
+    color: var(--blue);
+    font-size: 14.5px;
+    font-weight: 600;
+    white-space:nowrap;
+  }
+  .module-title .range{
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted-2);
+    background: var(--surface-3);
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space:nowrap;
+  }
+  .module-count{
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    flex-shrink:0;
+  }
+  .module-body{
+    padding: 0 22px 22px;
+    border-top: 1px solid var(--border-soft);
+  }
+  .module-body .objective{
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 13.8px;
+  }
+  .meta-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 24px;
+    margin-top: 18px;
+  }
+  @media (max-width: 640px){ .meta-grid{ grid-template-columns: 1fr; } }
+  .meta-item .k{
+    font-family: var(--mono);
     font-size: 11px;
-    letter-spacing: .04em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    margin-bottom: 6px;
   }
-
-  .meta-table code.endpoint {
-    display: inline-block;
-    background: #0d3b6e;
-    color: #bcd8ff;
+  .meta-item .v{ font-size: 13.5px; color: var(--text); }
+  .pill-row{ display:flex; flex-wrap:wrap; gap:6px; }
+  .pill{
     font-family: var(--mono);
     font-size: 12px;
-    padding: 2px 8px;
-    border-radius: 5px;
-    margin: 2px 4px 2px 0;
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    padding: 3px 9px;
+    border-radius: 6px;
+    color: var(--text);
   }
+  .pill.endpoint{ color: var(--green); }
+  .pill.table{ color: var(--amber); }
+  .pill.fixture{ color: var(--blue); }
 
-  .test-case {
-    border-left: 3px solid var(--accent);
-    background: var(--gray-50);
-    border-radius: 0 8px 8px 0;
-    padding: 14px 18px;
-    margin: 12px 0;
+  .cases{
+    margin-top: 22px;
   }
-
-  .test-case .tc-id {
+  .cases .label{
     font-family: var(--mono);
-    font-weight: 800;
-    color: var(--accent);
-    font-size: 13px;
-    background: var(--accent-light);
-    padding: 2px 9px;
-    border-radius: 20px;
-    display: inline-block;
-    margin-bottom: 8px;
-  }
-
-  .test-case p { margin: 6px 0; font-size: 14px; }
-  .test-case .label { font-weight: 700; color: var(--navy); }
-  .test-case .endpoint-line code {
-    font-family: var(--mono);
-    background: var(--surface-2);
-    border: 1px solid var(--gray-300);
-    padding: 1px 7px;
-    border-radius: 5px;
-    font-size: 12.5px;
-    color: var(--gray-700);
-  }
-
-  table.summary {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--surface);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.35);
-    margin: 20px 0 40px;
-  }
-
-  table.summary th {
-    background: var(--navy);
-    color: #fff;
-    text-align: left;
-    padding: 12px 16px;
-    font-size: 13px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    letter-spacing: .04em;
+    color: var(--muted-2);
+    margin-bottom: 12px;
   }
-
-  table.summary td {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--gray-100);
-    font-size: 14px;
+  .case{
+    display:grid;
+    grid-template-columns: 118px 1fr;
+    gap: 16px;
+    padding: 12px 0;
+    border-top: 1px solid var(--border-soft);
   }
-
-  table.summary tr:last-child td { border-bottom: none; }
-  table.summary tr:nth-child(even) td { background: var(--gray-50); }
-
-  .pi-range {
+  .case:first-of-type{ border-top:none; }
+  .case-id{
     font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--green);
     font-weight: 700;
-    color: var(--accent);
-    white-space: nowrap;
+    align-self:start;
   }
-
-  .mapping-grid {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 10px 20px;
-    background: var(--surface);
-    border-radius: 10px;
-    padding: 8px 20px;
-    border: 1px solid var(--gray-300);
-    margin: 20px 0 40px;
+  .case-body .title{
+    font-size: 13.8px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
   }
-
-  .mapping-grid .file {
+  .case-body .desc{ font-size: 13.2px; color: var(--muted); }
+  .case-body .ep{
+    margin-top: 6px;
     font-family: var(--mono);
+    font-size: 12px;
+    color: var(--blue);
+    word-break: break-word;
+  }
+
+  /* ---------- Tables ---------- */
+  table.data{
+    width:100%;
+    border-collapse: collapse;
+    margin-top: 16px;
     font-size: 13.5px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--gray-100);
-    color: var(--navy);
-    font-weight: 700;
   }
-
-  .mapping-grid .cases {
-    padding: 10px 0;
-    border-bottom: 1px solid var(--gray-100);
-    font-size: 13px;
-    color: var(--gray-700);
-    text-align: right;
+  table.data th, table.data td{
+    text-align:left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-soft);
   }
-
-  .mapping-grid > div:last-child.file,
-  .mapping-grid > div:nth-last-child(2) {
-    border-bottom: none;
+  table.data th{
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    background: var(--surface-2);
   }
+  table.data td code{ color: var(--green); font-size: 12.5px; }
+  table.data tr:hover td{ background: rgba(255,255,255,0.015); }
 
-  .terminal {
-    background: #0d1117;
-    color: #d1d9e0;
-    border-radius: 10px;
-    padding: 22px;
+  /* ---------- Terminal ---------- */
+  .terminal{
+    background: #05080b;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-top: 18px;
+    overflow: hidden;
+  }
+  .terminal-bar{
+    display:flex; align-items:center; gap:8px;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .terminal-bar .tdot{ width:11px; height:11px; border-radius:50%; }
+  .terminal-bar .tdot.r{ background:#f27878; }
+  .terminal-bar .tdot.y{ background:#f2c14e; }
+  .terminal-bar .tdot.g{ background:#4ade80; }
+  .terminal-bar .tlabel{
+    font-family: var(--mono);
+    font-size:12px;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+  .terminal pre{
+    padding: 18px 20px;
+    overflow-x: auto;
     font-family: var(--mono);
     font-size: 12.3px;
-    line-height: 1.55;
-    overflow-x: auto;
+    line-height: 1.65;
+    color: #a6c6b8;
     white-space: pre;
-    margin: 20px 0 40px;
-    border: 1px solid #232b38;
   }
+  .terminal pre .pass{ color: var(--green); }
+  .terminal pre .path{ color: var(--blue); }
+  .terminal pre .warn{ color: var(--amber); }
+  .terminal pre .dim{ color: var(--muted-2); }
 
-  .terminal .pass { color: #56d364; }
-  .terminal .dim { color: #7d8590; }
-  .terminal .head { color: #79c0ff; }
-
-  .coverage-summary {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin: 20px 0 40px;
+  /* ---------- Coverage bars ---------- */
+  .coverage-list{ margin-top: 18px; }
+  .cov-row{
+    display:grid;
+    grid-template-columns: 220px 1fr 52px;
+    align-items:center;
+    gap: 14px;
+    padding: 8px 0;
+    font-size: 13px;
   }
+  .cov-row .name{ font-family: var(--mono); color: var(--text); font-size: 12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cov-track{
+    height: 7px;
+    background: var(--surface-3);
+    border-radius: 20px;
+    overflow:hidden;
+  }
+  .cov-fill{
+    height:100%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, var(--green-dim), var(--green));
+  }
+  .cov-fill.low{ background: linear-gradient(90deg, #7a4a2f, var(--amber)); }
+  .cov-fill.mid{ background: linear-gradient(90deg, #2f5a7a, var(--blue)); }
+  .cov-pct{ font-family: var(--mono); font-size: 12.5px; text-align:right; color: var(--muted); }
 
-  .cov-card {
-    flex: 1;
-    min-width: 200px;
+  /* ---------- Summary stat cards ---------- */
+  .stat-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    margin: 18px 0 6px;
+  }
+  .stat-card{
     background: var(--surface);
-    border: 1px solid var(--gray-300);
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
   }
-
-  .cov-card .big {
-    font-size: 32px;
-    font-weight: 800;
+  .stat-card .num{
+    font-family: var(--mono);
+    font-size: 26px;
+    font-weight: 700;
     color: var(--green);
   }
-
-  .cov-card .lbl {
-    font-size: 12.5px;
-    color: var(--gray-500);
-    text-transform: uppercase;
-    letter-spacing: .04em;
+  .stat-card .lbl{
     margin-top: 4px;
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
-  .conclusion-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 18px;
-    margin: 20px 0 20px;
+  .conclusion-list{ margin-top: 14px; list-style:none; }
+  .conclusion-list li{
+    display:grid;
+    grid-template-columns: 26px 1fr;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid var(--border-soft);
   }
-
-  .conclusion-card {
-    background: var(--green-light);
-    border: 1px solid #1f5c44;
-    border-radius: 12px;
-    padding: 20px;
-  }
-
-  .conclusion-card h4 {
-    margin: 0 0 8px;
+  .conclusion-list li:first-child{ border-top:none; }
+  .conclusion-list .n{
+    font-family: var(--mono);
     color: var(--green);
-    font-size: 15px;
+    font-weight:700;
   }
+  .conclusion-list .t{ font-weight:600; color:#f2f6f9; display:block; margin-bottom:3px; font-size: 14px; }
+  .conclusion-list .d{ color: var(--muted); font-size: 13.5px; }
 
-  .conclusion-card p {
-    margin: 0;
-    font-size: 13.8px;
-    color: var(--gray-700);
-  }
-
-  footer {
-    text-align: center;
-    color: var(--gray-500);
-    font-size: 12.5px;
-    margin-top: 60px;
-    padding-top: 20px;
-    border-top: 1px solid var(--gray-300);
-  }
-
-  @media print {
-    header.hero { background: var(--hero-start) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .terminal { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  }
-
-  @media (max-width: 640px) {
-    header.hero h1 { font-size: 26px; }
-    .meta-table td.k { width: 130px; font-size: 10px; }
+  footer{
+    max-width: 1180px;
+    margin: 40px auto 0;
+    padding: 24px 28px;
+    border-top: 1px solid var(--border-soft);
+    color: var(--muted-2);
+    font-family: var(--mono);
+    font-size: 12px;
+    text-align:center;
   }
 </style>
 </head>
 <body>
 
-<header class="hero">
-  <div class="inner">
-    <div class="eyebrow">Backend · FastAPI · SQLite</div>
-    <h1>Plan de Pruebas de Integración</h1>
-    <p class="lead">
-      Implementación y ejecución del plan de pruebas de integración para el backend desarrollado en FastAPI.
-      A diferencia de las pruebas unitarias basadas en mocks, estas pruebas interactúan directamente con una
-      base de datos real (SQLite), verificando de extremo a extremo endpoints, reglas de negocio, seguridad
-      (roles y permisos), triggers y vistas de base de datos, y los flujos integrados de pacientes, sesiones
-      de terapia, documentos PDF y comunicación con Unity.
-    </p>
-    <div class="hero-stats">
-      <div class="stat-pill"><div class="num">85</div><div class="label">Pruebas pasadas</div></div>
-      <div class="stat-pill"><div class="num">91%</div><div class="label">Cobertura global</div></div>
-      <div class="stat-pill"><div class="num">9</div><div class="label">Módulos de prueba</div></div>
-      <div class="stat-pill"><div class="num">40</div><div class="label">Casos PI-BACK</div></div>
-    </div>
+<div class="hero">
+  <div class="eyebrow"><span class="dot"></span> QA · Backend Integration Suite</div>
+  <h1>Plan de Pruebas de Integración<br>Backend FastAPI</h1>
+  <p class="lede">
+    Suite de pruebas de extremo a extremo contra base de datos real (SQLite) — sin mocks — que verifica endpoints,
+    reglas de negocio, seguridad por roles, triggers y vistas de base de datos, y los flujos integrados de pacientes,
+    sesiones de terapia, documentos PDF y comunicación con Unity.
+  </p>
+  <div class="badges">
+    <span class="badge"><b>94</b> tests ejecutados</span>
+    <span class="badge"><b>94</b> passed</span>
+    <span class="badge info"><b>90%</b> cobertura global</span>
+    <span class="badge"><b>20.29s</b> tiempo total</span>
+    <span class="badge warn"><b>9</b> módulos de prueba</span>
   </div>
-</header>
+</div>
 
-<div class="page">
+<div class="shell">
+  <nav class="sidenav">
+    <div class="label">Índice</div>
+    <ul>
+      <li><a href="#fixtures"><span class="num">00</span>Fixtures</a></li>
+      <li><a href="#test_database"><span class="num">01</span>test_database.py</a></li>
+      <li><a href="#test_auth"><span class="num">02</span>test_auth.py</a></li>
+      <li><a href="#test_users"><span class="num">03</span>test_users.py</a></li>
+      <li><a href="#test_patients"><span class="num">04</span>test_patients.py</a></li>
+      <li><a href="#test_session_templates"><span class="num">05</span>test_session_templates.py</a></li>
+      <li><a href="#test_sessions"><span class="num">06</span>test_sessions.py</a></li>
+      <li><a href="#test_unity"><span class="num">07</span>test_unity.py</a></li>
+      <li><a href="#test_documents"><span class="num">08</span>test_documents.py</a></li>
+      <li><a href="#test_dashboards"><span class="num">09</span>test_dashboards.py</a></li>
+      <li><a href="#relacion"><span class="num">10</span>Relación de casos</a></li>
+      <li><a href="#ejecucion"><span class="num">11</span>Ejecución pytest</a></li>
+      <li><a href="#cobertura"><span class="num">12</span>Cobertura</a></li>
+      <li><a href="#conclusion"><span class="num">13</span>Conclusión</a></li>
+    </ul>
+  </nav>
 
-  <h2 class="section-title">Fixtures de configuración (conftest.py)</h2>
-  <p class="section-intro">Componentes reutilizables que preparan el entorno de cada caso de prueba.</p>
-  <div class="fixtures-grid">
-    <div class="fixture-card">
-      <code>db</code>
-      <p>Configura la sesión de base de datos para cada caso, envolviendo la ejecución en transacciones para mantener el aislamiento y revertir cambios de ser necesario.</p>
-    </div>
-    <div class="fixture-card">
-      <code>client</code>
-      <p>Proporciona una instancia de <code>TestClient</code> de FastAPI configurada con la base de datos de integración y los overrides de dependencias adecuados.</p>
-    </div>
-    <div class="fixture-card">
-      <code>admin_headers / specialist_headers</code>
-      <p>Encabezados HTTP con el token JWT Bearer pre-calculado para las credenciales por defecto (admin@local.test / specialist@local.test).</p>
-    </div>
-    <div class="fixture-card">
-      <code>monkeypatch</code>
-      <p>Módulo de pytest utilizado para simular variables de configuración dinámicas y evitar el envío real de correos SMTP en la recuperación de contraseñas.</p>
-    </div>
-  </div>
+  <main>
 
-  <h2 class="section-title">Documentación detallada de archivos de prueba</h2>
+    <section id="fixtures">
+      <div class="section-head">
+        <span class="idx">00</span>
+        <h2>Fixtures de configuración</h2>
+      </div>
+      <p style="color:var(--muted)">Definidas en <code style="color:var(--amber)">conftest.py</code>, dan soporte transversal a toda la suite.</p>
+      <div class="fixtures-grid">
+        <div class="fixture-card">
+          <code class="name">db</code>
+          <p>Configura la sesión de base de datos por caso de prueba, envolviendo la ejecución en transacciones para aislamiento y reversión.</p>
+        </div>
+        <div class="fixture-card">
+          <code class="name">client</code>
+          <p>Instancia de <code>TestClient</code> de FastAPI configurada con la base de datos de integración y overrides de dependencias.</p>
+        </div>
+        <div class="fixture-card">
+          <code class="name">admin_headers / specialist_headers</code>
+          <p>Encabezados HTTP con token JWT Bearer pre-calculado para credenciales por defecto de admin y especialista.</p>
+        </div>
+        <div class="fixture-card">
+          <code class="name">monkeypatch</code>
+          <p>Simula variables de configuración dinámicas y evita el envío real de correos SMTP en recuperación de contraseñas.</p>
+        </div>
+      </div>
+    </section>
 
-  <!-- 1. test_database.py -->
-  <div class="module-card">
-    <div class="module-head">
-      <div class="module-num">1</div>
-      <h3>test_database.py</h3>
-    </div>
-    <div class="module-body">
-      <table class="meta-table">
-        <tr><td class="k">Objetivo</td><td>Validar el comportamiento de las restricciones lógicas y automatizaciones directas de la base de datos (triggers, vistas DDL, claves foráneas, restricciones de unicidad).</td></tr>
-        <tr><td class="k">Módulos integrados</td><td>Capa del motor de base de datos, SQLAlchemy, modelos ORM (User, Patient, ClinicalNote, Session).</td></tr>
-        <tr><td class="k">Endpoints</td><td>Ninguno (interacción directa vía SQL y sesiones ORM).</td></tr>
-        <tr><td class="k">Tablas / Modelos</td><td>users, patients, clinical_notes, sessions.</td></tr>
-        <tr><td class="k">Fixtures</td><td><code>db</code></td></tr>
-        <tr><td class="k">Resultados esperados</td><td>Los triggers alteran marcas de tiempo en modificaciones; las vistas reportan información enriquecida consistente; las violaciones a restricciones levantan <code>IntegrityError</code>.</td></tr>
+    <!-- 1. DATABASE -->
+    <details class="module" id="test_database" open>
+      <summary>
+        <div class="module-title">
+          <span class="chev">▸</span>
+          <span class="filename">test_database.py</span>
+          <span class="range">PI-BACK-01 → 05</span>
+        </div>
+        <span class="module-count">5 casos</span>
+      </summary>
+      <div class="module-body">
+        <p class="objective">Validar el comportamiento de restricciones lógicas y automatizaciones directas de la base de datos: triggers, vistas DDL, claves foráneas y unicidad.</p>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="k">Módulos integrados</div>
+            <div class="v">Motor de BD, SQLAlchemy, modelos ORM (User, Patient, ClinicalNote, Session)</div>
+          </div>
+          <div class="meta-item">
+            <div class="k">Endpoints</div>
+            <div class="v">Ninguno — interacción directa vía SQL/ORM</div>
+          </div>
+          <div class="meta-item">
+            <div class="k">Tablas involucradas</div>
+            <div class="pill-row">
+              <span class="pill table">users</span><span class="pill table">patients</span>
+              <span class="pill table">clinical_notes</span><span class="pill table">sessions</span>
+            </div>
+          </div>
+          <div class="meta-item">
+            <div class="k">Fixtures</div>
+            <div class="pill-row"><span class="pill fixture">db</span></div>
+          </div>
+        </div>
+        <div class="cases">
+          <div class="label">Casos de prueba</div>
+          <div class="case">
+            <div class="case-id">PI-BACK-01</div>
+            <div class="case-body">
+              <div class="title">SQLite Triggers (updated_at)</div>
+              <div class="desc">Comprueba si los triggers nativos actualizan automáticamente la columna <code>updated_at</code> tras sentencias UPDATE.</div>
+            </div>
+          </div>
+          <div class="case">
+            <div class="case-id">PI-BACK-02</div>
+            <div class="case-body">
+              <div class="title">SQLite Views</div>
+              <div class="desc">Consultas directas contra <code>v_sessions_summary</code> y <code>v_patients_last_session</code>.</div>
+            </div>
+          </div>
+          <div class="case">
+            <div class="case-id">PI-BACK-03</div>
+            <div class="case-body">
+              <div class="title">Database Seeding</div>
+              <div class="desc">Verifica que la semilla cree correctamente los roles obligatorios (admin, specialist) y usuarios iniciales con contraseñas encriptadas.</div>
+            </div>
+          </div>
+          <div class="case">
+            <div class="case-id">PI-BACK-04</div>
+            <div class="case-body">
+              <div class="title">Foreign Key Constraints</div>
+              <div class="desc">Valida que las restricciones FOREIGN KEY estén activas y configuradas a nivel de motor SQLite.</div>
+            </div>
+          </div>
+          <div class="case">
+            <div class="case-id">PI-BACK-05</div>
+            <div class="case-body">
+              <div class="title">Unique Constraints (uq_sessions_single_run)</div>
+              <div class="desc">Que el índice único condicional impida más de una sesión en ejecución simultánea en todo el sistema.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 2. AUTH -->
+    <details class="module" id="test_auth">
+      <summary>
+        <div class="module-title">
+          <span class="chev">▸</span>
+          <span class="filename">test_auth.py</span>
+          <span class="range">PI-BACK-06 → 12</span>
+        </div>
+        <span class="module-count">7 casos</span>
+      </summary>
+      <div class="module-body">
+        <p class="objective">Validar control de accesos, login, expiración de tokens, cierre de sesión y recuperación de contraseñas.</p>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="k">Módulos integrados</div>
+            <div class="v">AuthService, seguridad JWT, encriptación, middleware, enrutadores</div>
+          </div>
+          <div class="meta-item">
+            <div class="k">Tablas involucradas</div>
+            <div class="pill-row">
+              <span class="pill table">users</span><span class="pill table">auth_sessions</span><span class="pill table">roles</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Endpoints</div>
+            <div class="pill-row">
+              <span class="pill endpoint">POST /auth/login</span>
+              <span class="pill endpoint">POST /auth/logout</span>
+              <span class="pill endpoint">PATCH /users/{user_id}</span>
+              <span class="pill endpoint">POST /auth/password-recovery</span>
+              <span class="pill endpoint">POST /auth/confirm-password-recovery</span>
+              <span class="pill endpoint">GET /auth/first-login-status</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Fixtures</div>
+            <div class="pill-row">
+              <span class="pill fixture">client</span><span class="pill fixture">db</span>
+              <span class="pill fixture">admin_headers</span><span class="pill fixture">specialist_headers</span>
+              <span class="pill fixture">monkeypatch</span>
+            </div>
+          </div>
+        </div>
+        <div class="cases">
+          <div class="label">Casos de prueba</div>
+          <div class="case"><div class="case-id">PI-BACK-06</div><div class="case-body">
+            <div class="title">Login Exitoso</div>
+            <div class="desc">Retorno correcto del token JWT Bearer y detalles del usuario (email y rol).</div>
+            <div class="ep">POST /api/v1/auth/login</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-07</div><div class="case-body">
+            <div class="title">Login Fallido</div>
+            <div class="desc">Denegación de credenciales con HTTP 401 y mensaje claro de error.</div>
+            <div class="ep">POST /api/v1/auth/login</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-08</div><div class="case-body">
+            <div class="title">Cambio de Contraseña (Self-Service)</div>
+            <div class="desc">Bloqueo inmediato del acceso con credenciales viejas y acceso exitoso con la nueva clave.</div>
+            <div class="ep">PATCH /api/v1/users/{user_id} · POST /api/v1/auth/login</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-09</div><div class="case-body">
+            <div class="title">Password Recovery Request</div>
+            <div class="desc">Generación de un token de recuperación y simulación del envío de correo mediante mock.</div>
+            <div class="ep">POST /api/v1/auth/password-recovery</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-10</div><div class="case-body">
+            <div class="title">Confirmar Recuperación de Contraseña</div>
+            <div class="desc">Actualización efectiva del hash de contraseña y desactivación de la bandera de cambio obligatorio.</div>
+            <div class="ep">POST /api/v1/auth/confirm-password-recovery · GET /api/v1/auth/first-login-status</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-11</div><div class="case-body">
+            <div class="title">Token Expiration / Invalid Token</div>
+            <div class="desc">El middleware intercepta la llamada y retorna HTTP 401.</div>
+            <div class="ep">GET /api/v1/users/</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-12</div><div class="case-body">
+            <div class="title">Logout Exitoso</div>
+            <div class="desc">Token invalidado activamente en la base de datos y bloqueado en peticiones posteriores.</div>
+            <div class="ep">POST /api/v1/auth/logout · GET /api/v1/users/</div>
+          </div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 3. USERS -->
+    <details class="module" id="test_users">
+      <summary>
+        <div class="module-title">
+          <span class="chev">▸</span>
+          <span class="filename">test_users.py</span>
+          <span class="range">PI-BACK-13 → 18</span>
+        </div>
+        <span class="module-count">6 casos</span>
+      </summary>
+      <div class="module-body">
+        <p class="objective">Evaluar la administración de usuarios por roles autorizados, bloqueo de acciones no autorizadas y exportaciones de auditoría.</p>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="k">Módulos integrados</div>
+            <div class="v">UserService, auditorías enriquecidas, dashboards administrativos</div>
+          </div>
+          <div class="meta-item">
+            <div class="k">Tablas involucradas</div>
+            <div class="pill-row">
+              <span class="pill table">users</span><span class="pill table">roles</span><span class="pill table">audit_logs</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Endpoints</div>
+            <div class="pill-row">
+              <span class="pill endpoint">POST /users/</span>
+              <span class="pill endpoint">GET /users/</span>
+              <span class="pill endpoint">PATCH /users/{id}/profile</span>
+              <span class="pill endpoint">POST /users/{id}/deactivate</span>
+              <span class="pill endpoint">POST /users/{id}/activate</span>
+              <span class="pill endpoint">GET /audit-logs/export</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Fixtures</div>
+            <div class="pill-row">
+              <span class="pill fixture">client</span><span class="pill fixture">db</span>
+              <span class="pill fixture">admin_headers</span><span class="pill fixture">specialist_headers</span>
+            </div>
+          </div>
+        </div>
+        <div class="cases">
+          <div class="label">Casos de prueba</div>
+          <div class="case"><div class="case-id">PI-BACK-13</div><div class="case-body">
+            <div class="title">Crear Usuario Exitoso (Admin)</div>
+            <div class="desc">Creación del registro con asignación correcta del rol specialist.</div>
+            <div class="ep">POST /api/v1/users/</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-14</div><div class="case-body">
+            <div class="title">Crear Usuario Denegado (Especialista)</div>
+            <div class="desc">La capa de permisos devuelve HTTP 403 Forbidden.</div>
+            <div class="ep">POST /api/v1/users/</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-15</div><div class="case-body">
+            <div class="title">Crear Usuario con Email Duplicado</div>
+            <div class="desc">Validación de unicidad del email, retorna HTTP 409 Conflict.</div>
+            <div class="ep">POST /api/v1/users/</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-16</div><div class="case-body">
+            <div class="title">Actualizar Perfil de Usuario</div>
+            <div class="desc">Persistencia de datos actualizados y retorno exitoso del registro modificado.</div>
+            <div class="ep">PATCH /api/v1/users/2/profile</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-17</div><div class="case-body">
+            <div class="title">Desactivar Cuenta de Usuario</div>
+            <div class="desc">Bloqueo del inicio de sesión para el usuario inhabilitado, HTTP 403.</div>
+            <div class="ep">POST /api/v1/users/2/deactivate · POST /api/v1/auth/login</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-18</div><div class="case-body">
+            <div class="title">Exportación de Logs de Auditoría</div>
+            <div class="desc">El Administrador descarga el log completo en CSV; los especialistas ven solo sus propios eventos filtrados.</div>
+            <div class="ep">GET /api/v1/audit-logs/export</div>
+          </div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 4. PATIENTS -->
+    <details class="module" id="test_patients">
+      <summary>
+        <div class="module-title">
+          <span class="chev">▸</span>
+          <span class="filename">test_patients.py</span>
+          <span class="range">PI-BACK-19 → 24</span>
+        </div>
+        <span class="module-count">6 casos</span>
+      </summary>
+      <div class="module-body">
+        <p class="objective">Comprobar el ciclo de vida de expedientes de pacientes, su asignación a especialistas y la protección de datos entre cuentas de terapeutas.</p>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="k">Módulos integrados</div>
+            <div class="v">PatientService, validaciones demográficas, control de estados</div>
+          </div>
+          <div class="meta-item">
+            <div class="k">Tablas involucradas</div>
+            <div class="pill-row">
+              <span class="pill table">patients</span><span class="pill table">users</span><span class="pill table">roles</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Endpoints</div>
+            <div class="pill-row">
+              <span class="pill endpoint">POST /patients/</span>
+              <span class="pill endpoint">GET /patients/</span>
+              <span class="pill endpoint">PATCH /patients/{id}</span>
+              <span class="pill endpoint">DELETE /patients/{id}</span>
+              <span class="pill endpoint">GET /patients/{id}</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Fixtures</div>
+            <div class="pill-row">
+              <span class="pill fixture">client</span><span class="pill fixture">db</span>
+              <span class="pill fixture">admin_headers</span><span class="pill fixture">specialist_headers</span>
+            </div>
+          </div>
+        </div>
+        <div class="cases">
+          <div class="label">Casos de prueba</div>
+          <div class="case"><div class="case-id">PI-BACK-19</div><div class="case-body">
+            <div class="title">Crear Paciente Exitoso</div>
+            <div class="desc">Registro persistido, asociado al especialista que realizó la petición.</div>
+            <div class="ep">POST /api/v1/patients/</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-20</div><div class="case-body">
+            <div class="title">Crear Paciente con Datos Inválidos</div>
+            <div class="desc">Validaciones de Pydantic/servicio arrojan HTTP 422 Unprocessable Content.</div>
+            <div class="ep">POST /api/v1/patients/</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-21</div><div class="case-body">
+            <div class="title">Listado de Pacientes Segmentado</div>
+            <div class="desc">El Administrador ve todos los expedientes; el Especialista solo los pacientes asignados a su cuidado.</div>
+            <div class="ep">GET /api/v1/patients/</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-22</div><div class="case-body">
+            <div class="title">Actualización y Normalización de Pacientes</div>
+            <div class="desc">El servicio elimina espacios en blanco (strip()) y actualiza la información limpia en la BD.</div>
+            <div class="ep">PATCH /api/v1/patients/{patient_id}</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-23</div><div class="case-body">
+            <div class="title">Archivar Paciente (Baja Lógica)</div>
+            <div class="desc">No se elimina físicamente el registro; se marca estado "archived" e is_active a False.</div>
+            <div class="ep">DELETE /api/v1/patients/{patient_id}</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-24</div><div class="case-body">
+            <div class="title">Bloqueo de Acceso Cruzado de Pacientes</div>
+            <div class="desc">Rechazo de la solicitud con HTTP 403 Forbidden.</div>
+            <div class="ep">GET/PATCH /api/v1/patients/{patient_id_de_otro}</div>
+          </div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 5. SESSION TEMPLATES -->
+    <details class="module" id="test_session_templates">
+      <summary>
+        <div class="module-title">
+          <span class="chev">▸</span>
+          <span class="filename">test_session_templates.py</span>
+          <span class="range">PI-BACK-25 → 28</span>
+        </div>
+        <span class="module-count">4 casos</span>
+      </summary>
+      <div class="module-body">
+        <p class="objective">Evaluar creación, validación, actualización y consulta de plantillas de configuración de sesiones de juego (parámetros Kinect).</p>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="k">Módulos integrados</div>
+            <div class="v">SessionTemplateService, parámetros del motor físico (sensibilidad, velocidad, obstáculos)</div>
+          </div>
+          <div class="meta-item">
+            <div class="k">Tablas involucradas</div>
+            <div class="pill-row"><span class="pill table">session_templates</span><span class="pill table">users</span></div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Endpoints</div>
+            <div class="pill-row">
+              <span class="pill endpoint">POST /session-templates/</span>
+              <span class="pill endpoint">GET /session-templates/</span>
+              <span class="pill endpoint">PATCH /session-templates/{id}</span>
+              <span class="pill endpoint">DELETE /session-templates/{id}</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Fixtures</div>
+            <div class="pill-row">
+              <span class="pill fixture">client</span><span class="pill fixture">db</span>
+              <span class="pill fixture">admin_headers</span><span class="pill fixture">specialist_headers</span>
+            </div>
+          </div>
+        </div>
+        <div class="cases">
+          <div class="label">Casos de prueba</div>
+          <div class="case"><div class="case-id">PI-BACK-25</div><div class="case-body">
+            <div class="title">Crear Plantilla Exitoso</div>
+            <div class="desc">Persistencia de configuraciones y umbrales físicos del ejercicio.</div>
+            <div class="ep">POST /api/v1/session-templates/</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-26</div><div class="case-body">
+            <div class="title">Crear Plantilla con Parámetros Inválidos</div>
+            <div class="desc">Bloqueo por reglas de validación de negocio, retorna HTTP 422.</div>
+            <div class="ep">POST /api/v1/session-templates/</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-27</div><div class="case-body">
+            <div class="title">Listado de Plantillas Activas</div>
+            <div class="desc">Retorna parámetros estructurados; plantillas eliminadas no se incluyen en el listado.</div>
+            <div class="ep">GET /api/v1/session-templates/</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-28</div><div class="case-body">
+            <div class="title">Actualización de Plantilla y Límites</div>
+            <div class="desc">Aplica modificaciones válidas y rechaza cambios que violen restricciones de consistencia.</div>
+            <div class="ep">PATCH /api/v1/session-templates/{template_id}</div>
+          </div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 6. SESSIONS -->
+    <details class="module" id="test_sessions">
+      <summary>
+        <div class="module-title">
+          <span class="chev">▸</span>
+          <span class="filename">test_sessions.py</span>
+          <span class="range">PI-BACK-29 → 34</span>
+        </div>
+        <span class="module-count">6 casos</span>
+      </summary>
+      <div class="module-body">
+        <p class="objective">Validar el flujo central de las terapias físicas: agendamiento, inicio, guardado en tiempo real de trayectorias, métricas Kinect, notas clínicas y cierre de sesión.</p>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="k">Módulos integrados</div>
+            <div class="v">SessionService, Kinect y trayectorias, notas clínicas</div>
+          </div>
+          <div class="meta-item">
+            <div class="k">Tablas involucradas</div>
+            <div class="pill-row">
+              <span class="pill table">sessions</span><span class="pill table">patients</span>
+              <span class="pill table">kinect_records</span><span class="pill table">kinect_trajectory_points</span>
+              <span class="pill table">clinical_notes</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Endpoints</div>
+            <div class="pill-row">
+              <span class="pill endpoint">POST /sessions/</span>
+              <span class="pill endpoint">POST /sessions/{id}/start</span>
+              <span class="pill endpoint">POST /sessions/results</span>
+              <span class="pill endpoint">GET /sessions/{id}/kinect-records</span>
+              <span class="pill endpoint">POST /sessions/{id}/complete</span>
+              <span class="pill endpoint">POST /sessions/{id}/cancel</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Fixtures</div>
+            <div class="pill-row"><span class="pill fixture">client</span><span class="pill fixture">db</span><span class="pill fixture">specialist_headers</span></div>
+          </div>
+        </div>
+        <div class="cases">
+          <div class="label">Casos de prueba</div>
+          <div class="case"><div class="case-id">PI-BACK-29</div><div class="case-body">
+            <div class="title">Agendamiento de Sesión</div>
+            <div class="desc">Asignación inicial del estado "scheduled", uso de la plantilla seleccionada y consistencia de parámetros.</div>
+            <div class="ep">POST /api/v1/sessions/</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-30</div><div class="case-body">
+            <div class="title">Inicio de Sesión de Terapia</div>
+            <div class="desc">Cambio de estado a "in_progress", is_run=True y registro de la marca de tiempo de inicio.</div>
+            <div class="ep">POST /api/v1/sessions/{session_id}/start</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-31 / 32</div><div class="case-body">
+            <div class="title">Envío de Resultados Kinect y Trayectorias</div>
+            <div class="desc">Guardado masivo de puntos de trayectoria física y métricas (aciertos, caídas, velocidad media) vinculadas correctamente.</div>
+            <div class="ep">POST /api/v1/sessions/results · GET /api/v1/sessions/{session_id}/kinect-records</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-33</div><div class="case-body">
+            <div class="title">Finalización Completa de Sesión</div>
+            <div class="desc">Cambio de estado a "completed", cálculo del tiempo transcurrido e inserción de nota médica en clinical_notes.</div>
+            <div class="ep">POST /api/v1/sessions/{session_id}/complete</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-34</div><div class="case-body">
+            <div class="title">Cancelación de Sesión</div>
+            <div class="desc">Cambio a estado "cancelled", is_run=False y guardado de la hora de cierre.</div>
+            <div class="ep">POST /api/v1/sessions/{session_id}/cancel</div>
+          </div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 7. UNITY -->
+    <details class="module" id="test_unity">
+      <summary>
+        <div class="module-title">
+          <span class="chev">▸</span>
+          <span class="filename">test_unity.py</span>
+          <span class="range">PI-BACK-35, 36, 40</span>
+        </div>
+        <span class="module-count">3 casos</span>
+      </summary>
+      <div class="module-body">
+        <p class="objective">Comprobar el lanzamiento y monitoreo del cliente 3D en Unity, su auto-completado al salir, y los endpoints de prueba de Unity.</p>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="k">Módulos integrados</div>
+            <div class="v">UnityRuntimeService, ejecución de subprocesos simulados, endpoints de integración de hardware</div>
+          </div>
+          <div class="meta-item">
+            <div class="k">Tablas involucradas</div>
+            <div class="pill-row">
+              <span class="pill table">sessions</span><span class="pill table">patients</span>
+              <span class="pill table">kinect_records</span><span class="pill table">kinect_trajectory_points</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Endpoints</div>
+            <div class="pill-row">
+              <span class="pill endpoint">POST /sessions/{id}/unity/launch</span>
+              <span class="pill endpoint">GET /sessions/{id}/unity/status</span>
+              <span class="pill endpoint">POST /unity-test/patient</span>
+              <span class="pill endpoint">POST /unity-test/kinect-record</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Fixtures</div>
+            <div class="pill-row">
+              <span class="pill fixture">client</span><span class="pill fixture">db</span>
+              <span class="pill fixture">specialist_headers</span><span class="pill fixture">monkeypatch</span>
+              <span class="pill fixture">tmp_path</span>
+            </div>
+          </div>
+        </div>
+        <div class="cases">
+          <div class="label">Casos de prueba</div>
+          <div class="case"><div class="case-id">PI-BACK-35</div><div class="case-body">
+            <div class="title">Lanzar Cliente Unity</div>
+            <div class="desc">Valida la presencia del binario en el sistema, guarda el PID asignado y mantiene el estado de la sesión activa en segundo plano.</div>
+            <div class="ep">POST /api/v1/sessions/{session_id}/unity/launch</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-36</div><div class="case-body">
+            <div class="title">Monitoreo y Auto-Completado de Unity</div>
+            <div class="desc">Al detectar la salida del proceso, la app finaliza automáticamente la sesión (completed) e inserta notas clínicas por defecto.</div>
+            <div class="ep">GET /api/v1/sessions/{session_id}/unity/status</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-40</div><div class="case-body">
+            <div class="title">Endpoints de Prueba de Unity (Sin Autenticación)</div>
+            <div class="desc">Endpoints totalmente abiertos (sin interceptor Bearer) que permiten insertar pacientes y telemetría Kinect directamente en la BD de pruebas.</div>
+            <div class="ep">POST /api/v1/unity-test/patient · POST /api/v1/unity-test/kinect-record</div>
+          </div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 8. DOCUMENTS -->
+    <details class="module" id="test_documents">
+      <summary>
+        <div class="module-title">
+          <span class="chev">▸</span>
+          <span class="filename">test_documents.py</span>
+          <span class="range">PI-BACK-37</span>
+        </div>
+        <span class="module-count">1 caso</span>
+      </summary>
+      <div class="module-body">
+        <p class="objective">Validar el motor de generación dinámica de reportes y hojas de consentimiento en formato PDF para pacientes.</p>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="k">Módulos integrados</div>
+            <div class="v">DocumentService, ReportLab, almacenamiento de archivos</div>
+          </div>
+          <div class="meta-item">
+            <div class="k">Tablas involucradas</div>
+            <div class="pill-row"><span class="pill table">patients</span><span class="pill table">users</span></div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Endpoints</div>
+            <div class="pill-row">
+              <span class="pill endpoint">GET /documents/consent-form/{patient_id}</span>
+              <span class="pill endpoint">GET /documents/consent-sheet/{patient_id}</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Fixtures</div>
+            <div class="pill-row"><span class="pill fixture">client</span><span class="pill fixture">db</span><span class="pill fixture">specialist_headers</span></div>
+          </div>
+        </div>
+        <div class="cases">
+          <div class="label">Casos de prueba</div>
+          <div class="case"><div class="case-id">PI-BACK-37</div><div class="case-body">
+            <div class="title">Generar PDF de Consentimiento Informado</div>
+            <div class="desc">El backend compila el PDF dinámicamente usando datos demográficos del paciente y lo retorna con cabeceras HTTP PDF binarias válidas.</div>
+            <div class="ep">GET /api/v1/documents/consent-form/{patient_id} · GET /api/v1/documents/consent-sheet/{patient_id}</div>
+          </div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 9. DASHBOARDS -->
+    <details class="module" id="test_dashboards">
+      <summary>
+        <div class="module-title">
+          <span class="chev">▸</span>
+          <span class="filename">test_dashboards.py</span>
+          <span class="range">PI-BACK-38, 39</span>
+        </div>
+        <span class="module-count">2 casos</span>
+      </summary>
+      <div class="module-body">
+        <p class="objective">Comprobar el cálculo de estadísticas y agregaciones demográficas para perfiles de administradores globales y terapeutas especialistas.</p>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="k">Módulos integrados</div>
+            <div class="v">DashboardService, agregación SQL de pacientes y sesiones</div>
+          </div>
+          <div class="meta-item">
+            <div class="k">Tablas involucradas</div>
+            <div class="pill-row">
+              <span class="pill table">users</span><span class="pill table">patients</span>
+              <span class="pill table">sessions</span><span class="pill table">session_templates</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Endpoints</div>
+            <div class="pill-row">
+              <span class="pill endpoint">GET /dashboard/superadmin</span>
+              <span class="pill endpoint">GET /dashboard/specialist</span>
+            </div>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1">
+            <div class="k">Fixtures</div>
+            <div class="pill-row">
+              <span class="pill fixture">client</span><span class="pill fixture">db</span>
+              <span class="pill fixture">admin_headers</span><span class="pill fixture">specialist_headers</span>
+            </div>
+          </div>
+        </div>
+        <div class="cases">
+          <div class="label">Casos de prueba</div>
+          <div class="case"><div class="case-id">PI-BACK-38</div><div class="case-body">
+            <div class="title">Panel de Control del Administrador (Counts Globales)</div>
+            <div class="desc">La suma reportada de cuentas activas es matemáticamente exacta.</div>
+            <div class="ep">GET /api/v1/dashboard/superadmin</div>
+          </div></div>
+          <div class="case"><div class="case-id">PI-BACK-39</div><div class="case-body">
+            <div class="title">Panel de Control del Especialista (Estadísticas Segmentadas)</div>
+            <div class="desc">Las métricas de pacientes, agendas y evolución corresponden estrictamente a los pacientes asignados, excluyendo datos de terceros.</div>
+            <div class="ep">GET /api/v1/dashboard/specialist</div>
+          </div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- RELACIÓN -->
+    <section id="relacion">
+      <div class="section-head">
+        <span class="idx">10</span>
+        <h2>Relación entre archivos y casos del plan</h2>
+      </div>
+      <table class="data">
+        <thead><tr><th>Archivo de prueba</th><th>Casos (PI-BACK)</th></tr></thead>
+        <tbody>
+          <tr><td><code>test_database.py</code></td><td>01 al 05</td></tr>
+          <tr><td><code>test_auth.py</code></td><td>06 al 12</td></tr>
+          <tr><td><code>test_users.py</code></td><td>13 al 18</td></tr>
+          <tr><td><code>test_patients.py</code></td><td>19 al 24</td></tr>
+          <tr><td><code>test_session_templates.py</code></td><td>25 al 28</td></tr>
+          <tr><td><code>test_sessions.py</code></td><td>29 al 34</td></tr>
+          <tr><td><code>test_unity.py</code></td><td>35, 36, 40</td></tr>
+          <tr><td><code>test_documents.py</code></td><td>37</td></tr>
+          <tr><td><code>test_dashboards.py</code></td><td>38, 39</td></tr>
+        </tbody>
       </table>
+    </section>
 
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-01</span>
-        <p><span class="label">SQLite Triggers (updated_at)</span> — Modifica el nombre de un especialista, un paciente y el contenido de una nota clínica mediante la sesión de base de datos.</p>
-        <p>Verifica: Comprueba si los triggers nativos de SQLite actualizan automáticamente la columna <code>updated_at</code> tras ejecutar sentencias <code>UPDATE</code>.</p>
+    <!-- EJECUCIÓN -->
+    <section id="ejecucion">
+      <div class="section-head">
+        <span class="idx">11</span>
+        <h2>Resultado de la ejecución de pytest</h2>
       </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-02</span>
-        <p><span class="label">SQLite Views</span> (v_sessions_summary y v_patients_last_session) — Crea un paciente, una sesión completada y una nota clínica asociada.</p>
-        <p>Verifica: Consultas SQL directas contra las vistas mencionadas.</p>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="num">94</div><div class="lbl">tests passed</div></div>
+        <div class="stat-card"><div class="num">0</div><div class="lbl">failed</div></div>
+        <div class="stat-card"><div class="num">90%</div><div class="lbl">cobertura</div></div>
+        <div class="stat-card"><div class="num">20.29s</div><div class="lbl">duración</div></div>
       </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-03</span>
-        <p><span class="label">Database Seeding</span> — Consulta los registros iniciales tras la inicialización del entorno de pruebas.</p>
-        <p>Verifica: La semilla por defecto crea correctamente los roles obligatorios (admin, specialist) y los usuarios iniciales con contraseñas encriptadas.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-04</span>
-        <p><span class="label">Foreign Key Constraints</span> — Intenta registrar un paciente asociado a un especialista inexistente (specialist_id=9999).</p>
-        <p>Verifica: Restricciones FOREIGN KEY activas y configuradas correctamente en SQLite.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-05</span>
-        <p><span class="label">Unique Constraints</span> (uq_sessions_single_run) — Intenta insertar concurrentemente dos sesiones activas (is_run=True).</p>
-        <p>Verifica: El índice único condicional impide más de una sesión ejecutándose simultáneamente.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 2. test_auth.py -->
-  <div class="module-card">
-    <div class="module-head">
-      <div class="module-num">2</div>
-      <h3>test_auth.py</h3>
-    </div>
-    <div class="module-body">
-      <table class="meta-table">
-        <tr><td class="k">Objetivo</td><td>Validar control de accesos, login, expiración de tokens, cierre de sesiones y recuperación de contraseñas.</td></tr>
-        <tr><td class="k">Módulos integrados</td><td>AuthService, seguridad JWT, encriptación, middleware de autenticación, enrutadores.</td></tr>
-        <tr><td class="k">Endpoints</td><td>
-          <code class="endpoint">POST /auth/login</code>
-          <code class="endpoint">POST /auth/logout</code>
-          <code class="endpoint">PATCH /users/{user_id}</code>
-          <code class="endpoint">POST /auth/password-recovery</code>
-          <code class="endpoint">POST /auth/confirm-password-recovery</code>
-          <code class="endpoint">GET /auth/first-login-status</code>
-        </td></tr>
-        <tr><td class="k">Tablas / Modelos</td><td>users, auth_sessions, roles.</td></tr>
-        <tr><td class="k">Fixtures</td><td><code>client</code>, <code>db</code>, <code>admin_headers</code>, <code>specialist_headers</code>, <code>monkeypatch</code></td></tr>
-        <tr><td class="k">Resultados esperados</td><td>Login exitoso retorna token y modelo de usuario; fallos devuelven 401/403; tras logout el token expira de inmediato.</td></tr>
-      </table>
-
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-06</span>
-        <p><span class="label">Login Exitoso</span> — Petición de autenticación con credenciales válidas creadas por semilla.</p>
-        <p>Verifica: Retorno correcto del token JWT Bearer y detalles del usuario (email y rol).</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-07</span>
-        <p><span class="label">Login Fallido</span> — Contraseña incorrecta o email inexistente.</p>
-        <p>Verifica: Denegación con HTTP 401 y mensaje claro de error.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-08</span>
-        <p><span class="label">Cambio de Contraseña (Self-Service)</span> — Usuario cambia su propia contraseña y prueba login con ambas claves.</p>
-        <p>Verifica: Bloqueo inmediato con la clave vieja y paso exitoso con la nueva.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-09</span>
-        <p><span class="label">Password Recovery Request</span> — Solicita reinicio de contraseña para un correo registrado.</p>
-        <p>Verifica: Generación de token de recuperación y simulación del envío de correo mediante mock.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-10</span>
-        <p><span class="label">Confirmar Recuperación de Contraseña</span> — Envía el token generado junto a la nueva contraseña.</p>
-        <p>Verifica: Actualización del hash de contraseña y desactivación de la bandera de cambio obligatorio.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-11</span>
-        <p><span class="label">Token Expiration / Invalid Token</span> — Solicitud a endpoint protegido con token alterado o malformado.</p>
-        <p>Verifica: El middleware intercepta la llamada y retorna HTTP 401.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-12</span>
-        <p><span class="label">Logout Exitoso</span> — Un especialista destruye su sesión y reintenta una consulta protegida con el mismo token.</p>
-        <p>Verifica: El token se invalida activamente y se bloquea en peticiones posteriores.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. test_users.py -->
-  <div class="module-card">
-    <div class="module-head">
-      <div class="module-num">3</div>
-      <h3>test_users.py</h3>
-    </div>
-    <div class="module-body">
-      <table class="meta-table">
-        <tr><td class="k">Objetivo</td><td>Evaluar la administración completa de usuarios, bloqueo de acciones no autorizadas y exportaciones de auditoría.</td></tr>
-        <tr><td class="k">Módulos integrados</td><td>UserService, auditorías enriquecidas, dashboards administrativos.</td></tr>
-        <tr><td class="k">Endpoints</td><td>
-          <code class="endpoint">POST /users/</code>
-          <code class="endpoint">GET /users/</code>
-          <code class="endpoint">PATCH /users/{user_id}/profile</code>
-          <code class="endpoint">POST /users/{user_id}/deactivate</code>
-          <code class="endpoint">POST /users/{user_id}/activate</code>
-          <code class="endpoint">GET /audit-logs/export</code>
-        </td></tr>
-        <tr><td class="k">Tablas / Modelos</td><td>users, roles, audit_logs.</td></tr>
-        <tr><td class="k">Fixtures</td><td><code>client</code>, <code>db</code>, <code>admin_headers</code>, <code>specialist_headers</code></td></tr>
-        <tr><td class="k">Resultados esperados</td><td>Administradores gestionan usuarios e inhabilitan cuentas; especialistas tienen accesos restringidos (403) o datos limitados.</td></tr>
-      </table>
-
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-13</span>
-        <p><span class="label">Crear Usuario Exitoso (Admin)</span> — Un Administrador crea una nueva cuenta de Especialista.</p>
-        <p>Verifica: Creación del registro con asignación correcta del rol specialist.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-14</span>
-        <p><span class="label">Crear Usuario Denegado (Especialista)</span> — Un Especialista intenta crear otro usuario.</p>
-        <p>Verifica: La capa de permisos devuelve HTTP 403 Forbidden.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-15</span>
-        <p><span class="label">Crear Usuario con Email Duplicado</span> — Registra un usuario con correo ya existente.</p>
-        <p>Verifica: El servicio valida unicidad y retorna HTTP 409 Conflict.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-16</span>
-        <p><span class="label">Actualizar Perfil de Usuario</span> — Actualiza nombre y email de un especialista.</p>
-        <p>Verifica: Persistencia de los datos actualizados y retorno exitoso del registro modificado.</p>
-        <p class="endpoint-line"><code>PATCH /users/2/profile</code></p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-17</span>
-        <p><span class="label">Desactivar Cuenta de Usuario</span> — Desactiva la cuenta de un especialista activo e intenta login inmediato.</p>
-        <p>Verifica: Bloqueo de login para el usuario inhabilitado (HTTP 403).</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-18</span>
-        <p><span class="label">Exportación de Logs de Auditoría</span> — Solicita exportación CSV como Admin y como Especialista.</p>
-        <p>Verifica: El Admin descarga todo el log en CSV; los especialistas ven solo sus propios eventos filtrados.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 4. test_patients.py -->
-  <div class="module-card">
-    <div class="module-head">
-      <div class="module-num">4</div>
-      <h3>test_patients.py</h3>
-    </div>
-    <div class="module-body">
-      <table class="meta-table">
-        <tr><td class="k">Objetivo</td><td>Comprobar el ciclo de vida de expedientes de pacientes, asignación a especialistas y protección de datos entre terapeutas.</td></tr>
-        <tr><td class="k">Módulos integrados</td><td>PatientService, validaciones demográficas, control de estados (activo/archivado).</td></tr>
-        <tr><td class="k">Endpoints</td><td>
-          <code class="endpoint">POST /patients/</code>
-          <code class="endpoint">GET /patients/</code>
-          <code class="endpoint">PATCH /patients/{patient_id}</code>
-          <code class="endpoint">DELETE /patients/{patient_id}</code>
-          <code class="endpoint">GET /patients/{patient_id}</code>
-        </td></tr>
-        <tr><td class="k">Tablas / Modelos</td><td>patients, users, roles.</td></tr>
-        <tr><td class="k">Fixtures</td><td><code>client</code>, <code>db</code>, <code>admin_headers</code>, <code>specialist_headers</code></td></tr>
-        <tr><td class="k">Resultados esperados</td><td>Pacientes guardados normalizados; especialistas solo leen/editan sus pacientes asignados; archivar cambia estado e inhabilita perfil.</td></tr>
-      </table>
-
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-19</span>
-        <p><span class="label">Crear Paciente Exitoso</span> — Un especialista registra un nuevo paciente con datos personales y demográficos.</p>
-        <p>Verifica: Registro persistido y asociado al especialista que hizo la petición.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-20</span>
-        <p><span class="label">Datos Inválidos</span> — Da de alta un paciente con datos vacíos o formato erróneo.</p>
-        <p>Verifica: HTTP 422 Unprocessable Content.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-21</span>
-        <p><span class="label">Listado de Pacientes Segmentado</span> — Solicita la lista con tokens de Admin y Especialista.</p>
-        <p>Verifica: El Admin ve todos los expedientes; el Especialista solo los asignados a su cuidado.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-22</span>
-        <p><span class="label">Actualización y Normalización</span> — Modifica el perfil agregando espacios en blanco extra en el nombre.</p>
-        <p>Verifica: El servicio elimina espacios innecesarios (strip()) y actualiza limpiamente.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-23</span>
-        <p><span class="label">Archivar Paciente (Baja Lógica)</span> — Llama al endpoint de eliminación para un paciente activo.</p>
-        <p>Verifica: No se elimina físicamente; se marca <code>status = "archived"</code> e <code>is_active = False</code>.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-24</span>
-        <p><span class="label">Bloqueo de Acceso Cruzado</span> — Un especialista intenta consultar/editar un paciente de otro terapeuta.</p>
-        <p>Verifica: Rechazo con HTTP 403 Forbidden.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 5. test_session_templates.py -->
-  <div class="module-card">
-    <div class="module-head">
-      <div class="module-num">5</div>
-      <h3>test_session_templates.py</h3>
-    </div>
-    <div class="module-body">
-      <table class="meta-table">
-        <tr><td class="k">Objetivo</td><td>Evaluar creación, validación, actualización y consulta de plantillas de sesiones de juego (parámetros con Kinect).</td></tr>
-        <tr><td class="k">Módulos integrados</td><td>SessionTemplateService, parámetros del motor físico (sensibilidad, velocidad, obstáculos).</td></tr>
-        <tr><td class="k">Endpoints</td><td>
-          <code class="endpoint">POST /session-templates/</code>
-          <code class="endpoint">GET /session-templates/</code>
-          <code class="endpoint">PATCH /session-templates/{template_id}</code>
-          <code class="endpoint">DELETE /session-templates/{template_id}</code>
-        </td></tr>
-        <tr><td class="k">Tablas / Modelos</td><td>session_templates, users.</td></tr>
-        <tr><td class="k">Fixtures</td><td><code>client</code>, <code>db</code>, <code>admin_headers</code>, <code>specialist_headers</code></td></tr>
-        <tr><td class="k">Resultados esperados</td><td>Rangos de juego entre 0.0 y 1.0; inconsistencias de umbrales devuelven 422; listados ignoran plantillas eliminadas.</td></tr>
-      </table>
-
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-25</span>
-        <p><span class="label">Crear Plantilla Exitoso</span> — Registra una plantilla con límites válidos de velocidad y umbrales Kinect.</p>
-        <p>Verifica: Persistencia de configuraciones y umbrales físicos del ejercicio.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-26</span>
-        <p><span class="label">Parámetros Inválidos</span> — Envía umbrales negativos o threshold_min mayor que threshold_max.</p>
-        <p>Verifica: Bloqueo por reglas de validación de negocio y HTTP 422.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-27</span>
-        <p><span class="label">Listado de Plantillas Activas</span> — Recupera las plantillas disponibles del sistema.</p>
-        <p>Verifica: Retorno estructurado; plantillas eliminadas no se incluyen.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-28</span>
-        <p><span class="label">Actualización de Plantilla y Límites</span> — Modifica dificultad/velocidad y valida nuevos límites erróneos.</p>
-        <p>Verifica: Se aplican cambios válidos; se rechazan los que violan restricciones de consistencia.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 6. test_sessions.py -->
-  <div class="module-card">
-    <div class="module-head">
-      <div class="module-num">6</div>
-      <h3>test_sessions.py</h3>
-    </div>
-    <div class="module-body">
-      <table class="meta-table">
-        <tr><td class="k">Objetivo</td><td>Validar el flujo central de terapias físicas: agendamiento, inicio, guardado de trayectorias, métricas Kinect, notas clínicas y cierre/cancelación.</td></tr>
-        <tr><td class="k">Módulos integrados</td><td>SessionService, Kinect y trayectorias, notas clínicas.</td></tr>
-        <tr><td class="k">Endpoints</td><td>
-          <code class="endpoint">POST /sessions/</code>
-          <code class="endpoint">POST /sessions/{id}/start</code>
-          <code class="endpoint">POST /sessions/results</code>
-          <code class="endpoint">GET /sessions/{id}/kinect-records</code>
-          <code class="endpoint">POST /sessions/{id}/complete</code>
-          <code class="endpoint">POST /sessions/{id}/cancel</code>
-        </td></tr>
-        <tr><td class="k">Tablas / Modelos</td><td>sessions, patients, kinect_records, kinect_trajectory_points, clinical_notes.</td></tr>
-        <tr><td class="k">Fixtures</td><td><code>client</code>, <code>db</code>, <code>specialist_headers</code></td></tr>
-        <tr><td class="k">Resultados esperados</td><td>Transiciones de estado conformes al diagrama de estados; métricas y trayectorias vinculadas a la sesión; cálculo automático del tiempo real de juego.</td></tr>
-      </table>
-
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-29</span>
-        <p><span class="label">Agendamiento de Sesión</span> — Crea una sesión de terapia para un paciente asignado y activo.</p>
-        <p>Verifica: Estado inicial "scheduled", uso de la plantilla seleccionada y consistencia de parámetros.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-30</span>
-        <p><span class="label">Inicio de Sesión de Terapia</span> — Transiciona de programada a activa.</p>
-        <p>Verifica: Estado "in_progress", <code>is_run=True</code> y marca de tiempo de inicio.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-31 &amp; PI-BACK-32</span>
-        <p><span class="label">Envío de Resultados Kinect y Trayectorias</span> — Envía el reporte final de métricas y la secuencia de puntos cartesianos.</p>
-        <p>Verifica: Guardado masivo de puntos de trayectoria; métricas (aciertos, caídas, velocidad media) vinculadas correctamente.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-33</span>
-        <p><span class="label">Finalización Completa de Sesión</span> — Cierra la sesión aportando hora de fin, duración real y nota de observaciones.</p>
-        <p>Verifica: Estado "completed", cálculo correcto del tiempo transcurrido e inserción en <code>clinical_notes</code>.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-34</span>
-        <p><span class="label">Cancelación de Sesión</span> — Solicitud de cancelación para una sesión programada o activa.</p>
-        <p>Verifica: Estado "cancelled", <code>is_run=False</code> y hora de cierre guardada.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 7. test_unity.py -->
-  <div class="module-card">
-    <div class="module-head">
-      <div class="module-num">7</div>
-      <h3>test_unity.py</h3>
-    </div>
-    <div class="module-body">
-      <table class="meta-table">
-        <tr><td class="k">Objetivo</td><td>Comprobar el lanzamiento y monitoreo del cliente 3D en Unity, su auto-completado al salir, y los endpoints de prueba de Unity.</td></tr>
-        <tr><td class="k">Módulos integrados</td><td>UnityRuntimeService, ejecución de subprocesos simulados, endpoints de integración para hardware.</td></tr>
-        <tr><td class="k">Endpoints</td><td>
-          <code class="endpoint">POST /sessions/{id}/unity/launch</code>
-          <code class="endpoint">GET /sessions/{id}/unity/status</code>
-          <code class="endpoint">POST /unity-test/patient</code>
-          <code class="endpoint">POST /unity-test/kinect-record</code>
-        </td></tr>
-        <tr><td class="k">Tablas / Modelos</td><td>sessions, patients, kinect_records, kinect_trajectory_points.</td></tr>
-        <tr><td class="k">Fixtures</td><td><code>client</code>, <code>db</code>, <code>specialist_headers</code>, <code>monkeypatch</code>, <code>tmp_path</code></td></tr>
-        <tr><td class="k">Resultados esperados</td><td>Lanzamiento exitoso retorna PID; el status auto-completa la terapia al apagarse Unity; endpoints libres guardan datos sin token.</td></tr>
-      </table>
-
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-35</span>
-        <p><span class="label">Lanzar Cliente Unity</span> — Inicia el subproceso de Unity para una sesión activa.</p>
-        <p>Verifica: Validación del binario en disco, guardado del PID asignado y mantenimiento del estado activo en segundo plano.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-36</span>
-        <p><span class="label">Monitoreo y Auto-Completado</span> — Consulta el estado simulando que el ejecutable finalizó.</p>
-        <p>Verifica: Al detectar la salida del proceso, la sesión se finaliza automáticamente (completed) e inserta notas clínicas por defecto si no fue completada a mano.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-40</span>
-        <p><span class="label">Endpoints de Prueba de Unity (Sin Autenticación)</span> — Envía telemetría a los endpoints temporales sin cabeceras de autorización.</p>
-        <p>Verifica: Endpoints totalmente abiertos que permiten insertar pacientes y registros Kinect directamente.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 8. test_documents.py -->
-  <div class="module-card">
-    <div class="module-head">
-      <div class="module-num">8</div>
-      <h3>test_documents.py</h3>
-    </div>
-    <div class="module-body">
-      <table class="meta-table">
-        <tr><td class="k">Objetivo</td><td>Validar el motor de generación dinámica de reportes y hojas de consentimiento en formato PDF.</td></tr>
-        <tr><td class="k">Módulos integrados</td><td>DocumentService, ReportLab, almacenamiento de archivos.</td></tr>
-        <tr><td class="k">Endpoints</td><td>
-          <code class="endpoint">GET /documents/consent-form/{patient_id}</code>
-          <code class="endpoint">GET /documents/consent-sheet/{patient_id}</code>
-        </td></tr>
-        <tr><td class="k">Tablas / Modelos</td><td>patients, users.</td></tr>
-        <tr><td class="k">Fixtures</td><td><code>client</code>, <code>db</code>, <code>specialist_headers</code></td></tr>
-        <tr><td class="k">Resultados esperados</td><td>Respuestas exitosas retornan el flujo de datos PDF con cabecera de descarga.</td></tr>
-      </table>
-
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-37</span>
-        <p><span class="label">Generar PDF de Consentimiento Informado</span> — Petición para generar la hoja de consentimiento del paciente.</p>
-        <p>Verifica: Compilación dinámica del PDF con datos demográficos y retorno con cabeceras HTTP PDF válidas.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 9. test_dashboards.py -->
-  <div class="module-card">
-    <div class="module-head">
-      <div class="module-num">9</div>
-      <h3>test_dashboards.py</h3>
-    </div>
-    <div class="module-body">
-      <table class="meta-table">
-        <tr><td class="k">Objetivo</td><td>Comprobar el cálculo de estadísticas y agregaciones demográficas para administradores globales y terapeutas especialistas.</td></tr>
-        <tr><td class="k">Módulos integrados</td><td>DashboardService, lógica de agregación SQL de pacientes y sesiones.</td></tr>
-        <tr><td class="k">Endpoints</td><td>
-          <code class="endpoint">GET /dashboard/superadmin</code>
-          <code class="endpoint">GET /dashboard/specialist</code>
-        </td></tr>
-        <tr><td class="k">Tablas / Modelos</td><td>users, patients, sessions, session_templates.</td></tr>
-        <tr><td class="k">Fixtures</td><td><code>client</code>, <code>db</code>, <code>admin_headers</code>, <code>specialist_headers</code></td></tr>
-        <tr><td class="k">Resultados esperados</td><td>Los datos agregados coinciden exactamente con la suma lógica de la base de datos para cada rol.</td></tr>
-      </table>
-
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-38</span>
-        <p><span class="label">Panel del Administrador (Counts Globales)</span> — Agrega usuarios, especialistas activos/inactivos, pacientes y sesiones variadas, y consulta el dashboard admin.</p>
-        <p>Verifica: La suma de cuentas activas reportada es matemáticamente exacta.</p>
-      </div>
-      <div class="test-case">
-        <span class="tc-id">PI-BACK-39</span>
-        <p><span class="label">Panel del Especialista (Estadísticas Segmentadas)</span> — Crea pacientes y terapias de distintos especialistas y solicita el panel del especialista logueado.</p>
-        <p>Verifica: Las métricas corresponden estrictamente a los pacientes asignados, excluyendo datos de terceros.</p>
-      </div>
-    </div>
-  </div>
-
-  <h2 class="section-title">Resumen de cobertura</h2>
-  <table class="summary">
-    <thead>
-      <tr><th>Módulo</th><th>Casos PI-BACK</th><th>Objetivo</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Base de datos</td><td class="pi-range">01–05</td><td>Validar triggers, vistas y restricciones</td></tr>
-      <tr><td>Autenticación</td><td class="pi-range">06–12</td><td>Login, JWT y recuperación</td></tr>
-      <tr><td>Usuarios</td><td class="pi-range">13–18</td><td>Administración y auditoría</td></tr>
-      <tr><td>Pacientes</td><td class="pi-range">19–24</td><td>Gestión y permisos</td></tr>
-      <tr><td>Plantillas</td><td class="pi-range">25–28</td><td>Configuración de sesiones</td></tr>
-      <tr><td>Sesiones</td><td class="pi-range">29–34</td><td>Flujo terapéutico</td></tr>
-      <tr><td>Unity</td><td class="pi-range">35–36, 40</td><td>Integración con Unity</td></tr>
-      <tr><td>Documentos</td><td class="pi-range">37</td><td>Generación de PDF</td></tr>
-      <tr><td>Dashboards</td><td class="pi-range">38–39</td><td>Estadísticas del sistema</td></tr>
-    </tbody>
-  </table>
-
-  <h2 class="section-title">Relación entre archivos y casos del plan</h2>
-  <div class="mapping-grid">
-    <div class="file">test_database.py</div><div class="cases">PI-BACK-01 al PI-BACK-05</div>
-    <div class="file">test_auth.py</div><div class="cases">PI-BACK-06 al PI-BACK-12</div>
-    <div class="file">test_users.py</div><div class="cases">PI-BACK-13 al PI-BACK-18</div>
-    <div class="file">test_patients.py</div><div class="cases">PI-BACK-19 al PI-BACK-24</div>
-    <div class="file">test_session_templates.py</div><div class="cases">PI-BACK-25 al PI-BACK-28</div>
-    <div class="file">test_sessions.py</div><div class="cases">PI-BACK-29 al PI-BACK-34</div>
-    <div class="file">test_unity.py</div><div class="cases">PI-BACK-35, PI-BACK-36, PI-BACK-40</div>
-    <div class="file">test_documents.py</div><div class="cases">PI-BACK-37</div>
-    <div class="file">test_dashboards.py</div><div class="cases">PI-BACK-38, PI-BACK-39</div>
-  </div>
-
-  <h2 class="section-title">Resultado completo de la ejecución de pytest</h2>
-  <div class="terminal"><span class="head">============================================ tests coverage =============================================</span>
-<span class="dim">____________________________ coverage: platform win32, python 3.10.6-final-0 ____________________________</span>
-
-Name                                       Stmts   Miss  Cover   Missing
-------------------------------------------------------------------------
-app\__init__.py                                0      0   <span class="pass">100%</span>
-app\api\__init__.py                            0      0   <span class="pass">100%</span>
-app\api\dependencies.py                       19      0   <span class="pass">100%</span>
-app\api\v1\__init__.py                        13      0   <span class="pass">100%</span>
-app\api\v1\audit_logs.py                      18      1    94%   34
-app\api\v1\auth.py                            46      4    91%   63, 79, 87, 104
-app\api\v1\dashboards.py                      16      0   <span class="pass">100%</span>
-app\api\v1\documents.py                       17      0   <span class="pass">100%</span>
-app\api\v1\patients.py                        25      0   <span class="pass">100%</span>
-app\api\v1\session_templates.py               22      0   <span class="pass">100%</span>
-app\api\v1\sessions.py                        52      0   <span class="pass">100%</span>
-app\api\v1\unity_runtime.py                   30      6    80%   33-42, 56-65
-app\api\v1\unity_test.py                      17      0   <span class="pass">100%</span>
-app\api\v1\users.py                           38      0   <span class="pass">100%</span>
-app\core\bootstrap.py                        108     65    40%   30-32, 35, 37, 42-43, 51-110, 124, 129-146, 157-191, 195-201, 205-217
-app\core\config.py                            47      6    87%   14-16, 52-54
-app\core\database.py                          38      3    92%   13, 17, 34
-app\core\pdf.py                               51      3    94%   29, 36, 78
-app\core\permissions.py                       18      2    89%   32-33
-app\core\security.py                          71      8    89%   21, 32, 52, 56-57, 60, 139, 146
-app\core\sqlite_ddl.py                        19      2    89%   136, 140
-app\core\startup.py                           40     20    50%   20-23, 43-56, 60-62
-app\core\time.py                              56     14    75%   22-23, 32, 34, 43-47, 50, 61, 73, 76, 84
-app\main.py                                   26      3    88%   40-42
-app\models\ (todas las clases)                                    <span class="pass">100%</span>
-app\schemas\session.py                       158      1    99%   94
-app\seed.py                                    6      6     0%   1-10
-app\services\audit_service.py                 58      4    93%   200, 202, 204, 206
-app\services\dashboard_service.py             23      1    96%   57
-app\services\document_service.py              23      0   <span class="pass">100%</span>
-app\services\helpers.py                       32      2    94%   13, 15
-app\services\patient_service.py              172      6    97%   90, 113, 225, 338, 352, 401
-app\services\session_service.py              269     18    93%   129, 342, 404-405, 582, 595, 612, 625, 630, 635, 640, 645, 684-686, 695, 712, 714
-app\services\session_template_service.py      79      1    99%   112
-app\services\unity_runtime_service.py        144     53    63%   53-122, 125-127, 130-132, 135-148, 181-187, 222, 256-262, 274, 280, 282-287, 296-298, 300-305
-app\services\unity_test_service.py           120      4    97%   78, 110, 196, 223
-app\services\user_service.py                 147      4    97%   157-159, 291
-------------------------------------------------------------------------
-TOTAL                                       2671    253    91%
-<span class="pass">===================================== 85 passed in 78.09s =====================================</span>
-
-<span class="dim">PS C:\Users\User\Downloads\Proyecto-Backend\PS-ProyectoFinal-A8-Backend&gt; pytest tests/integration --cov=app --cov-report=html</span>
-<span class="head">================================================================== test session starts ===================================================================</span>
-platform win32 -- Python 3.10.6, pytest-9.0.3, pluggy-1.6.0
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span>
+          <span class="tlabel">pytest tests/integration/back-db --cov=app --cov-report=html</span>
+        </div>
+        <pre>platform win32 -- Python 3.10.6, pytest-9.0.3, pluggy-1.6.0
 rootdir: C:\Users\User\Downloads\Proyecto-Backend\PS-ProyectoFinal-A8-Backend
 plugins: anyio-4.13.0, cov-7.1.0, django-4.12.0
-collected 85 items
+collected 94 items
 
-tests\integration\test_auth.py <span class="pass">.......</span>                                                                                                              [  8%]
-tests\integration\test_dashboards.py <span class="pass">..</span>                                                                                                             [ 10%]
-tests\integration\test_database.py <span class="pass">.....</span>                                                                                                            [ 16%]
-tests\integration\test_documents.py <span class="pass">...</span>                                                                                                             [ 20%]
-tests\integration\test_patients.py <span class="pass">.....................</span>                                                                                             [ 44%]
-tests\integration\test_session_templates.py <span class="pass">.......</span>                                                                                                 [ 52%]
-tests\integration\test_sessions.py <span class="pass">.....................</span>                                                                                            [ 77%]
-tests\integration\test_unity.py <span class="pass">...</span>                                                                                                                 [ 81%]
-tests\integration\test_users.py <span class="pass">................</span>                                                                                                    [100%]
+<span class="path">tests\integration\back-db\test_auth.py</span> <span class="pass">.......</span>                                        <span class="dim">[  7%]</span>
+<span class="path">tests\integration\back-db\test_core_permissions.py</span> <span class="pass">.</span>                                 <span class="dim">[  8%]</span>
+<span class="path">tests\integration\back-db\test_core_security.py</span> <span class="pass">...</span>                                <span class="dim">[ 11%]</span>
+<span class="path">tests\integration\back-db\test_core_time.py</span> <span class="pass">......</span>                                    <span class="dim">[ 18%]</span>
+<span class="path">tests\integration\back-db\test_dashboards.py</span> <span class="pass">..</span>                                     <span class="dim">[ 20%]</span>
+<span class="path">tests\integration\back-db\test_database.py</span> <span class="pass">.....</span>                                     <span class="dim">[ 25%]</span>
+<span class="path">tests\integration\back-db\test_documents.py</span> <span class="pass">...</span>                                     <span class="dim">[ 28%]</span>
+<span class="path">tests\integration\back-db\test_patients.py</span> <span class="pass">.....................</span>                     <span class="dim">[ 51%]</span>
+<span class="path">tests\integration\back-db\test_session_templates.py</span> <span class="pass">.......</span>                        <span class="dim">[ 58%]</span>
+<span class="path">tests\integration\back-db\test_sessions.py</span> <span class="pass">.....................</span>                       <span class="dim">[ 80%]</span>
+<span class="path">tests\integration\back-db\test_unity_test_flow.py</span> <span class="pass">..</span>                              <span class="dim">[ 82%]</span>
+<span class="path">tests\integration\back-db\test_users.py</span> <span class="pass">................</span>                              <span class="dim">[100%]</span>
 
-<span class="dim">Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html</span>
-<span class="head">===================================================================== tests coverage =====================================================================</span>
-Coverage HTML written to dir htmlcov
-<span class="pass">============================================================ 85 passed in 78.09s =============================================================</span></div>
+<span class="warn">==================================================================== warnings summary ====================================================================</span>
+<span class="dim">..\..\..\AppData\Local\Programs\Python\Python310\lib\site-packages\fastapi\testclient.py:1
+  StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
 
-  <h2 class="section-title">Cobertura de código obtenida</h2>
-  <p class="section-intro">El análisis de cobertura reporta un total de <strong>91%</strong> de líneas de código cubiertas de forma global a nivel de todo el proyecto.</p>
-  <div class="coverage-summary">
-    <div class="cov-card">
-      <div class="big">&gt;90%</div>
-      <div class="lbl">Enrutadores (app/api/v1/)</div>
-    </div>
-    <div class="cov-card">
-      <div class="big">100%</div>
-      <div class="lbl">Modelos ORM (app/models/)</div>
-    </div>
-    <div class="cov-card">
-      <div class="big">Robusta</div>
-      <div class="lbl">Servicios de lógica (app/services/)</div>
-    </div>
-  </div>
+tests/integration/back-db/test_patients.py::test_pi_back_20_create_patient_validation_errors
+  StarletteDeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
 
-  <h2 class="section-title">Conclusión técnica final</h2>
-  <p class="section-intro">La suite de pruebas de integración desarrollada para el backend FastAPI cumple de forma rigurosa con los objetivos y criterios del plan de pruebas:</p>
-  <div class="conclusion-grid">
-    <div class="conclusion-card">
-      <h4>1. Robustez y veracidad</h4>
-      <p>Al no apoyarse en mocks falsos para bases de datos, las pruebas aseguran que las sentencias SQL generadas por SQLAlchemy son plenamente compatibles con el motor SQLite y que todas las restricciones de integridad y triggers se aplican en la vida real.</p>
-    </div>
-    <div class="conclusion-card">
-      <h4>2. Seguridad y aislamiento</h4>
-      <p>Las verificaciones cruzadas entre Administradores y Especialistas confirman la efectividad de las directivas de seguridad basadas en roles, asegurando la privacidad de los datos demográficos e históricos de los pacientes.</p>
-    </div>
-    <div class="conclusion-card">
-      <h4>3. Mantenibilidad a largo plazo</h4>
-      <p>La parametrización de credenciales fijas y la configuración estructurada de base de datos temporal facilitan que estas pruebas puedan ejecutarse de forma automática en tuberías de CI/CD para evitar regresiones lógicas ante futuros cambios en el backend.</p>
-    </div>
-  </div>
+tests/integration/back-db/test_session_templates.py::test_pi_back_26_create_session_template_invalid_params
+  StarletteDeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
 
-  <footer>Plan de Pruebas de Integración — Backend FastAPI · Generado para consulta y descarga</footer>
+tests/integration/back-db/test_session_templates.py::test_pi_back_28_update_session_template
+  StarletteDeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.</span>
+
+<span class="pass">===================================================================== tests coverage =====================================================================
+============================================================ 94 passed in 20.29s =============================================================</span></pre>
+      </div>
+    </section>
+
+    <!-- COBERTURA -->
+    <section id="cobertura">
+      <div class="section-head">
+        <span class="idx">12</span>
+        <h2>Cobertura de código obtenida</h2>
+      </div>
+      <p style="color:var(--muted)">
+        Cobertura global de <b style="color:var(--green)">90%</b> sobre 2,671 sentencias. Los enrutadores clave
+        (dashboards, documents, patients, session_templates, sessions, users, unity_test) alcanzan el 100%.
+        Las brechas se concentran en el runtime de Unity y el bootstrap de arranque, cuyos flujos de subprocesos
+        reales no se ejercitan por completo en el entorno de prueba.
+      </p>
+      <div class="coverage-list">
+        <div class="cov-row"><span class="name">app/api/v1/dashboards.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/api/v1/documents.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/api/v1/patients.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/api/v1/session_templates.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/api/v1/sessions.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/api/v1/unity_runtime.py</span><div class="cov-track"><div class="cov-fill low" style="width:50%"></div></div><span class="cov-pct">50%</span></div>
+        <div class="cov-row"><span class="name">app/api/v1/unity_test.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/api/v1/users.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/core/bootstrap.py</span><div class="cov-track"><div class="cov-fill low" style="width:40%"></div></div><span class="cov-pct">40%</span></div>
+        <div class="cov-row"><span class="name">app/core/config.py</span><div class="cov-track"><div class="cov-fill mid" style="width:87%"></div></div><span class="cov-pct">87%</span></div>
+        <div class="cov-row"><span class="name">app/core/constants.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/core/context.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/core/database.py</span><div class="cov-track"><div class="cov-fill mid" style="width:92%"></div></div><span class="cov-pct">92%</span></div>
+        <div class="cov-row"><span class="name">app/core/pdf.py</span><div class="cov-track"><div class="cov-fill mid" style="width:94%"></div></div><span class="cov-pct">94%</span></div>
+        <div class="cov-row"><span class="name">app/core/permissions.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/core/security.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/core/sqlite_ddl.py</span><div class="cov-track"><div class="cov-fill mid" style="width:89%"></div></div><span class="cov-pct">89%</span></div>
+        <div class="cov-row"><span class="name">app/core/startup.py</span><div class="cov-track"><div class="cov-fill low" style="width:50%"></div></div><span class="cov-pct">50%</span></div>
+        <div class="cov-row"><span class="name">app/core/time.py</span><div class="cov-track"><div class="cov-fill mid" style="width:98%"></div></div><span class="cov-pct">98%</span></div>
+        <div class="cov-row"><span class="name">app/main.py</span><div class="cov-track"><div class="cov-fill mid" style="width:88%"></div></div><span class="cov-pct">88%</span></div>
+        <div class="cov-row"><span class="name">app/models/*.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/services/document_service.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/services/helpers.py</span><div class="cov-track"><div class="cov-fill mid" style="width:94%"></div></div><span class="cov-pct">94%</span></div>
+        <div class="cov-row"><span class="name">app/services/patient_service.py</span><div class="cov-track"><div class="cov-fill mid" style="width:97%"></div></div><span class="cov-pct">97%</span></div>
+        <div class="cov-row"><span class="name">app/services/session_service.py</span><div class="cov-track"><div class="cov-fill mid" style="width:93%"></div></div><span class="cov-pct">93%</span></div>
+        <div class="cov-row"><span class="name">app/services/session_template_service.py</span><div class="cov-track"><div class="cov-fill mid" style="width:99%"></div></div><span class="cov-pct">99%</span></div>
+        <div class="cov-row"><span class="name">app/services/unity_runtime_service.py</span><div class="cov-track"><div class="cov-fill low" style="width:33%"></div></div><span class="cov-pct">33%</span></div>
+        <div class="cov-row"><span class="name">app/services/unity_test_service.py</span><div class="cov-track"><div class="cov-fill" style="width:100%"></div></div><span class="cov-pct">100%</span></div>
+        <div class="cov-row"><span class="name">app/services/user_service.py</span><div class="cov-track"><div class="cov-fill mid" style="width:97%"></div></div><span class="cov-pct">97%</span></div>
+        <div class="cov-row" style="border-top:1px solid var(--border); margin-top:8px; padding-top:14px;">
+          <span class="name" style="color:var(--green); font-weight:700;">TOTAL</span>
+          <div class="cov-track"><div class="cov-fill" style="width:90%"></div></div>
+          <span class="cov-pct" style="color:var(--green); font-weight:700;">90%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONCLUSIÓN -->
+    <section id="conclusion">
+      <div class="section-head">
+        <span class="idx">13</span>
+        <h2>Conclusión técnica final</h2>
+      </div>
+      <p style="color:var(--muted)">
+        La suite de pruebas de integración desarrollada para el backend FastAPI cumple de forma rigurosa con los
+        objetivos y criterios del plan de pruebas:
+      </p>
+      <ul class="conclusion-list">
+        <li>
+          <span class="n">01</span>
+          <div>
+            <span class="t">Robustez y veracidad</span>
+            <span class="d">Al no apoyarse en mocks para la base de datos, las pruebas aseguran que las sentencias SQL generadas por SQLAlchemy son plenamente compatibles con SQLite y que todas las restricciones de integridad y triggers se aplican en la vida real.</span>
+          </div>
+        </li>
+        <li>
+          <span class="n">02</span>
+          <div>
+            <span class="t">Seguridad y aislamiento</span>
+            <span class="d">Las verificaciones cruzadas entre Administradores y Especialistas confirman la efectividad de las directivas de seguridad basadas en roles, asegurando la privacidad de los datos demográficos e históricos de los pacientes.</span>
+          </div>
+        </li>
+        <li>
+          <span class="n">03</span>
+          <div>
+            <span class="t">Mantenibilidad a largo plazo</span>
+            <span class="d">La parametrización de credenciales fijas y la configuración estructurada de base de datos temporal facilitan la ejecución automática en pipelines de CI/CD, evitando regresiones lógicas ante futuros cambios del backend.</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+  </main>
 </div>
+
+<footer>
+  Plan de Pruebas de Integración · Backend FastAPI — generado a partir de la documentación del proyecto
+</footer>
+
 </body>
 </html>
