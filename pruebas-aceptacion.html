@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informe de Pruebas de Aceptación | RehabACV</title>
+  <meta name="description" content="Informe de pruebas de aceptación del sistema RehabACV con casos de autenticación, usuarios, pacientes, sesiones, reportes y trazabilidad.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hero-report { padding: 140px 0 60px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 36px; }
+    .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 22px 20px 18px; text-align: center; transition: var(--transition); }
+    .kpi-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .kpi-value { font-family: var(--font-syne); font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 6px; line-height: 1; }
+    .kpi-value.pass { color: var(--teal); }
+    .kpi-value.fail { color: var(--red); }
+    .kpi-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 500; }
+    .modules-section { padding: 60px 0; }
+    .accordion { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+    details { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: var(--transition); }
+    details[open] { border-color: var(--blue2); box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+    summary { padding: 20px 24px; font-family: var(--font-syne); font-weight: 700; font-size: 16px; color: #ffffff; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; font-size: 20px; font-weight: 300; color: var(--text2); transition: var(--transition); }
+    details[open] summary::after { content: '−'; color: var(--teal); }
+    .details-content { padding: 0 24px 24px; border-top: 1px solid var(--border); background: rgba(11, 15, 26, 0.4); }
+    .case-list { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
+    .case-card { border: 1px solid var(--border2); border-radius: var(--radius-md); padding: 16px 18px; background: var(--surface); }
+    .case-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 8px; }
+    .case-id { font-family: monospace; color: var(--blue); font-weight: 700; }
+    .badge-pass, .badge-fail { padding: 4px 10px; border-radius: var(--radius-full); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-pass { background: var(--teal); color: #000; }
+    .badge-fail { background: var(--red); color: #fff; }
+    .case-desc { color: var(--text2); font-size: 14px; line-height: 1.6; }
+    .conclusion-card { background: linear-gradient(135deg, rgba(79,142,247,0.05) 0%, rgba(248,113,113,0.05) 100%); border: 1px solid var(--border2); border-radius: var(--radius-lg); padding: 36px; display: flex; gap: 24px; align-items: flex-start; margin-top: 48px; margin-bottom: 90px; }
+    .conclusion-icon { width: 52px; height: 52px; background: var(--blue-dim); color: var(--blue); border: 1.5px solid rgba(79,142,247,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .conclusion-content h3 { font-size: 19px; margin-bottom: 12px; }
+    .conclusion-content p { color: var(--text2); line-height: 1.75; font-size: 14px; }
+    @media (max-width: 768px) { .conclusion-card { flex-direction: column; gap: 16px; padding: 24px; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="main-navbar">
+    <div class="container navbar-container">
+      <div class="brand">
+        <img src="public/PS-MariposaMorpho-Logo.png" alt="Logo Mariposa Morpho" class="brand-logo">
+        <span class="brand-name">Mariposa Morpho</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Descripción</a></li>
+        <li><a href="index.html#tecnologias" class="nav-link">Tecnologías</a></li>
+        <li class="dropdown">
+          <span class="nav-link dropdown-toggle" tabindex="0">
+            Pruebas
+            <svg class="dropdown-chevron" viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </span>
+          <ul class="dropdown-menu">
+            <li class="dropdown-item"><a href="pruebas-unitarias-frontend.html">Informe de Pruebas Unitarias - Frontend</a></li>
+            <li class="dropdown-item"><a href="pruebas-unitarias-backend.html">Informe de Pruebas Unitarias - Backend</a></li>
+            <li class="dropdown-item"><a href="pruebas-unitarias-unity.html">Informe de Pruebas Unitarias - Unity</a></li>
+            <li class="dropdown-item"><a href="pruebas-funcionales-frontend.html">Informe de Pruebas Funcionales - Frontend</a></li>
+            <li class="dropdown-item"><a href="pruebas-funcionales-backend.html">Informe de Pruebas Funcionales - Backend</a></li>
+            <li class="dropdown-item"><a href="pruebas-integracion-frontend-backend.html">Informe de Pruebas de Integración - Frontend/Backend</a></li>
+            <li class="dropdown-item"><a href="pruebas-integracion-back-bd.html">Informe de Pruebas de Integración - Backend/Base de Datos</a></li>
+            <li class="dropdown-item"><a href="pruebas-integracion-back-unity.html">Informe de Pruebas de Integración - Backend/Unity</a></li>
+            <li class="dropdown-item"><a href="pruebas-sistema-manuales.html">Informe de Pruebas de Sistema - Manuales</a></li>
+            <li class="dropdown-item"><a href="pruebas-sistema-automatizadas.html">Informe de Pruebas de Sistema - Automatizadas</a></li>
+            <li class="dropdown-item"><a href="pruebas-aceptacion.html">Informe de Pruebas de Aceptación</a></li>
+            <li class="dropdown-item"><a href="sonarqube.html">Informe de Integración de SonarQube</a></li>
+          </ul>
+        </li>
+        <li><a href="index.html#equipo" class="nav-link">Equipo</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero-report container">
+    <span class="badge"><span class="pulse-dot"></span>Aceptación · Validación de negocio</span>
+    <h1 class="hero-title">Informe de Pruebas de Aceptación</h1>
+    <p class="hero-description">
+      Este informe documenta la ejecución de los casos de aceptación del sistema RehabACV, validando que las funcionalidades clave cumplan con las expectativas del negocio y del usuario final.
+    </p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-value pass">34</div>
+        <div class="kpi-label">Casos evaluados</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value pass">12</div>
+        <div class="kpi-label">Módulos cubiertos</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value pass">67%</div>
+        <div class="kpi-label">Aprobación</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value fail">Revisión</div>
+        <div class="kpi-label">Estado general</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="modules-section container">
+    <h2 class="section-title">Resumen por módulos</h2>
+    <p class="section-subtitle">Los casos se agruparon por módulos funcionales para analizar el comportamiento del sistema desde la perspectiva del usuario final.</p>
+
+    <div class="accordion">
+      <details open>
+        <summary>1. Autenticación (AUTH)</summary>
+        <div class="details-content">
+          <div class="case-list">
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-AUTH-01</span><span class="badge-pass">PASS</span></div><div class="case-desc">Inicio de sesión con diferenciación de rol: se accedió correctamente al dashboard correspondiente.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-AUTH-02</span><span class="badge-pass">PASS</span></div><div class="case-desc">Manejo de error por credenciales inválidas: se muestra un mensaje genérico de error.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-AUTH-03</span><span class="badge-pass">PASS</span></div><div class="case-desc">Manejo de error por cuenta inactiva: se impide el acceso con la cuenta deshabilitada.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-AUTH-04</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Recuperación de contraseña: el sistema solicita el correo pero no completa el envío del enlace.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-AUTH-05</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Cambio de contraseña desde enlace de recuperación: no se confirma el flujo completo.</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>2. Gestión de Usuarios (USR)</summary>
+        <div class="details-content">
+          <div class="case-list">
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-USR-01</span><span class="badge-pass">PASS</span></div><div class="case-desc">Listar usuarios con filtros: el Superadmin puede filtrar por rol, estado y búsqueda por nombre.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-USR-02</span><span class="badge-pass">PASS</span></div><div class="case-desc">Crear usuario: se permite registrar un usuario nuevo con datos válidos.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-USR-03</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Editar usuario: no se guardan correctamente los cambios del perfil.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-USR-04</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Activar/desactivar cuenta: la acción cambia el estado, pero produce efectos secundarios en el flujo de edición.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-USR-05</span><span class="badge-pass">PASS</span></div><div class="case-desc">Ver log de trazabilidad individual por usuario: se muestran registros paginados del usuario seleccionado.</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>3. Dashboard de Administración (ADM)</summary>
+        <div class="details-content">
+          <div class="case-list">
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-ADM-01</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Conteo de usuarios activos: el dashboard muestra listas en lugar de contadores correctos.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-ADM-02</span><span class="badge-pass">PASS</span></div><div class="case-desc">Accesos rápidos del dashboard: los botones de usuario y logs navegan correctamente.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-ADM-03</span><span class="badge-pass">PASS</span></div><div class="case-desc">Actividad reciente del sistema: se visualizan las acciones recientes con éxito.</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>4. Log de Trazabilidad (LOG)</summary>
+        <div class="details-content">
+          <div class="case-list">
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-LOG-01</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Registro automático de login/logout: se contabiliza login, pero no quedan registrados los eventos logout.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-LOG-02</span><span class="badge-pass">PASS</span></div><div class="case-desc">Registro de creación/edición/archivado de paciente: las acciones quedan registradas correctamente.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-LOG-03</span><span class="badge-pass">PASS</span></div><div class="case-desc">Registro de inicio de sesión de juego: se guarda el inicio de la sesión de rehabilitación.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-LOG-04</span><span class="badge-pass">PASS</span></div><div class="case-desc">Registro de fin de sesión de juego: el sistema guarda el cierre y el estado final.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-LOG-05</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Registro de generación/descarga de reporte PDF: no se completa la descarga automática del documento.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-LOG-06</span><span class="badge-pass">PASS</span></div><div class="case-desc">Visualización del log global: se visualizan usuario, rol, acción, entidad y fecha/hora.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-LOG-07</span><span class="badge-pass">PASS</span></div><div class="case-desc">Exportar log de trazabilidad: se descarga el reporte con éxito.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-LOG-08</span><span class="badge-pass">PASS</span></div><div class="case-desc">Visualización del propio historial: el especialista visualiza solo sus acciones.</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>5. Dashboard del Especialista (ESP)</summary>
+        <div class="details-content">
+          <div class="case-list">
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-ESP-01</span><span class="badge-pass">PASS</span></div><div class="case-desc">Lista de pacientes recientes: se muestran los pacientes asignados al especialista ordenados por actividad.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-ESP-02</span><span class="badge-pass">PASS</span></div><div class="case-desc">Resumen de última sesión por paciente: la información se presenta de forma correcta.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-ESP-03</span><span class="badge-pass">PASS</span></div><div class="case-desc">Accesos rápidos del dashboard: los botones abren las pantallas correctas.</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>6. Gestión de Pacientes (PAC)</summary>
+        <div class="details-content">
+          <div class="case-list">
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-PAC-01</span><span class="badge-pass">PASS</span></div><div class="case-desc">Listar pacientes con búsqueda y filtro: se muestran los pacientes asignados con los filtros activos.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-PAC-02</span><span class="badge-pass">PASS</span></div><div class="case-desc">Crear paciente: se valida la información y se registra el paciente con éxito.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-PAC-03</span><span class="badge-pass">PASS</span></div><div class="case-desc">Editar paciente: se logra modificar la información del paciente.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-PAC-04</span><span class="badge-pass">PASS</span></div><div class="case-desc">Archivar paciente: la acción se ejecuta correctamente.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-PAC-05</span><span class="badge-pass">PASS</span></div><div class="case-desc">Ver ficha individual del paciente: se visualiza la ficha completa.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-PAC-06</span><span class="badge-pass">PASS</span></div><div class="case-desc">Historial de sesiones: se muestra el historial en orden cronológico.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-PAC-07</span><span class="badge-pass">PASS</span></div><div class="case-desc">Gráfica de evolución: se visualiza la comparación cuando existen suficientes sesiones.</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>7. Consentimiento Informado (CONS)</summary>
+        <div class="details-content">
+          <div class="case-list">
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-CONS-01</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Subir documento de consentimiento: no permite cargar un PDF válido.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-CONS-02</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Registrar metadata del consentimiento: no se completa el registro de la información adicional.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-CONS-03</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Visualizar/descargar consentimiento: no se logra la descarga del documento.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-CONS-04</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Bloquear inicio de sesión sin consentimiento válido: se permite iniciar una sesión sin el documento firmado.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-CONS-05</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Reemplazar/actualizar documento: no se completa la carga de una nueva versión.</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>8. Configuración y Control de Sesión (SES)</summary>
+        <div class="details-content">
+          <div class="case-list">
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-SES-01</span><span class="badge-pass">PASS</span></div><div class="case-desc">Selección del paciente para nueva sesión: se avanza correctamente a la configuración de la sesión.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-SES-02</span><span class="badge-pass">PASS</span></div><div class="case-desc">Configurar parámetros: la sesión se prepara con valores válidos.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-SES-03</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Guardar configuración como plantilla: no se puede guardar una plantilla reutilizable.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-SES-04</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Cargar plantilla existente: no se logra reutilizar la plantilla guardada.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-SES-05</span><span class="badge-pass">PASS</span></div><div class="case-desc">Pantalla de pre-sesión: se muestra la información previa antes de iniciar la rehabilitación.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-SES-06</span><span class="badge-pass">PASS</span></div><div class="case-desc">Iniciar sesión en Unity: el sistema lanza la sesión correctamente.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-SES-07</span><span class="badge-pass">PASS</span></div><div class="case-desc">Temporizador, pausa y término: el flujo de control de la sesión funciona correctamente.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-SES-08</span><span class="badge-pass">PASS</span></div><div class="case-desc">Confirmación de fin de sesión: se solicita confirmación antes de terminar la sesión.</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>9. Resultados de Sesión — Kinect (RES)</summary>
+        <div class="details-content">
+          <div class="case-list">
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-RES-01</span><span class="badge-pass">PASS</span></div><div class="case-desc">Resumen general de la sesión: se muestran los resultados de forma correcta.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-RES-02</span><span class="badge-pass">PASS</span></div><div class="case-desc">Gráfica de centro de masa: se representa la información capturada por Kinect.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-RES-03</span><span class="badge-pass">PASS</span></div><div class="case-desc">Comparativa con sesión anterior: se visualiza la comparación cuando existe una sesión previa.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-RES-04</span><span class="badge-pass">PASS</span></div><div class="case-desc">Notas clínicas del especialista: las notas se almacenan y editan correctamente.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-RES-05</span><span class="badge-pass">PASS</span></div><div class="case-desc">Generar reporte PDF: se dispone de la opción y se puede descargar el reporte.</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>10. Historial de Sesiones (HIST)</summary>
+        <div class="details-content">
+          <div class="case-list">
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-HIST-01</span><span class="badge-pass">PASS</span></div><div class="case-desc">Listar sesiones por paciente: se visualizan las sesiones ordenadas cronológicamente.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-HIST-02</span><span class="badge-pass">PASS</span></div><div class="case-desc">Filtrar historial por rango de fechas: el filtro restringe correctamente las sesiones.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-HIST-03</span><span class="badge-pass">PASS</span></div><div class="case-desc">Acceso directo a vista de resultados: se accede correctamente a la vista seleccionada.</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>11. Generación de Reporte PDF (REP)</summary>
+        <div class="details-content">
+          <div class="case-list">
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-REP-01</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Previsualización del reporte: no existe una previsualización completa del documento exportado.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-REP-02</span><span class="badge-pass">PASS</span></div><div class="case-desc">Exportar/descargar reporte PDF: el archivo se descarga con éxito.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-REP-03</span><span class="badge-pass">PASS</span></div><div class="case-desc">Trazabilidad de generación de reporte: el evento queda registrado correctamente.</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>12. Mi Cuenta (CTA)</summary>
+        <div class="details-content">
+          <div class="case-list">
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-CTA-01</span><span class="badge-fail">FAIL</span></div><div class="case-desc">Ver y editar datos de perfil: no se actualizan correctamente los datos del usuario autenticado.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-CTA-02</span><span class="badge-pass">PASS</span></div><div class="case-desc">Cambiar contraseña: la operación se completa correctamente y redirige al dashboard.</div></div>
+            <div class="case-card"><div class="case-head"><span class="case-id">PA-CTA-03</span><span class="badge-pass">PASS</span></div><div class="case-desc">Ver log de trazabilidad propio: se muestra el historial del usuario autenticado.</div></div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div class="conclusion-card">
+      <div class="conclusion-icon">✓</div>
+      <div class="conclusion-content">
+        <h3>Conclusión</h3>
+        <p>Las pruebas de aceptación confirmaron que la mayoría de los flujos críticos del sistema funcionan desde la perspectiva del usuario, especialmente aquellos relacionados con autenticación, gestión de pacientes, sesiones terapéuticas y trazabilidad. Sin embargo, se identificaron mejoras pendientes en recuperación de contraseña, consentimiento informado, plantillas de sesión y edición de perfil, que requieren atención antes de cerrar la liberación del sistema.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>RehabACV · Documentación de Pruebas de Software</p>
+      <p>Validación de aceptación orientada a negocio</p>
+    </div>
+  </footer>
+</body>
+</html>
